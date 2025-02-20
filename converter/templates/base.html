@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SIESTA Platform{% endblock %}</title>
+    <!-- Bootstrap CSS (opcional) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Estilos personalizados -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Garante que o body ocupe pelo menos a altura da tela */
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #007bff;
+        }
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+        }
+        .footer {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: auto; /* Empurra o rodapé para o final da página */
+        }
+        .container {
+            flex: 1; /* Faz com que o conteúdo principal ocupe o espaço restante */
+        }
+    </style>
+    {% block extra_css %}{% endblock %}  <!-- Bloco para CSS adicional específico de páginas -->
+</head>
+<body>
+    <!-- Cabeçalho/Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">SIESTA Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signup' %}">Criar Conta</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container mt-4">
+        {% block content %}
+        <!-- O conteúdo específico de cada página será inserido aqui -->
+        {% endblock %}
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; {% now "Y" %} SIESTA Platform. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS (opcional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}  <!-- Bloco para JavaScript adicional específico de páginas -->
+</body>
+</html>

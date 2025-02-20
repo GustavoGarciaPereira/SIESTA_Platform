@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar Conta - SIESTA Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center">
+    <h1>Criar Conta</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Criar Conta</button>
+    </form>
+</div>
+{% endblock %}

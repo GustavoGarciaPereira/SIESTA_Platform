@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Página Inicial - SIESTA Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center">
+    <h1>Bem-vindo à SIESTA Platform</h1>
+    <p class="lead">Simulações computacionais de materiais de forma simples e eficiente.</p>
+    <div>
+        <a href="{% url 'login' %}" class="btn btn-primary">Logar</a>
+        <a href="{% url 'signup' %}" class="btn btn-success">Criar Conta</a>
+        <a href="{% url 'convert' %}" class="btn btn-success">Criar uma conversão</a>
+    </div>
+</div>
+{% endblock %}
