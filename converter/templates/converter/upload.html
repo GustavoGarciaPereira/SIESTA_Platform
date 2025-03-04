@@ -6,13 +6,13 @@
 {% block content %}
 <div class="container">
     <h2 class="mb-4">Conversor XXX.xyz para XXX.fdf</h2>
-    
+
     {% if error %}
         <div class="alert alert-danger" role="alert">
             {{ error }}
         </div>
     {% endif %}
-    
+
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
@@ -21,5 +21,28 @@
         </div>
         <button type="submit" class="btn btn-primary">Converter</button>
     </form>
+
+    <!-- Área de pré-visualização -->
+    <div id="preview" class="mt-4" style="display: none;">
+        <h3>Pré-visualização do Arquivo</h3>
+        <pre id="file-content"></pre>
+    </div>
 </div>
+
+<script>
+    document.getElementById('id_xyz_file').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                document.getElementById('file-content').textContent = content;
+                document.getElementById('preview').style.display = 'block';
+            };
+            reader.readAsText(file);
+        } else {
+            document.getElementById('preview').style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}
