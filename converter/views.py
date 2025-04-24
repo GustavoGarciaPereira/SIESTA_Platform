@@ -427,7 +427,7 @@ class ConvertView(View):
 
         return output.getvalue()
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
+from .forms import UserCreationForm
 from django.views import View
 from django.shortcuts import render, redirect
 
@@ -438,4 +438,4 @@ class HomeView(TemplateView):
 class SignupView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')  # Redireciona para a página de login após o cadastro
-    template_name = 'converter/signup.html'
+    template_name = 'converter/signup.html'  # Remova a vírgula

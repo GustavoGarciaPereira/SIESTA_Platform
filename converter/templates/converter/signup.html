@@ -3,12 +3,200 @@
 {% block title %}Criar Conta - SIESTA Platform{% endblock %}
 
 {% block content %}
-<div class="hero-section text-center">
-    <h1>Criar Conta</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Criar Conta</button>
-    </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <!-- Cabeçalho com gradiente -->
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h2 class="fw-bold mb-2">Criar Conta</h2>
+                    <p class="mb-0 text-white-50">Junte-se à comunidade SIESTA Platform</p>
+                </div>
+                
+                <div class="card-body p-4 p-lg-5">
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Campo de Nome de Usuário -->
+                        <div class="mb-4">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-person-badge me-2"></i>Nome de usuário
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light text-muted border-end-0">
+                                    <i class="bi bi-person-fill"></i>
+                                </span>
+                                {{ form.username }}
+                            </div>
+                            {% if form.username.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.username.errors %}
+                                <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Escolha um nome único para acessar sua conta.</div>
+                        </div>
+                        
+                        <!-- Campo de Email -->
+                        <div class="mb-4">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-envelope me-2"></i>Email
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light text-muted border-end-0">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </span>
+                                {{ form.email }}
+                            </div>
+                            {% if form.email.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.email.errors %}
+                                <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Seu email será usado para recuperação de senha e notificações.</div>
+                        </div>
+                        
+                        <!-- Campo de Senha -->
+                        <div class="mb-4">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-shield-lock me-2"></i>Senha
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light text-muted border-end-0">
+                                    <i class="bi bi-lock-fill"></i>
+                                </span>
+                                {{ form.password1 }}
+                            </div>
+                            {% if form.password1.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.password1.errors %}
+                                <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text small">
+                                <ul class="ps-3 mb-0">
+                                    <li>Sua senha não pode ser muito similar às suas outras informações pessoais.</li>
+                                    <li>Sua senha deve conter pelo menos 8 caracteres.</li>
+                                    <li>Sua senha não pode ser uma senha comumente utilizada.</li>
+                                    <li>Sua senha não pode ser inteiramente numérica.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Campo de Confirmação de Senha -->
+                        <div class="mb-4">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-shield-check me-2"></i>Confirmar senha
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light text-muted border-end-0">
+                                    <i class="bi bi-lock-fill"></i>
+                                </span>
+                                {{ form.password2 }}
+                            </div>
+                            {% if form.password2.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.password2.errors %}
+                                <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Digite a mesma senha novamente para verificação.</div>
+                        </div>
+                        
+                        <!-- Botão de Cadastro -->
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">
+                                <i class="bi bi-person-plus-fill me-2"></i>Criar minha conta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Rodapé -->
+                <div class="card-footer bg-light py-4 text-center rounded-bottom">
+                    <p class="mb-0 fw-bold">
+                        Já tem uma conta? <a href="{% url 'login' %}" class="text-primary text-decoration-none">Faça login</a>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Termos e Políticas -->
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    Ao criar uma conta, você concorda com nossos 
+                    <a href="#" class="text-decoration-none text-primary">Termos de Serviço</a> e 
+                    <a href="#" class="text-decoration-none text-primary">Política de Privacidade</a>.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- CSS customizado -->
+<style>
+    /* Estilos personalizados para a página de cadastro */
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+    }
+    
+    .rounded-4 {
+        border-radius: 0.75rem !important;
+    }
+    
+    .card {
+        transition: transform 0.3s ease;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .form-control {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+        border-left: 0;
+        padding-left: 0;
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        border-color: #d1d3e2;
+    }
+    
+    .input-group-text {
+        border-end-end-radius: 0;
+        border-start-end-radius: 0;
+    }
+    
+    .input-group:focus-within .input-group-text {
+        border-color: #d1d3e2;
+    }
+    
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2e59d9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 89, 217, 0.3);
+    }
+</style>
 {% endblock %}

@@ -1,12 +1,205 @@
 {% extends 'base.html' %}
 
+{% block title %}Entrar - SIESTA Platform{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <h2>Logar</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Logar</button>
-    </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <!-- Cabeçalho com gradiente -->
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h2 class="fw-bold mb-2">Bem-vindo de volta</h2>
+                    <p class="mb-0 text-white-50">Entre na sua conta SIESTA Platform</p>
+                </div>
+                
+                <div class="card-body p-4 p-lg-5">
+                    {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Erro!</strong> Nome de usuário ou senha incorretos.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    </div>
+                    {% endif %}
+                    
+                    {% if next %}
+                        {% if user.is_authenticated %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Sua conta não tem acesso a esta página. Para prosseguir, faça login com uma conta que tenha acesso.
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Faça login para ver esta página.
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <form method="post" action="{% url 'login' %}" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Campo de Nome de Usuário -->
+                        <div class="mb-4">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-person-fill me-2"></i>Nome de usuário
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light text-muted border-end-0">
+                                    <i class="bi bi-person-fill"></i>
+                                </span>
+                                <input type="text" name="{{ form.username.html_name }}" 
+                                       id="{{ form.username.id_for_label }}" 
+                                       class="form-control border-start-0 ps-0" 
+                                       placeholder="Digite seu nome de usuário" 
+                                       required autofocus>
+                            </div>
+                            {% if form.username.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.username.errors %}
+                                <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Campo de Senha -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="{{ form.password.id_for_label }}" class="form-label fw-bold mb-0">
+                                    <i class="bi bi-shield-lock me-2"></i>Senha
+                                </label>
+                                <a href="{% url 'password_reset' %}" class="text-primary small text-decoration-none">
+                                    <i class="bi bi-key-fill me-1"></i>Esqueceu a senha?
+                                </a>
+                            </div>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light text-muted border-end-0">
+                                    <i class="bi bi-lock-fill"></i>
+                                </span>
+                                <input type="password" name="{{ form.password.html_name }}" 
+                                       id="{{ form.password.id_for_label }}" 
+                                       class="form-control border-start-0 ps-0" 
+                                       placeholder="Digite sua senha" 
+                                       required>
+                            </div>
+                            {% if form.password.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.password.errors %}
+                                <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Opção Lembrar-me -->
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember-me" name="remember">
+                            <label class="form-check-label" for="remember-me">Lembrar meus dados</label>
+                        </div>
+                        
+                        <!-- Botão de Login -->
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                            </button>
+                        </div>
+                        
+                        <!-- Campo para redirecionar após login -->
+                        <input type="hidden" name="next" value="{{ next }}">
+                    </form>
+                </div>
+                
+                <!-- Rodapé -->
+                <div class="card-footer bg-light py-4 text-center rounded-bottom">
+                    <p class="mb-0 fw-bold">
+                        Não tem uma conta? <a href="{% url 'signup' %}" class="text-primary text-decoration-none">Registre-se</a>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Recursos -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body text-center p-3">
+                            <i class="bi bi-laptop fs-1 text-primary mb-2"></i>
+                            <h5 class="fw-bold">Acesso Completo</h5>
+                            <p class="small mb-0">Ao ferramentas de simulação SIESTA</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center p-3">
+                            <i class="bi bi-file-earmark-code fs-1 text-primary mb-2"></i>
+                            <h5 class="fw-bold">Recursos Exclusivos</h5>
+                            <p class="small mb-0">Para seu trabalho científico</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- CSS customizado -->
+<style>
+    /* Estilos personalizados para a página de login */
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+    }
+    
+    .rounded-4 {
+        border-radius: 0.75rem !important;
+    }
+    
+    .card {
+        transition: transform 0.3s ease;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .form-control {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+        border-left: 0;
+        padding-left: 0;
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        border-color: #d1d3e2;
+    }
+    
+    .input-group-text {
+        border-end-end-radius: 0;
+        border-start-end-radius: 0;
+    }
+    
+    .input-group:focus-within .input-group-text {
+        border-color: #d1d3e2;
+    }
+    
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2e59d9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 89, 217, 0.3);
+    }
+    
+    .form-check-input:checked {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+</style>
 {% endblock %}
