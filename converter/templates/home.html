@@ -7,11 +7,10 @@
     <h1>Bem-vindo à SIESTA Platform</h1>
     <p class="lead">Simulações computacionais de materiais de forma simples e eficiente.</p>
     <div>
-        {% if not request.user.is_authenticated  %}
+        {% if not request.user.is_authenticated %}
             <a href="{% url 'login' %}" class="btn btn-primary">Logar</a>
             <a href="{% url 'signup' %}" class="btn btn-success">Criar Conta</a>
-        {% endif%}
-
+        {% endif %}
         <a href="{% url 'convert' %}" class="btn btn-success">Criar uma conversão</a>
     </div>
 </div>
