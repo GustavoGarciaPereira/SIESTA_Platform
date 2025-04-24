@@ -3,7 +3,7 @@ import os
 from django.urls import reverse_lazy
 import numpy as np
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from .forms import UploadFileForm
 from django.views import View
@@ -105,127 +105,327 @@ from django.views.generic import CreateView, TemplateView
 #         out.write("ElectronicTemperature  80 meV\n")
 #         out.write("DM.Tolerance         0.1000000000E-02\n")
 
-import numpy as np
+from django.views import View
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.utils.text import slugify
+from django import forms
+import io
+from collections import OrderedDict
 
-def xyz_to_fdf(xyz_path, fdf_path, lattice=None):
-    with open(xyz_path, 'r') as f:
-        lines = f.readlines()
-    
-    n_atoms = int(lines[0].strip())
-    comment = lines[1].strip()  # Linha de comentário (vazia no seu caso)
-    atoms = [line.split() for line in lines[2:2 + n_atoms]]
+from django.views import View
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.utils.text import slugify
+from django import forms
+import io
+from collections import OrderedDict
 
-    # Se lattice não for fornecido, tentar extrair do comentário
-    if lattice is None:
-        if "Lattice=" in comment:
-            lattice_str = comment.split('"')[1]
-            lattice = np.array(list(map(float, lattice_str.split()))).reshape(3, 3)
-        else:
-            raise ValueError("Vetores de rede não encontrados. Defina-os manualmente.")
-    else:
-        lattice = np.array(lattice).reshape(3, 3)
-    # Mapear elementos para IDs
-    elements = list(set([atom[0] for atom in atoms]))
-    species = {elem: i+1 for i, elem in enumerate(elements)}
-    
-    # Escrever FDF
-    with open(fdf_path, 'w') as f:
-        f.write("# FDF gerado a partir de XYZ\n")
-        
-        # Bloco ChemicalSpeciesLabel
-        f.write("%block ChemicalSpeciesLabel\n")
-        for elem, id in species.items():
-            f.write(f"  {id}  {elem}  {elem}\n")  # Assume pseudopotencial = nome do elemento
-        f.write("%endblock ChemicalSpeciesLabel\n\n")
-        
-        # Bloco LatticeVectors (em Ångstrom)
-        f.write("LatticeConstant 1.0 Ang\n\n")  # Fator de escala = 1.0
-        f.write("%block LatticeVectors\n")
-        for vec in lattice:
-            f.write(f"  {' '.join(map(str, vec))}\n")
-        f.write("%endblock LatticeVectors\n\n")
-        
-        # Bloco AtomicCoordinates (em Ångstrom)
-        f.write("AtomicCoordinatesFormat Ang\n")
-        f.write("%block AtomicCoordinatesAndAtomicSpecies\n")
-        for i, (elem, x, y, z) in enumerate(atoms, 1):
-            f.write(f"  {x}  {y}  {z}  {species[elem]}  {i}  {elem}\n")
-        f.write("%endblock AtomicCoordinatesAndAtomicSpecies")
-    
-    return f"Arquivo {fdf_path} gerado com sucesso!"
+class SIESTAParametersForm(forms.Form):
+    # Upload e parâmetros básicos
+    xyz_file = forms.FileField(label='Arquivo XYZ')
+    system_name = forms.CharField(label='Nome do Sistema', required=False,
+                                 help_text='Deixe em branco para usar o nome do arquivo')
+    padding = forms.FloatField(label='Espaçamento de borda (Å)', initial=10.0, min_value=0.0)
+
+    # Parâmetros de base
+    PAO_BasisSize = forms.ChoiceField(
+        label='PAO.BasisSize',
+        choices=[('SZ', 'SZ'), ('DZ', 'DZ'), ('SZP', 'SZP'), ('DZP', 'DZP')],
+        initial='DZP'
+    )
+    PAO_EnergyShift = forms.FloatField(
+        label='PAO.EnergyShift (eV)',
+        initial=0.05,
+        min_value=0.001,
+        help_text='Valor em eV'
+    )
+
+    # Parâmetros MD
+    MD_TypeOfRun = forms.ChoiceField(
+        label='MD.TypeOfRun',
+        choices=[('CG', 'CG'), ('Verlet', 'Verlet'), ('Nose', 'Nose'),
+                ('ParrinelloRahman', 'ParrinelloRahman'), ('NoseParrinelloRahman', 'NoseParrinelloRahman')],
+        initial='CG'
+    )
+    MD_NumCGsteps = forms.IntegerField(
+        label='MD.NumCGsteps',
+        initial=1000,
+        min_value=1
+    )
+    MD_MaxForceTol = forms.FloatField(
+        label='MD.MaxForceTol (eV/Ang)',
+        initial=0.05,
+        min_value=0.001
+    )
+
+    # Parâmetros SCF
+    MaxSCFIterations = forms.IntegerField(
+        label='MaxSCFIterations',
+        initial=100,
+        min_value=1
+    )
+    SpinPolarized = forms.BooleanField(
+        label='SpinPolarized',
+        initial=True,
+        required=False
+    )
+    MeshCutoff = forms.FloatField(
+        label='MeshCutoff (Ry)',
+        initial=200.0,
+        min_value=50.0
+    )
+
+    # Parâmetros DM
+    DM_UseSaveDM = forms.BooleanField(
+        label='DM.UseSaveDM',
+        initial=True,
+        required=False
+    )
+    UseSaveData = forms.BooleanField(
+        label='UseSaveData',
+        initial=True,
+        required=False
+    )
+    MD_UseSaveXV = forms.BooleanField(
+        label='MD.UseSaveXV',
+        initial=True,
+        required=False
+    )
+    MD_UseSaveCG = forms.BooleanField(
+        label='MD.UseSaveCG',
+        initial=True,
+        required=False
+    )
+    DM_MixingWeight = forms.FloatField(
+        label='DM.MixingWeight',
+        initial=0.10,
+        min_value=0.01,
+        max_value=1.0
+    )
+    DM_NumberPulay = forms.IntegerField(
+        label='DM.NumberPulay',
+        initial=3,
+        min_value=0
+    )
+    DM_Tolerance = forms.FloatField(
+        label='DM.Tolerance',
+        initial=1.0E-3,
+        help_text='Valor em formato científico (ex: 1.0E-3)'
+    )
+
+    # Parâmetros de saída
+    WriteCoorXmol = forms.BooleanField(
+        label='WriteCoorXmol',
+        initial=True,
+        required=False
+    )
+    WriteMullikenPop = forms.IntegerField(
+        label='WriteMullikenPop',
+        initial=1,
+        min_value=0,
+        max_value=3
+    )
+
+    # Parâmetros de XC e solução
+    XC_functional = forms.ChoiceField(
+        label='XC.functional',
+        choices=[('LDA', 'LDA'), ('GGA', 'GGA'), ('PBE', 'PBE')],
+        initial='LDA'
+    )
+    XC_authors = forms.ChoiceField(
+        label='XC.authors',
+        choices=[('CA', 'CA'), ('PZ', 'PZ'), ('PW92', 'PW92'),
+                ('PBE', 'PBE'), ('revPBE', 'revPBE'), ('RPBE', 'RPBE')],
+        initial='CA'
+    )
+    SolutionMethod = forms.ChoiceField(
+        label='SolutionMethod',
+        choices=[('diagon', 'diagon'), ('OrderN', 'OrderN')],
+        initial='diagon'
+    )
+    ElectronicTemperature = forms.FloatField(
+        label='ElectronicTemperature (meV)',
+        initial=80,
+        min_value=0.0,
+        help_text='Valor em meV'
+    )
 
 class ConvertView(View):
-    """
-    View para processar o upload do arquivo XYZ, converter e retornar o arquivo FDF.
-    """
+    template_name = 'converter/upload.html'  # Template que você precisa criar
+
+    # Tabela periódica mínima (principais elementos para biomoléculas)
+    PT = {'H':1, 'C':6, 'N':7, 'O':8, 'F':9, 'P':15, 'S':16, 'Cl':17, 'Br':35, 'I':53}
+
     def get(self, request):
-        form = UploadFileForm()
-        return render(request, 'converter/upload.html', {'form': form})
-    
+        form = SIESTAParametersForm()
+        return render(request, self.template_name, {'form': form})
+
     def post(self, request):
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            xyz_file = request.FILES['xyz_file']
-            # Certifique-se de que o diretório MEDIA_ROOT existe
-            if not os.path.exists(settings.MEDIA_ROOT):
+        form = SIESTAParametersForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return render(request, self.template_name, {'form': form})
+
+        # Obtém dados do formulário
+        xyz_file = request.FILES['xyz_file']
+        params = form.cleaned_data
+
+        # Se o nome do sistema não for fornecido, use o nome do arquivo
+        system_name = params['system_name']
+        if not system_name:
+            system_name = xyz_file.name.rsplit('.', 1)[0]
+
+        # Converte o arquivo
+        fdf_content = self.convert_xyz_to_fdf(xyz_file, system_name, params)
+
+        # Verifica se é uma solicitação de pré-visualização ou download
+        if 'preview' in request.POST:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                # Retorna apenas o conteúdo para AJAX
+                return JsonResponse({
+                    'content': fdf_content,
+                    'filename': f"{slugify(system_name)}.fdf"
+                })
+            else:
+                # Renderiza a página com pré-visualização
+                return render(request, self.template_name, {
+                    'form': form,
+                    'preview_content': fdf_content,
+                    'preview_filename': f"{slugify(system_name)}.fdf"
+                })
+        else:
+            # Prepara o arquivo para download
+            response = HttpResponse(fdf_content, content_type='text/plain')
+            response['Content-Disposition'] = f'attachment; filename="{slugify(system_name)}.fdf"'
+            return response
+
+    def read_xyz(self, file_obj):
+        """Lê um arquivo XYZ e retorna uma lista de tuplas (símbolo, x, y, z)"""
+        # Decodifica cada linha para texto
+        lines = [line.decode('utf-8').strip() for line in file_obj]
+
+        n = int(lines[0])  # Número de átomos
+        comment = lines[1]  # Linha de comentário
+        atoms = []
+
+        for i in range(2, 2 + n):
+            if i < len(lines) and lines[i].strip():
+                parts = lines[i].split()
+                if len(parts) >= 4:
+                    symbol = parts[0]
+                    x, y, z = map(float, parts[1:4])
+                    atoms.append((symbol, x, y, z))
+
+        return atoms
+
+    def bounding_box(self, atoms):
+        """Calcula a caixa delimitadora para os átomos"""
+        xs, ys, zs = zip(*[(a[1], a[2], a[3]) for a in atoms])
+        return min(xs), max(xs), min(ys), max(ys), min(zs), max(zs)
+
+    def convert_xyz_to_fdf(self, xyz_file, system_name, params):
+        """Converte um arquivo XYZ para formato FDF do SIESTA com os parâmetros especificados"""
+        # Lê o arquivo XYZ
+        atoms = self.read_xyz(xyz_file)
+
+        # Identifica espécies únicas
+        species = OrderedDict()
+        for sym, *_ in atoms:
+            if sym not in species:
+                species[sym] = len(species) + 1  # Número de espécie
+
+        # Calcula a caixa
+        xmin, xmax, ymin, ymax, zmin, zmax = self.bounding_box(atoms)
+        side = max(xmax-xmin, ymax-ymin, zmax-zmin) + 2*params['padding']
+
+        # Centro da caixa para recentrar os átomos
+        center_x = (xmin + xmax) / 2
+        center_y = (ymin + ymax) / 2
+        center_z = (zmin + zmax) / 2
+
+        # Cria o arquivo FDF
+        output = io.StringIO()
+
+        output.write(f"SystemName    {system_name}\n")
+        output.write(f"SystemLabel    {system_name}\n")
+        output.write(f"NumberOfAtoms    {len(atoms)}\n")
+        output.write(f"NumberOfSpecies  {len(species)}\n")
+
+        # Bloco de espécies químicas
+        output.write("%block ChemicalSpeciesLabel\n")
+        for sym, idx in species.items():
+            atomic_num = self.PT.get(sym, 0)
+            if atomic_num == 0:
+                # Se não encontrar na tabela, tenta converter para número
                 try:
-                    os.makedirs(settings.MEDIA_ROOT)
-                except Exception as e:
-                    return render(request, 'converter/upload.html', {'form': form, 'error': f"Erro ao criar diretório de mídia: {str(e)}"})
-            
-            # Salve o arquivo temporariamente
-            save_path = os.path.join(settings.MEDIA_ROOT, xyz_file.name)
-            try:
-                with open(save_path, 'wb+') as destination:
-                    for chunk in xyz_file.chunks():
-                        destination.write(chunk)
-                print(f"Arquivo salvo em: {save_path}")
-            except Exception as e:
-                return render(request, 'converter/upload.html', {'form': form, 'error': f"Erro ao salvar o arquivo: {str(e)}"})
-            
-            try:
-                # Defina o caminho para o arquivo FDF de saída
-                # Renomeie para Enoxaparin.fdf para refletir o sistema convertido
-                base_filename = os.path.splitext(xyz_file.name)[0]
-                fdf_filename = f"Enoxaparin_{base_filename}.fdf"
-                fdf_path = os.path.join(settings.MEDIA_ROOT, fdf_filename)
-                
-                # Chame a função de conversão
-                lattice_manual = [50.000, 0.000,  0.000,
-                0.000,  50.000, 0.000,
-                0.000,  0.000,  50.000]
+                    atomic_num = int(sym)
+                except ValueError:
+                    atomic_num = 0  # Desconhecido
+            output.write(f" {idx}   {atomic_num}    {sym}.lda\n")
+        output.write("%endblock ChemicalSpeciesLabel\n\n")
 
-                xyz_to_fdf(save_path, fdf_path, lattice = lattice_manual)
-                print(f"Arquivo FDF gerado em: {fdf_path}")
-                
-                # Prepare o arquivo para download
-                with open(fdf_path, 'rb') as f:
-                    response = HttpResponse(f.read(), content_type='application/octet-stream')
-                    response['Content-Disposition'] = f'attachment; filename="{fdf_filename}"'
-                
-                # Remova os arquivos temporários
-                os.remove(save_path)
-                os.remove(fdf_path)
-                
-                return response
-            
-            except FileNotFoundError:
-                # Remova o arquivo salvo se ocorrer um erro
-                if os.path.exists(save_path):
-                    os.remove(save_path)
-                return render(request, 'converter/upload.html', {'form': form, 'error': "Arquivo XYZ não encontrado após o upload."})
-            except Exception as e:
-                # Remova os arquivos salvos em caso de erro
-                if os.path.exists(save_path):
-                    os.remove(save_path)
-                if os.path.exists(fdf_path):
-                    os.remove(fdf_path)
-                return render(request, 'converter/upload.html', {'form': form, 'error': f"Erro durante a conversão: {str(e)}"})
-        
-        return render(request, 'converter/upload.html', {'form': form, 'error': 'Formulário inválido.'})
+        # Constante de rede e vetores
+        output.write("LatticeConstant 1.0 Ang\n")
+        output.write("%block LatticeVectors\n")
+        output.write(f"  {side:.3f} 0.000  0.000\n")
+        output.write(f"  0.000  {side:.3f} 0.000\n")
+        output.write(f"  0.000  0.000  {side:.3f}\n")
+        output.write("%endblock LatticeVectors\n\n")
 
+        # Coordenadas atômicas
+        output.write("AtomicCoordinatesFormat NotScaledCartesianAng\n")
+        output.write("%block AtomicCoordinatesAndAtomicSpecies \n")
 
+        # Recentra os átomos no meio da caixa
+        box_center = side / 2
+        for sym, x, y, z in atoms:
+            # Translada do centro original para o centro da caixa
+            nx = x - center_x + box_center
+            ny = y - center_y + box_center
+            nz = z - center_z + box_center
+            output.write(f"   {nx:.5f}    {ny:.5f}    {nz:.5f}    {species[sym]}\n")
 
+        output.write("%endblock AtomicCoordinatesAndAtomicSpecies\n\n")
+
+        # Adiciona os parâmetros SIESTA do formulário
+        output.write(f"PAO.BasisSize    {params['PAO_BasisSize']}\n")
+        output.write(f"PAO.EnergyShift   {params['PAO_EnergyShift']} eV\n")
+        output.write(f"MD.TypeOfRun    {params['MD_TypeOfRun']}\n")
+        output.write(f"MD.NumCGsteps    {params['MD_NumCGsteps']}\n")
+        output.write(f"MaxSCFIterations  {params['MaxSCFIterations']}\n")
+
+        if params['SpinPolarized']:
+            output.write("SpinPolarized true\n")
+
+        output.write(f"MD.MaxForceTol    {params['MD_MaxForceTol']} eV/Ang\n")
+        output.write(f"MeshCutoff    {params['MeshCutoff']} Ry\n")
+
+        if params['DM_UseSaveDM']:
+            output.write("DM.UseSaveDM    true\n")
+
+        if params['UseSaveData']:
+            output.write("UseSaveData    true\n")
+
+        if params['MD_UseSaveXV']:
+            output.write("MD.UseSaveXV    true\n")
+
+        if params['MD_UseSaveCG']:
+            output.write("MD.UseSaveCG    true\n")
+
+        output.write(f"DM.MixingWeight   {params['DM_MixingWeight']:.2f}\n")
+        output.write(f"DM.NumberPulay    {params['DM_NumberPulay']}\n")
+
+        if params['WriteCoorXmol']:
+            output.write("WriteCoorXmol\n")
+
+        output.write(f"WriteMullikenPop {params['WriteMullikenPop']}\n")
+        output.write(f"XC.functional    {params['XC_functional']}\n")
+        output.write(f"XC.authors    {params['XC_authors']} \n")
+        output.write(f"SolutionMethod {params['SolutionMethod']}\n")
+        output.write(f"ElectronicTemperature  {params['ElectronicTemperature']} meV\n")
+        output.write(f"DM.Tolerance    {params['DM_Tolerance']:.8E}\n")
+
+        return output.getvalue()
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.views import View

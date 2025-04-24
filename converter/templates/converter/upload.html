@@ -1,48 +1,401 @@
+{% extends "base.html" %}
 
-{% extends 'base.html' %}
-
-{% block title %}Conversor XXX.xyz para XXX.fdf{% endblock %}
+{% block title %}Conversor XYZ para FDF com Parâmetros SIESTA{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4">Conversor XXX.xyz para XXX.fdf</h2>
-
-    {% if error %}
-        <div class="alert alert-danger" role="alert">
-            {{ error }}
-        </div>
-    {% endif %}
-
-    <form method="post" enctype="multipart/form-data">
+    <h3>Conversor de Arquivos XYZ para FDF (SIESTA)</h3>
+    
+    <form method="post" enctype="multipart/form-data" id="convertForm">
         {% csrf_token %}
-        <div class="form-group">
-            {{ form.xyz_file.label_tag }}
-            {{ form.xyz_file }}
-        </div>
-        <button type="submit" class="btn btn-primary">Converter</button>
-    </form>
+        
 
-    <!-- Área de pré-visualização -->
-    <div id="preview" class="mt-4" style="display: none;">
-        <h3>Pré-visualização do Arquivo</h3>
-        <pre id="file-content"></pre>
+
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Arquivo e Configurações Básicas</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    {{ form.xyz_file.label_tag }}
+                    {{ form.xyz_file }}
+                    {% if form.xyz_file.errors %}
+                    <div class="invalid-feedback d-block">{{ form.xyz_file.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">Formato XYZ: número de átomos, comentário, linhas de coordenadas</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.system_name.label_tag }}
+                            {{ form.system_name }}
+                            {% if form.system_name.errors %}
+                            <div class="invalid-feedback d-block">{{ form.system_name.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">{{ form.system_name.help_text }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.padding.label_tag }}
+                            {{ form.padding }}
+                            {% if form.padding.errors %}
+                            <div class="invalid-feedback d-block">{{ form.padding.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Espaço extra em Å ao redor da molécula</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Parâmetros de Base e Malha</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.PAO_BasisSize.label_tag }}
+                            {{ form.PAO_BasisSize }}
+                            {% if form.PAO_BasisSize.errors %}
+                            <div class="invalid-feedback d-block">{{ form.PAO_BasisSize.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.PAO_EnergyShift.label_tag }}
+                            {{ form.PAO_EnergyShift }}
+                            {% if form.PAO_EnergyShift.errors %}
+                            <div class="invalid-feedback d-block">{{ form.PAO_EnergyShift.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.MeshCutoff.label_tag }}
+                            {{ form.MeshCutoff }}
+                            {% if form.MeshCutoff.errors %}
+                            <div class="invalid-feedback d-block">{{ form.MeshCutoff.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Parâmetros de Dinâmica Molecular</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.MD_TypeOfRun.label_tag }}
+                            {{ form.MD_TypeOfRun }}
+                            {% if form.MD_TypeOfRun.errors %}
+                            <div class="invalid-feedback d-block">{{ form.MD_TypeOfRun.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.MD_NumCGsteps.label_tag }}
+                            {{ form.MD_NumCGsteps }}
+                            {% if form.MD_NumCGsteps.errors %}
+                            <div class="invalid-feedback d-block">{{ form.MD_NumCGsteps.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.MD_MaxForceTol.label_tag }}
+                            {{ form.MD_MaxForceTol }}
+                            {% if form.MD_MaxForceTol.errors %}
+                            <div class="invalid-feedback d-block">{{ form.MD_MaxForceTol.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3 mt-4">
+                            <div class="form-check">
+                                {{ form.MD_UseSaveXV }}
+                                {{ form.MD_UseSaveXV.label_tag }}
+                            </div>
+                            <div class="form-check">
+                                {{ form.MD_UseSaveCG }}
+                                {{ form.MD_UseSaveCG.label_tag }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0">Parâmetros SCF e DM</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.MaxSCFIterations.label_tag }}
+                            {{ form.MaxSCFIterations }}
+                            {% if form.MaxSCFIterations.errors %}
+                            <div class="invalid-feedback d-block">{{ form.MaxSCFIterations.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.DM_MixingWeight.label_tag }}
+                            {{ form.DM_MixingWeight }}
+                            {% if form.DM_MixingWeight.errors %}
+                            <div class="invalid-feedback d-block">{{ form.DM_MixingWeight.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.DM_NumberPulay.label_tag }}
+                            {{ form.DM_NumberPulay }}
+                            {% if form.DM_NumberPulay.errors %}
+                            <div class="invalid-feedback d-block">{{ form.DM_NumberPulay.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.DM_Tolerance.label_tag }}
+                            {{ form.DM_Tolerance }}
+                            {% if form.DM_Tolerance.errors %}
+                            <div class="invalid-feedback d-block">{{ form.DM_Tolerance.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            {{ form.DM_UseSaveDM }}
+                            {{ form.DM_UseSaveDM.label_tag }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            {{ form.UseSaveData }}
+                            {{ form.UseSaveData.label_tag }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-header bg-secondary text-white">
+                <h4 class="mb-0">Funcional XC e Parâmetros de Solução</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.XC_functional.label_tag }}
+                            {{ form.XC_functional }}
+                            {% if form.XC_functional.errors %}
+                            <div class="invalid-feedback d-block">{{ form.XC_functional.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.XC_authors.label_tag }}
+                            {{ form.XC_authors }}
+                            {% if form.XC_authors.errors %}
+                            <div class="invalid-feedback d-block">{{ form.XC_authors.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.SolutionMethod.label_tag }}
+                            {{ form.SolutionMethod }}
+                            {% if form.SolutionMethod.errors %}
+                            <div class="invalid-feedback d-block">{{ form.SolutionMethod.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ form.ElectronicTemperature.label_tag }}
+                            {{ form.ElectronicTemperature }}
+                            {% if form.ElectronicTemperature.errors %}
+                            <div class="invalid-feedback d-block">{{ form.ElectronicTemperature.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            {{ form.SpinPolarized }}
+                            {{ form.SpinPolarized.label_tag }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Saídas e Análises</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            {{ form.WriteCoorXmol }}
+                            {{ form.WriteCoorXmol.label_tag }}
+                            <div class="form-text">Exporta coordenadas em formato Xmol</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.WriteMullikenPop.label_tag }}
+                            {{ form.WriteMullikenPop }}
+                            {% if form.WriteMullikenPop.errors %}
+                            <div class="invalid-feedback d-block">{{ form.WriteMullikenPop.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Análise populacional de Mulliken</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-lg btn-primary">Converter e Baixar FDF</button>
+        </div>
+
+        <!-- Botões de ação no final do formulário -->
+        <div class="d-flex gap-2 justify-content-end mt-4 mb-4">
+            <button type="button" id="previewButton" class="btn btn-info">
+                <i class="bi bi-eye-fill"></i> Pré-visualizar
+            </button>
+            <button type="submit" class="btn btn-lg btn-primary">
+                <i class="bi bi-download"></i> Converter e Baixar FDF
+            </button>
+        </div>
+    </form>
+    
+    <!-- Modal de Pré-visualização -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">Pré-visualização do arquivo FDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="previewContent" class="bg-light p-3" style="max-height: 70vh; overflow: auto;"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" id="downloadPreviewButton" class="btn btn-primary">
+                        <i class="bi bi-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mostrar pré-visualização se foi submetido com o botão de pré-visualizar -->
+    {% if preview_content %}
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Pré-visualização: {{ preview_filename }}</h5>
+            <button type="submit" form="convertForm" class="btn btn-light">
+                <i class="bi bi-download"></i> Download
+            </button>
+        </div>
+        <div class="card-body">
+            <pre class="bg-light p-3" style="max-height: 500px; overflow: auto;">{{ preview_content }}</pre>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <h4>O que faz este conversor?</h4>
+        <p>Este conversor transforma arquivos XYZ em arquivos de entrada FDF para o SIESTA, permitindo ajuste completo de todos os parâmetros de simulação:</p>
+        <ul>
+            <li>Lê a geometria do arquivo XYZ</li>
+            <li>Identifica elementos e cria bloco de espécies químicas</li>
+            <li>Constrói uma caixa cúbica adequada baseada nas dimensões da molécula</li>
+            <li>Centraliza a molécula na caixa</li>
+            <li>Configura todos os parâmetros de cálculo SIESTA</li>
+            <li>Gera um arquivo FDF pronto para o SIESTA</li>
+        </ul>
     </div>
 </div>
 
+<!-- JavaScript para a funcionalidade de pré-visualização -->
 <script>
-    document.getElementById('id_xyz_file').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const content = e.target.result;
-                document.getElementById('file-content').textContent = content;
-                document.getElementById('preview').style.display = 'block';
-            };
-            reader.readAsText(file);
-        } else {
-            document.getElementById('preview').style.display = 'none';
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const previewButton = document.getElementById('previewButton');
+        const downloadPreviewButton = document.getElementById('downloadPreviewButton');
+        const previewContent = document.getElementById('previewContent');
+        const form = document.getElementById('convertForm');
+        const modalElement = document.getElementById('previewModal');
+        
+        // Inicializar o modal Bootstrap
+        let previewModal = new bootstrap.Modal(modalElement);
+        
+        // Função para pré-visualizar
+        previewButton.addEventListener('click', function() {
+            // Criar um FormData para enviar todos os campos do formulário
+            const formData = new FormData(form);
+            formData.append('preview', 'true');
+            
+            // Ocultar qualquer mensagem de erro anterior
+            previewContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div><p class="mt-2">Gerando pré-visualização...</p></div>';
+            
+            // Mostrar o modal enquanto carrega
+            previewModal.show();
+            
+            // Enviar solicitação AJAX para obter a pré-visualização
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Atualizar o conteúdo da pré-visualização
+                previewContent.textContent = data.content;
+                // Atualizar o título do modal
+                document.getElementById('previewModalLabel').textContent = 'Pré-visualização: ' + data.filename;
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                previewContent.innerHTML = '<div class="alert alert-danger">Erro ao gerar pré-visualização. Verifique se o arquivo XYZ é válido.</div>';
+            });
+        });
+        
+        // Função para fazer download a partir do botão no modal
+        downloadPreviewButton.addEventListener('click', function() {
+            // Remover o campo 'preview' se estiver presente
+            const previewInput = form.querySelector('input[name="preview"]');
+            if (previewInput) previewInput.remove();
+            
+            // Enviar o formulário para download
+            form.submit();
+        });
     });
 </script>
 {% endblock %}
