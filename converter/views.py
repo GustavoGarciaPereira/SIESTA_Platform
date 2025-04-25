@@ -323,17 +323,8 @@ class ConvertView(View):
         xs, ys, zs = zip(*[(a[1], a[2], a[3]) for a in atoms])
         return min(xs), max(xs), min(ys), max(ys), min(zs), max(zs)
 
-    def convert_xyz_to_fdf(self, xyz_file, system_name, params, use_provided_coordinates=False, coordinates_map=None):
-        """
-        Converte um arquivo XYZ para formato FDF do SIESTA com os parâmetros especificados
-
-        Args:
-            xyz_file: Arquivo XYZ de entrada
-            system_name: Nome do sistema
-            params: Dicionário com parâmetros de simulação
-            use_provided_coordinates: Se True, usa as coordenadas do coordinates_map (se fornecido)
-            coordinates_map: Dicionário opcional mapeando índices de átomos para coordenadas otimizadas
-        """
+    def convert_xyz_to_fdf(self, xyz_file, system_name, params):
+        """Converte um arquivo XYZ para formato FDF do SIESTA mantendo as coordenadas originais"""
         # Restaurar o arquivo para o início (caso já tenha sido lido)
         if hasattr(xyz_file, 'seek'):
             xyz_file.seek(0)
@@ -357,7 +348,7 @@ class ConvertView(View):
         output = io.StringIO()
 
         output.write(f"SystemName    {system_name}\n")
-        output.write(f"SystemLabel    {system_name}\n")  # Note o espaço extra para corresponder exatamente
+        output.write(f"SystemLabel    {system_name}\n")  # Espaço após Label para corresponder ao exemplo
         output.write(f"NumberOfAtoms    {len(atoms)}\n")
         output.write(f"NumberOfSpecies  {len(unique_species)}\n")
 
@@ -370,7 +361,7 @@ class ConvertView(View):
         output.write("%endblock ChemicalSpeciesLabel\n\n")
 
         # Define o tamanho da célula de simulação (caixa)
-        cell_size = params.get('cell_size', 50.0)  # Usar 50.0 como padrão, conforme o arquivo esperado
+        cell_size = params.get('cell_size', 50.0)  # Usar 50.0 como padrão
 
         # Constante de rede e vetores
         output.write("LatticeConstant 1.0 Ang\n")
@@ -382,23 +373,14 @@ class ConvertView(View):
 
         # Coordenadas atômicas
         output.write("AtomicCoordinatesFormat NotScaledCartesianAng\n")
-        output.write("AtomCoorFormatOut   NotScaledCartesianAng\n")  # Linha extra presente no arquivo esperado
+        output.write("AtomCoorFormatOut   NotScaledCartesianAng\n")  # Linha necessária no formato esperado
         output.write("%block AtomicCoordinatesAndAtomicSpecies \n")
 
-        # Se coordenadas otimizadas estiverem disponíveis, usá-las
-        if use_provided_coordinates and coordinates_map:
-            for i, (sym, _, _, _) in enumerate(atoms):
-                if i in coordinates_map:
-                    x, y, z = coordinates_map[i]
-                    species_num = species_map.get(sym, 0)
-                    output.write(f"   {x:<10.5f}    {y:<10.5f}    {z:<10.5f}    {species_num}\n")
-        else:
-            # Caso contrário, usar as coordenadas do arquivo XYZ, formatando da mesma maneira
-            for i, (sym, x, y, z) in enumerate(atoms):
-                species_num = species_map.get(sym, 0)
-                # Formato com 5 casas decimais, alinhado por espaços para corresponder ao esperado
-                # O formato :<10.5f significa um campo de largura 10, com 5 casas decimais, alinhado à esquerda
-                output.write(f"   {x:<10.5f}    {y:<10.5f}    {z:<10.5f}    {species_num}\n")
+        # Escreve as coordenadas com formatação exata
+        for sym, x, y, z in atoms:
+            species_num = species_map.get(sym, 0)
+            # '<10.5f' para formatação com 5 casas decimais e alinhamento à esquerda em campo de largura 10
+            output.write(f"   {x:<10.6f}    {y:<10.6f}    {z:<10.6f}    {species_num}\n")
 
         output.write("%endblock AtomicCoordinatesAndAtomicSpecies\n\n")
 
@@ -441,6 +423,8 @@ class ConvertView(View):
         output.write(f"DM.Tolerance    {params.get('DM_Tolerance', 1.0E-3):.8E}\n")
 
         return output.getvalue()
+
+
 from django.contrib.auth import authenticate, login
 from .forms import UserCreationForm
 from django.views import View
