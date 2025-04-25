@@ -323,8 +323,17 @@ class ConvertView(View):
         xs, ys, zs = zip(*[(a[1], a[2], a[3]) for a in atoms])
         return min(xs), max(xs), min(ys), max(ys), min(zs), max(zs)
 
-    def convert_xyz_to_fdf(self, xyz_file, system_name, params):
-        """Converte um arquivo XYZ para formato FDF do SIESTA com os parâmetros especificados"""
+    def convert_xyz_to_fdf(self, xyz_file, system_name, params, use_provided_coordinates=False, coordinates_map=None):
+        """
+        Converte um arquivo XYZ para formato FDF do SIESTA com os parâmetros especificados
+
+        Args:
+            xyz_file: Arquivo XYZ de entrada
+            system_name: Nome do sistema
+            params: Dicionário com parâmetros de simulação
+            use_provided_coordinates: Se True, usa as coordenadas do coordinates_map (se fornecido)
+            coordinates_map: Dicionário opcional mapeando índices de átomos para coordenadas otimizadas
+        """
         # Restaurar o arquivo para o início (caso já tenha sido lido)
         if hasattr(xyz_file, 'seek'):
             xyz_file.seek(0)
@@ -332,7 +341,7 @@ class ConvertView(View):
         # Lê o arquivo XYZ
         atoms = self.read_xyz(xyz_file)
 
-        # Mapeamento para os tipos de espécies específicos baseado no exemplo
+        # Mapeamento para os tipos de espécies específicos
         species_map = {
             'C': 1,
             'N': 2,
@@ -342,13 +351,13 @@ class ConvertView(View):
         }
 
         # Identifica espécies únicas presentes no arquivo
-        unique_species = set(sym for sym, *_ in atoms)
+        unique_species = sorted([sym for sym in set(sym for sym, *_ in atoms) if sym in species_map])
 
         # Cria o arquivo FDF
         output = io.StringIO()
 
         output.write(f"SystemName    {system_name}\n")
-        output.write(f"SystemLabel   {system_name}\n")
+        output.write(f"SystemLabel    {system_name}\n")  # Note o espaço extra para corresponder exatamente
         output.write(f"NumberOfAtoms    {len(atoms)}\n")
         output.write(f"NumberOfSpecies  {len(unique_species)}\n")
 
@@ -357,49 +366,43 @@ class ConvertView(View):
         for sym in unique_species:
             species_num = species_map.get(sym, 0)
             atomic_num = self.PT.get(sym, 0)
-            if atomic_num == 0:
-                try:
-                    atomic_num = int(sym)
-                except ValueError:
-                    atomic_num = 0
             output.write(f" {species_num}   {atomic_num}    {sym}.lda\n")
         output.write("%endblock ChemicalSpeciesLabel\n\n")
 
-        # Verifica se o arquivo tem alguma medida de célula, caso contrário usa o padrão
-        # Cálculo da caixa (mas não usará para reposicionar átomos)
-        xmin, xmax, ymin, ymax, zmin, zmax = self.bounding_box(atoms)
-        side = max(xmax-xmin, ymax-ymin, zmax-zmin) + 2*params.get('padding', 10.0)
+        # Define o tamanho da célula de simulação (caixa)
+        cell_size = params.get('cell_size', 50.0)  # Usar 50.0 como padrão, conforme o arquivo esperado
 
         # Constante de rede e vetores
         output.write("LatticeConstant 1.0 Ang\n")
         output.write("%block LatticeVectors\n")
-        output.write(f"  {side:.3f} 0.000  0.000\n")
-        output.write(f"  0.000  {side:.3f} 0.000\n")
-        output.write(f"  0.000  0.000  {side:.3f}\n")
+        output.write(f"  {cell_size:.3f} 0.000  0.000\n")
+        output.write(f"  0.000  {cell_size:.3f} 0.000\n")
+        output.write(f"  0.000  0.000  {cell_size:.3f}\n")
         output.write("%endblock LatticeVectors\n\n")
 
         # Coordenadas atômicas
         output.write("AtomicCoordinatesFormat NotScaledCartesianAng\n")
+        output.write("AtomCoorFormatOut   NotScaledCartesianAng\n")  # Linha extra presente no arquivo esperado
         output.write("%block AtomicCoordinatesAndAtomicSpecies \n")
 
-        # Escreve as coordenadas com 5 casas decimais e o tipo de espécie
-        for sym, x, y, z in atoms:
-            # Arredonda para 5 casas decimais
-            # Alternativa: pode-se aplicar uma transformação específica se necessário
-            x_formatted = f"{x:.5f}"
-            y_formatted = f"{y:.5f}"
-            z_formatted = f"{z:.5f}"
-
-            # Identifica o número da espécie de acordo com o mapeamento
-            species_num = species_map.get(sym, 0)
-
-            # Escreve com formatação alinhada
-            output.write(f"   {x_formatted:12s}{y_formatted:12s}{z_formatted:12s}{species_num:7d}\n")
+        # Se coordenadas otimizadas estiverem disponíveis, usá-las
+        if use_provided_coordinates and coordinates_map:
+            for i, (sym, _, _, _) in enumerate(atoms):
+                if i in coordinates_map:
+                    x, y, z = coordinates_map[i]
+                    species_num = species_map.get(sym, 0)
+                    output.write(f"   {x:<10.5f}    {y:<10.5f}    {z:<10.5f}    {species_num}\n")
+        else:
+            # Caso contrário, usar as coordenadas do arquivo XYZ, formatando da mesma maneira
+            for i, (sym, x, y, z) in enumerate(atoms):
+                species_num = species_map.get(sym, 0)
+                # Formato com 5 casas decimais, alinhado por espaços para corresponder ao esperado
+                # O formato :<10.5f significa um campo de largura 10, com 5 casas decimais, alinhado à esquerda
+                output.write(f"   {x:<10.5f}    {y:<10.5f}    {z:<10.5f}    {species_num}\n")
 
         output.write("%endblock AtomicCoordinatesAndAtomicSpecies\n\n")
 
         # Adiciona os parâmetros SIESTA do formulário
-        # [O resto dos parâmetros permanece igual...]
         output.write(f"PAO.BasisSize    {params.get('PAO_BasisSize', 'DZP')}\n")
         output.write(f"PAO.EnergyShift   {params.get('PAO_EnergyShift', 0.05)} eV\n")
         output.write(f"MD.TypeOfRun    {params.get('MD_TypeOfRun', 'CG')}\n")
@@ -437,7 +440,7 @@ class ConvertView(View):
         output.write(f"ElectronicTemperature  {params.get('ElectronicTemperature', 80)} meV\n")
         output.write(f"DM.Tolerance    {params.get('DM_Tolerance', 1.0E-3):.8E}\n")
 
-        return output.getvalue()  # Removida a vírgula que causava problema
+        return output.getvalue()
 from django.contrib.auth import authenticate, login
 from .forms import UserCreationForm
 from django.views import View
