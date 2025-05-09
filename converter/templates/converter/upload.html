@@ -1,16 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Conversor XYZ para FDF com Parâmetros SIESTA{% endblock %}
+{% block title %}Conversor XYZ para FDF com Visualizador 3D{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h3>Conversor de Arquivos XYZ para FDF (SIESTA)</h3>
+    <h3>Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D</h3>
     
     <form method="post" enctype="multipart/form-data" id="convertForm">
         {% csrf_token %}
         
-
-
         <div class="card mb-3">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Arquivo e Configurações Básicas</h4>
@@ -18,11 +16,11 @@
             <div class="card-body">
                 <div class="mb-3">
                     {{ form.xyz_file.label_tag }}
-                    {{ form.xyz_file }}
+                    {{ form.xyz_file }} {# Este é o input que o JS vai observar #}
                     {% if form.xyz_file.errors %}
                     <div class="invalid-feedback d-block">{{ form.xyz_file.errors }}</div>
                     {% endif %}
-                    <div class="form-text">Formato XYZ: número de átomos, comentário, linhas de coordenadas</div>
+                    <div class="form-text">Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione um arquivo para visualização 3D abaixo.</div>
                 </div>
                 
                 <div class="row">
@@ -46,6 +44,18 @@
                             <div class="form-text">Espaço extra em Å ao redor da molécula</div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container para o Visualizador 3Dmol.js -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Visualização 3D da Molécula (do arquivo XYZ selecionado)</h4>
+            </div>
+            <div class="card-body">
+                <div id="molviewer" style="width: 100%; height: 450px; position: relative; border: 1px solid #ced4da; border-radius: .25rem;">
+                    <div class="text-center p-5 text-muted">Selecione um arquivo XYZ acima para visualizar a molécula.</div>
                 </div>
             </div>
         </div>
@@ -277,14 +287,10 @@
             </div>
         </div>
         
-        <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-lg btn-primary">Converter e Baixar FDF</button>
-        </div>
-
         <!-- Botões de ação no final do formulário -->
         <div class="d-flex gap-2 justify-content-end mt-4 mb-4">
             <button type="button" id="previewButton" class="btn btn-info">
-                <i class="bi bi-eye-fill"></i> Pré-visualizar
+                <i class="bi bi-eye-fill"></i> Pré-visualizar FDF
             </button>
             <button type="submit" class="btn btn-lg btn-primary">
                 <i class="bi bi-download"></i> Converter e Baixar FDF
@@ -292,7 +298,7 @@
         </div>
     </form>
     
-    <!-- Modal de Pré-visualização -->
+    <!-- Modal de Pré-visualização FDF -->
     <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
@@ -313,11 +319,10 @@
         </div>
     </div>
     
-    <!-- Mostrar pré-visualização se foi submetido com o botão de pré-visualizar -->
     {% if preview_content %}
     <div class="card mb-4">
         <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Pré-visualização: {{ preview_filename }}</h5>
+            <h5 class="mb-0">Pré-visualização FDF: {{ preview_filename }}</h5>
             <button type="submit" form="convertForm" class="btn btn-light">
                 <i class="bi bi-download"></i> Download
             </button>
@@ -330,9 +335,10 @@
     
     <div class="mt-4">
         <h4>O que faz este conversor?</h4>
-        <p>Este conversor transforma arquivos XYZ em arquivos de entrada FDF para o SIESTA, permitindo ajuste completo de todos os parâmetros de simulação:</p>
+        <p>Este conversor transforma arquivos XYZ em arquivos de entrada FDF para o SIESTA, permitindo ajuste completo de todos os parâmetros de simulação e visualização 3D da molécula carregada.</p>
         <ul>
             <li>Lê a geometria do arquivo XYZ</li>
+            <li>Renderiza a molécula em 3D interativamente no navegador</li>
             <li>Identifica elementos e cria bloco de espécies químicas</li>
             <li>Constrói uma caixa cúbica adequada baseada nas dimensões da molécula</li>
             <li>Centraliza a molécula na caixa</li>
@@ -342,60 +348,109 @@
     </div>
 </div>
 
-<!-- JavaScript para a funcionalidade de pré-visualização -->
+<!-- Incluir a biblioteca 3Dmol.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
+
+<!-- JavaScript para a funcionalidade de pré-visualização FDF e Visualização 3D -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const previewButton = document.getElementById('previewButton');
-        const downloadPreviewButton = document.getElementById('downloadPreviewButton');
-        const previewContent = document.getElementById('previewContent');
-        const form = document.getElementById('convertForm');
-        const modalElement = document.getElementById('previewModal');
-        
-        // Inicializar o modal Bootstrap
-        let previewModal = new bootstrap.Modal(modalElement);
-        
-        // Função para pré-visualizar
+document.addEventListener('DOMContentLoaded', function() {
+    // Script para pré-visualização FDF (existente)
+    const previewButton = document.getElementById('previewButton');
+    const downloadPreviewButton = document.getElementById('downloadPreviewButton');
+    const previewContent = document.getElementById('previewContent');
+    const form = document.getElementById('convertForm');
+    const modalElement = document.getElementById('previewModal');
+    
+    let previewModal = null;
+    if (modalElement) {
+        previewModal = new bootstrap.Modal(modalElement);
+    }
+    
+    if (previewButton) {
         previewButton.addEventListener('click', function() {
-            // Criar um FormData para enviar todos os campos do formulário
             const formData = new FormData(form);
             formData.append('preview', 'true');
             
-            // Ocultar qualquer mensagem de erro anterior
-            previewContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div><p class="mt-2">Gerando pré-visualização...</p></div>';
+            previewContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div><p class="mt-2">Gerando pré-visualização FDF...</p></div>';
             
-            // Mostrar o modal enquanto carrega
-            previewModal.show();
+            if (previewModal) previewModal.show();
             
-            // Enviar solicitação AJAX para obter a pré-visualização
             fetch(window.location.href, {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.json())
             .then(data => {
-                // Atualizar o conteúdo da pré-visualização
                 previewContent.textContent = data.content;
-                // Atualizar o título do modal
-                document.getElementById('previewModalLabel').textContent = 'Pré-visualização: ' + data.filename;
+                if (document.getElementById('previewModalLabel')) {
+                    document.getElementById('previewModalLabel').textContent = 'Pré-visualização FDF: ' + data.filename;
+                }
             })
             .catch(error => {
-                console.error('Erro:', error);
-                previewContent.innerHTML = '<div class="alert alert-danger">Erro ao gerar pré-visualização. Verifique se o arquivo XYZ é válido.</div>';
+                console.error('Erro na pré-visualização FDF:', error);
+                previewContent.innerHTML = '<div class="alert alert-danger">Erro ao gerar pré-visualização FDF. Verifique se o arquivo XYZ é válido.</div>';
             });
         });
-        
-        // Função para fazer download a partir do botão no modal
+    }
+
+    if (downloadPreviewButton) {
         downloadPreviewButton.addEventListener('click', function() {
-            // Remover o campo 'preview' se estiver presente
             const previewInput = form.querySelector('input[name="preview"]');
             if (previewInput) previewInput.remove();
-            
-            // Enviar o formulário para download
             form.submit();
         });
-    });
+    }
+
+    // Novo Script para Visualização 3D com 3Dmol.js
+    // O Django renderiza o input de arquivo com id="id_xyz_file" e name="xyz_file"
+    // Usaremos o 'name' pois é mais genérico, mas 'id_xyz_file' também funcionaria.
+    let xyzFileElement = document.querySelector('input[name="xyz_file"]'); 
+    let viewerContainer = document.getElementById('molviewer');
+    let glviewer = null;
+
+    if (xyzFileElement && viewerContainer) {
+        xyzFileElement.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const xyzData = e.target.result;
+                    
+                    // Limpa o container antes de adicionar novo viewer
+                    viewerContainer.innerHTML = ''; 
+
+                    if (glviewer) {
+                        // Se você quiser manter o objeto viewer e apenas atualizar o modelo:
+                        // glviewer.clear(); 
+                        // glviewer.addModel(xyzData, 'xyz');
+                        // Mas criar um novo viewer a cada vez é mais simples e robusto aqui.
+                    }
+                    glviewer = $3Dmol.createViewer(viewerContainer, { backgroundColor: 'white' });
+                    glviewer.addModel(xyzData, 'xyz');
+                    glviewer.setStyle({}, {stick: {radius: 0.15}, sphere: {scale: 0.25}}); // Estilo stick com esferas menores
+                    glviewer.zoomTo();
+                    glviewer.render();
+                    // glviewer.zoom(0.8, 1000); // Zoom inicial pode ser ajustado conforme preferência
+                };
+                reader.onerror = function() {
+                    viewerContainer.innerHTML = '<div class="alert alert-danger text-center p-3">Erro ao ler o arquivo XYZ.</div>';
+                    console.error("Erro ao ler o arquivo:", reader.error);
+                };
+                reader.readAsText(file);
+            } else {
+                // Se nenhum arquivo for selecionado (ou for des-selecionado)
+                viewerContainer.innerHTML = '<div class="text-center p-5 text-muted">Selecione um arquivo XYZ acima para visualizar a molécula.</div>';
+                if (glviewer) {
+                    glviewer.clear();
+                    glviewer = null; 
+                }
+            }
+        });
+    } else {
+        if (!xyzFileElement) console.error("Elemento input[name='xyz_file'] não encontrado.");
+        if (!viewerContainer) console.error("Elemento div#molviewer não encontrado.");
+    }
+});
 </script>
 {% endblock %}
