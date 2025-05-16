@@ -22,3 +22,52 @@ services:
 
 volumes:
   postgres_data_compose: # Declaração do volume nomeado para persistência
+
+
+
+# version: '3.8'
+
+# services:
+#   # Serviço para o aplicativo web Django
+#   web:
+#     build: .
+#     container_name: heparin_web
+#     command: gunicorn --bind 0.0.0.0:8000 heparin_converter.wsgi
+#     volumes:
+#       - .:/app
+#     ports:
+#       - "8000:8000"
+#     depends_on:
+#       - db
+#     environment:
+#       - DJANGO_SETTINGS_MODULE=heparin_converter.settings
+#       - DB_HOST=db
+#       - DB_USER=postgres
+#       - DB_PASSWORD=postgres
+#       - DB_NAME=heparin_db
+
+#   # Serviço para o banco de dados PostgreSQL
+#   db:
+#     image: postgres:13
+#     container_name: heparin_db
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=postgres
+#       - POSTGRES_DB=heparin_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+#   # Serviço opcional para o SIESTA (se necessário)
+#   siesta:
+#     image: siesta:latest  # Substitua pela imagem oficial ou personalizada do SIESTA
+#     container_name: heparin_siesta
+#     volumes:
+#       - ./data:/data
+#     environment:
+#       - SIESTA_CONFIG=/data/config
+
+# # Volume para persistência dos dados do PostgreSQL
+# volumes:
+#   postgres_data:

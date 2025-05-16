@@ -357,11 +357,11 @@ class ConvertView(View):
 
         # Mapeamento para os tipos de espécies específicos
         species_map = {
-            'C': 1,
-            'N': 2,
-            'O': 3,
-            'H': 4,
-            'S': 5,
+            'C': 6,
+            'N': 7,
+            'O': 8,
+            'H': 1,
+            'S': 16,
         }
 
         # Identifica espécies únicas presentes no arquivo
@@ -376,11 +376,23 @@ class ConvertView(View):
         output.write(f"NumberOfSpecies  {len(unique_species)}\n")
 
         # Bloco de espécies químicas
+        # output.write("%block ChemicalSpeciesLabel\n")
+        # for sym in unique_species:
+        #     species_num = species_map.get(sym, 0)
+        #     atomic_num = self.PT.get(sym, 0)
+        #     output.write(f" {species_num}   {atomic_num}    {sym}.lda\n")
+        # output.write("%endblock ChemicalSpeciesLabel\n\n")
+        
+        # Bloco de espécies químicas
+        dici = {}
         output.write("%block ChemicalSpeciesLabel\n")
-        for sym in unique_species:
-            species_num = species_map.get(sym, 0)
-            atomic_num = self.PT.get(sym, 0)
-            output.write(f" {species_num}   {atomic_num}    {sym}.lda\n")
+        # Use enumerate para obter um índice sequencial (começando em 1)
+        for idx, sym in enumerate(unique_species, start=1):
+            atomic_num = self.PT.get(sym, 0)  # Assume-se que self.PT contém os números atômicos corretos
+            # Use 'idx' para a primeira coluna, garantindo a sequência 1, 2, 3, ...
+            dici.update({atomic_num:idx})
+
+            output.write(f" {idx}   {atomic_num}    {sym}.lda\n")
         output.write("%endblock ChemicalSpeciesLabel\n\n")
 
         # Define o tamanho da célula de simulação (caixa)
@@ -406,7 +418,9 @@ class ConvertView(View):
         for sym, x, y, z in atoms:
             species_num = species_map.get(sym, 0)
             # '<10.5f' para formatação com 5 casas decimais e alinhamento à esquerda em campo de largura 10
-            output.write(f"   {x:<10.6f}    {y:<10.6f}    {z:<10.6f}    {species_num}\n")
+            aaa = dici.get(species_num, False)
+            if aaa:
+                output.write(f"   {x:<10.6f}    {y:<10.6f}    {z:<10.6f}    {aaa}\n")
 
         output.write("%endblock AtomicCoordinatesAndAtomicSpecies\n\n")
 
