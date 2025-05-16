@@ -122,6 +122,29 @@ import io
 from collections import OrderedDict
 
 class SIESTAParametersForm(forms.Form):
+
+    lattice_constant = forms.FloatField(
+            label='LatticeConstant (Ang)',
+            initial=1.0,  # Baseado em "LatticeConstant 1.0 Ang" no trecho de código original
+            help_text="Valor da constante de rede em Angstroms. Os vetores da rede (abaixo) são multiplicados por este valor pelo SIESTA."
+        )
+    cell_size_x = forms.FloatField(
+        label='Tamanho da Célula X (para Vetor A: [X, 0, 0])',
+        initial=50.0, # Valor padrão conforme solicitado
+        help_text="Componente X do primeiro vetor da rede (A_x). Valor adimensional, que será multiplicado pela LatticeConstant."
+    )
+    cell_size_y = forms.FloatField(
+        label='Tamanho da Célula Y (para Vetor B: [0, Y, 0])',
+        initial=50.0, # Valor padrão conforme solicitado
+        help_text="Componente Y do segundo vetor da rede (B_y). Valor adimensional, que será multiplicado pela LatticeConstant."
+    )
+    cell_size_z = forms.FloatField(
+        label='Tamanho da Célula Z (para Vetor C: [0, 0, Z])',
+        initial=50.0, # Valor padrão conforme solicitado
+        help_text="Componente Z do terceiro vetor da rede (C_z). Valor adimensional, que será multiplicado pela LatticeConstant."
+    )
+
+
     # Upload e parâmetros básicos
     xyz_file = forms.FileField(label='Arquivo XYZ')
     system_name = forms.CharField(label='Nome do Sistema', required=False,
@@ -150,7 +173,7 @@ class SIESTAParametersForm(forms.Form):
     )
     MD_NumCGsteps = forms.IntegerField(
         label='MD.NumCGsteps',
-        initial=1000,
+        initial=500,
         min_value=1
     )
     MD_MaxForceTol = forms.FloatField(
@@ -252,7 +275,7 @@ class SIESTAParametersForm(forms.Form):
     )
 
 class ConvertView(View):
-    template_name = 'converter/upload.html'  # Template que você precisa criar
+    template_name = 'converter/upload.html'
 
     # Tabela periódica mínima (principais elementos para biomoléculas)
     PT = {'H':1, 'C':6, 'N':7, 'O':8, 'F':9, 'P':15, 'S':16, 'Cl':17, 'Br':35, 'I':53}
@@ -361,14 +384,17 @@ class ConvertView(View):
         output.write("%endblock ChemicalSpeciesLabel\n\n")
 
         # Define o tamanho da célula de simulação (caixa)
-        cell_size = params.get('cell_size', 50.0)  # Usar 50.0 como padrão
+        cell_size_x = params.get('cell_size_x', 50.0)  # Usar 50.0 como padrão
+        cell_size_y = params.get('cell_size_y', 50.0)  # Usar 50.0 como padrão
+        cell_size_z = params.get('cell_size_z', 50.0)  # Usar 50.0 como padrão
+        lc = params.get('lattice_constant', 1.0)  # Usar 50.0 como padrão
 
         # Constante de rede e vetores
-        output.write("LatticeConstant 1.0 Ang\n")
+        output.write(f"LatticeConstant {lc:.1f} Ang\n")
         output.write("%block LatticeVectors\n")
-        output.write(f"  {cell_size:.3f} 0.000  0.000\n")
-        output.write(f"  0.000  {cell_size:.3f} 0.000\n")
-        output.write(f"  0.000  0.000  {cell_size:.3f}\n")
+        output.write(f"  {cell_size_x:.3f} 0.000  0.000\n")
+        output.write(f"  0.000  {cell_size_y:.3f} 0.000\n")
+        output.write(f"  0.000  0.000  {cell_size_z:.3f}\n")
         output.write("%endblock LatticeVectors\n\n")
 
         # Coordenadas atômicas
@@ -436,5 +462,5 @@ class HomeView(TemplateView):
     
 class SignupView(CreateView):
     form_class = UserCreationForm
-    success_url = reverse_lazy('login')  # Redireciona para a página de login após o cadastro
-    template_name = 'converter/signup.html'  # Remova a vírgula
+    success_url = reverse_lazy('login')
+    template_name = 'converter/signup.html'
