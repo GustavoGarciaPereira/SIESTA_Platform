@@ -29,7 +29,7 @@ RUN python manage.py collectstatic --noinput
 # Copiar o script de entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
+RUN DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=admin@example.com DJANGO_SUPERUSER_PASSWORD=1234 python manage.py createsuperuser --noinput
 # Expor a porta
 EXPOSE 8000
 
