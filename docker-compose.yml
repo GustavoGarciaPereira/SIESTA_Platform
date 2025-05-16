@@ -1,0 +1,24 @@
+
+
+services:
+  db: # Nome do serviço (você pode escolher outro, 'db' é comum para bancos de dados)
+    image: postgres:15-alpine # Usa a mesma imagem base do seu Dockerfile
+    container_name: meu_postgres_local_compose # Nome customizado para o contêiner
+    environment:
+      POSTGRES_USER: testuser # Define o usuário do PostgreSQL
+      POSTGRES_PASSWORD: testpassword # Define a senha do PostgreSQL
+      POSTGRES_DB: testdb # Define o nome do banco de dados a ser criado
+    ports:
+      - "5432:5432" # Mapeia a porta 5432 do host para a porta 5432 do contêiner
+    volumes:
+      # Volume para persistência dos dados do PostgreSQL:
+      # 'postgres_data' é um volume nomeado gerenciado pelo Docker.
+      # Os dados do banco sobreviverão mesmo se o contêiner for removido e recriado.
+      - postgres_data_compose:/var/lib/postgresql/data
+      # Opcional: Para scripts de inicialização (como no seu Dockerfile)
+      # Crie uma pasta 'init-db.d' ao lado deste docker-compose.yml e coloque seus .sql lá.
+      # - ./init-db.d:/docker-entrypoint-initdb.d
+    restart: unless-stopped # Política de reinicialização do contêiner
+
+volumes:
+  postgres_data_compose: # Declaração do volume nomeado para persistência
