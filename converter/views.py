@@ -8,102 +8,25 @@ from django.conf import settings
 from .forms import UploadFileForm
 from django.views import View
 from django.views.generic import CreateView, TemplateView
+from django.contrib import messages
 
-# def xyz_to_fdf(input_xyz, output_fdf):
-#     """
-#     Converte um arquivo XYZ para FDF.
+def contact_submit_view(request):
+    if request.method == 'POST':
+        # Aqui você poderia, no futuro, pegar os dados do formulário:
+        # name = request.POST.get('name')
+        # email = request.POST.get('email')
+        # subject = request.POST.get('subject')
+        # message_body = request.POST.get('message')
+        
+        # Lógica de processamento (ex: enviar email, salvar no DB) iria aqui.
+        # Por enquanto, apenas simulamos o sucesso.
+        
+        messages.success(request, 'Sua mensagem foi "enviada" com sucesso! Entraremos em contato em breve (esta é uma simulação).')
+        return redirect('contact') # Redireciona de volta para a página de contato
 
-#     :param input_xyz: Caminho para o arquivo XYZ de entrada.
-#     :param output_fdf: Caminho para o arquivo FDF de saída.
-#     """
-#     # Dicionário de conversão do símbolo atômico para o índice da espécie
-#     species_map = {
-#         'C': 1,
-#         'N': 2,
-#         'O': 3,
-#         'H': 4,
-#         'S': 5
-#     }
-
-#     # Ler o arquivo xyz
-#     with open(input_xyz, 'r') as f:
-#         lines = f.readlines()
-
-#     # Primeira linha: número de átomos
-#     num_atoms = int(lines[0].strip())
-
-#     # Linhas de coordenadas começam após a linha do número de átomos
-#     coord_lines = lines[2:]
-
-#     # Preparar lista para armazenar dados atômicos
-#     atoms = []
-#     for line in coord_lines:
-#         if line.strip():
-#             parts = line.split()
-#             symbol = parts[0]
-#             x = float(parts[1])
-#             y = float(parts[2])
-#             z = float(parts[3])
-#             if symbol not in species_map:
-#                 raise ValueError(f"Elemento '{symbol}' não está mapeado para nenhuma espécie química.")
-#             specie_index = species_map[symbol]
-#             atoms.append((x, y, z, specie_index))
-
-#     # Escrever o arquivo de saída .fdf exatamente conforme o gabarito fornecido
-#     with open(output_fdf, 'w') as out:
-#         # Cabeçalho do sistema
-#         out.write("SystemName       Enoxaparin\n")
-#         out.write("SystemLabel      Enoxaparin\n")
-#         out.write(f"NumberOfAtoms    {num_atoms}\n")
-#         out.write("NumberOfSpecies  5\n")
-#         out.write("%block ChemicalSpeciesLabel\n")
-#         out.write(" 1   6    C.lda\n")
-#         out.write(" 2   7    N.lda\n")
-#         out.write(" 3   8    O.lda\n")
-#         out.write(" 4   1    H.lda\n")
-#         out.write(" 5   16   S.lda\n")
-#         out.write("%endblock ChemicalSpeciesLabel\n\n")
-
-#         out.write("LatticeConstant 1.0 Ang\n")
-#         out.write("%block LatticeVectors\n")
-#         out.write("  50.000 0.000  0.000\n")
-#         out.write("  0.000  50.000 0.000\n")
-#         out.write("  0.000  0.000  50.000\n")
-#         out.write("%endblock LatticeVectors\n\n")
-
-#         out.write("AtomicCoordinatesFormat NotScaledCartesianAng\n")
-#         out.write("AtomCoorFormatOut   NotScaledCartesianAng\n")
-#         out.write("%block AtomicCoordinatesAndAtomicSpecies \n")
-
-#         # Escrever coordenadas atômicas com índices conforme o gabarito
-#         # Mantendo 3 espaços iniciais e o mesmo padrão de espaçamento
-#         for (x, y, z, si) in atoms:
-#             out.write(f"   {x:10.5f}        {y:10.5f}       {z:10.5f}      {si}\n")
-
-#         out.write("%endblock AtomicCoordinatesAndAtomicSpecies\n\n")
-
-#         # Demais parâmetros fixos exatamente conforme o gabarito
-#         out.write("PAO.BasisSize     DZP\n")
-#         out.write("PAO.EnergyShift   0.05 eV\n")
-#         out.write("MD.TypeOfRun      CG\n")
-#         out.write("MD.NumCGsteps     1000\n")
-#         out.write("MaxSCFIterations  100\n")
-#         out.write("SpinPolarized true\n")
-#         out.write("MD.MaxForceTol    0.05 eV/Ang\n")
-#         out.write("MeshCutoff        200.0 Ry\n")
-#         out.write("DM.UseSaveDM     true\n")
-#         out.write("UseSaveData      true\n")
-#         out.write("MD.UseSaveXV     true\n")
-#         out.write("MD.UseSaveCG     true\n")
-#         out.write("DM.MixingWeight   0.10\n")
-#         out.write("DM.NumberPulay    3\n")
-#         out.write("WriteCoorXmol\n")
-#         out.write("WriteMullikenPop 1\n")
-#         out.write("XC.functional      LDA\n")
-#         out.write("XC.authors        CA \n")
-#         out.write("SolutionMethod diagon\n")
-#         out.write("ElectronicTemperature  80 meV\n")
-#         out.write("DM.Tolerance         0.1000000000E-02\n")
+    # Se não for POST, redireciona para a página de contato (ou pode mostrar um erro)
+    messages.error(request, 'Método inválido para esta ação.')
+    return redirect('contact')
 
 from django.views import View
 from django.shortcuts import render
@@ -478,3 +401,50 @@ class SignupView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'converter/signup.html'
+    
+    
+class AboutView(TemplateView):
+    template_name = 'about.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Substitua com os dados reais e URLs das imagens
+        context['team_members'] = [
+            {
+                'name': 'André Flores',
+                'role': 'Aluno/Doutorado',
+                'bio': 'Graduado em Ciência da Computação (UFN), Mestre em Microeletrônica (UFRGS) e aluno de Doutorado em Nanociências (UFN).',
+                'image_url': 'https://lasimon.vercel.app/assets/img/team/andre_flores.jpg', # Substitua pela URL da imagem real
+                'email': 'andre.santos@ufn.edu.br', # Opcional
+                'lattes_url': 'http://lattes.cnpq.br/4249324194215985', # Opcional
+                'url_linkedin':"https://www.linkedin.com/in/andr%C3%A9-f-dos-santos-b11478b7/"
+            },
+            {
+                'name': 'Gustavo Garcia Pereira',
+                'role': 'Aluno/Programador',
+                'bio': 'Graduado em Ciência da Computação (UFN).',
+                'image_url': 'https://avatars.githubusercontent.com/u/19331198?v=4', # Substitua pela URL da imagem real
+                'email': 'gusgurtavo@gmail.com', # Opcional
+                'lattes_url': 'http://lattes.cnpq.br/SEU_ID_LATTES_ANDRE', # Opcional
+                'url_linkedin':"https://www.linkedin.com/in/gustavo-garcia-pereira-078240143/"
+            },
+            {
+                'name': 'Mirkos Martins',
+                'role': 'Professor (UFN)',
+                'bio': 'Professor de Ciência da Computação, Engenharia Biomédica, Inteligência Artificial para Engenharias, Modelagem e Simulação e Complexidade de Algoritmos.',
+                'image_url': 'https://avatars.githubusercontent.com/u/5223402?v=4', # Substitua pela URL da imagem real
+                'email': 'mirkos@gmail.com', # Opcional
+                'lattes_url': 'http://lattes.cnpq.br/5382133106359249', # Opcional
+                'url_linkedin':"https://www.linkedin.com/in/mirkos-martins-77a6ab8/"
+            },
+            
+            # Adicione mais membros conforme necessário
+        ]
+        # Você pode manter as outras seções ou removê-las se a página for só sobre a equipe
+        context['show_mission_vision'] = False # Defina como True se quiser mostrar as outras seções
+        return context
+
+# ... suas outras views
+
+class ContactView(TemplateView):
+    template_name = 'contact.html' # Certifique-se que 'contact.html' está no seu diretório de templates

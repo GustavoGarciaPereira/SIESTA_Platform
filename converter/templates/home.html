@@ -4,6 +4,13 @@
 
 {% block content %}
 <div class="hero-section text-center">
+    <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+        <i class="bi bi-cone-striped me-2"></i>
+        <strong>Atenção:</strong> A SIESTA Platform ainda está em fase <strong>Beta</strong>!
+        Algumas funcionalidades podem estar em desenvolvimento ou apresentar comportamento inesperado.
+        Agradecemos sua compreensão e feedback.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <h1>Bem-vindo à SIESTA Platform</h1>
     <p class="lead">Simulações computacionais de materiais de forma simples e eficiente.</p>
     <div>
@@ -12,6 +19,35 @@
             <a href="{% url 'signup' %}" class="btn btn-success">Criar Conta</a>
         {% endif %}
         <a href="{% url 'convert' %}" class="btn btn-success">Criar uma conversão</a>
+    </div>
+</div>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Nosso Fluxo de Trabalho</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Passo 1</h5>
+                    <p class="card-text">Converter ZYX para FDF</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1">
+            {% comment %} <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Passo 1</h5>
+                    <p class="card-text">Converter ZYX para FDF</p>
+                </div>
+            </div> {% endcomment %}
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Passo 2</h5>
+                    <p class="card-text">Rodar SIESTA</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

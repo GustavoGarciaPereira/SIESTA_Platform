@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %} {# Certifique-se de carregar static se usar imagens locais #}
+
+{% block title %}Nossa Equipe - SIESTA Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .team-section {
+        padding: 40px 0;
+        background-color: #f8f9fa; /* Um fundo levemente diferente para a seção da equipe */
+    }
+    .team-card {
+        background-color: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem; /* Bordas um pouco mais arredondadas */
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        display: flex; /* Para alinhar itens verticalmente se o card tiver altura fixa */
+        flex-direction: column;
+        height: 100%; /* Para garantir que os cards na mesma linha tenham a mesma altura */
+    }
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+    .team-card .card-body {
+        display: flex;
+        align-items: flex-start; /* Alinha imagem e texto no topo */
+        padding: 1.5rem; /* Mais padding interno */
+        flex-grow: 1; /* Permite que o card-body cresça para preencher o card */
+    }
+    .team-member-img-wrapper {
+        flex-shrink: 0; /* Impede que a imagem encolha */
+        margin-right: 1.5rem;
+    }
+    .team-member-img {
+        width: 100px; /* Tamanho da imagem */
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover; /* Garante que a imagem cubra o círculo sem distorcer */
+        border: 3px solid #dee2e6; /* Borda sutil na imagem */
+    }
+    .team-member-info {
+        flex-grow: 1;
+    }
+    .team-member-info h5 {
+        font-weight: 600;
+        color: #343a40; /* Cor do nome */
+        margin-bottom: 0.25rem;
+    }
+    .team-member-info .role {
+        font-size: 0.875rem;
+        color: #6c757d; /* Cor do cargo/nível */
+        margin-bottom: 0.75rem;
+        display: block; /* Para garantir quebra de linha */
+    }
+    .team-member-info .bio {
+        font-size: 0.875rem; /* Bio um pouco menor */
+        color: #495057;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+    .team-member-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px; /* Tamanho dos botões de ícone */
+        height: 32px;
+        border-radius: 50%;
+        background-color: #e9f0ff; /* Fundo azul claro para os ícones */
+        color: #007bff; /* Cor do ícone */
+        margin-right: 0.5rem;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
+    .team-member-links a:hover {
+        background-color: #d0e0ff;
+    }
+    .team-member-links a i {
+        font-size: 0.9rem; /* Tamanho do ícone dentro do botão */
+    }
+
+    /* Para outras seções, se você decidir mantê-las */
+    .content-section {
+        padding: 60px 0;
+    }
+    .content-section h2 {
+        color: #007bff;
+        margin-bottom: 30px;
+    }
+    .content-section p, .content-section ul {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #555;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container team-section">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="text-center mb-5" style="color: #0056b3;">Conheça Nossa Equipe</h1>
+
+            <div class="row gy-4"> {# gy-4 para espaçamento vertical entre os cards #}
+                {% if team_members %}
+                    {% for member in team_members %}
+                    <div class="col-md-6"> {# Cada card ocupa metade da linha em telas médias e maiores #}
+                        <div class="card team-card">
+                            <div class="card-body">
+                                <div class="team-member-img-wrapper">
+                                    <img src="{{ member.image_url }}" alt="Foto de {{ member.name }}" class="team-member-img">
+                                </div>
+                                <div class="team-member-info">
+                                    <h5>{{ member.name }}</h5>
+                                    <span class="role">{{ member.role }}</span>
+                                    <p class="bio">{{ member.bio }}</p>
+                                    <div class="team-member-links">
+                                        {% if member.email %}
+                                        <a href="mailto:{{ member.email }}" title="Enviar email para {{ member.name }}">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if member.lattes_url %}
+                                        <a href="{{ member.lattes_url }}" target="_blank" rel="noopener noreferrer" title="Currículo Lattes de {{ member.name }}">
+                                            <i class="bi bi-journal-text"></i> {# Ícone para Lattes/CV #}
+                                        </a>
+                                        {% endif %}
+                                        {# Adicione mais links se necessário (LinkedIn, GitHub, etc.) #}
+                                        <a href="{{ member.url_linkedin }}" target="_blank" rel="noopener noreferrer" title="LinkedIn de {{ member.name }}">
+                                            <i class="bi bi-linkedin"></i>
+                                        </a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col">
+                        <p class="text-center">Informações da equipe não disponíveis no momento.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Se você quiser manter as outras seções (missão, visão, etc.) #}
+{% if show_mission_vision %}
+<div class="container content-section">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="text-center mb-5">
+                <img src="https://via.placeholder.com/200x100.png?text=SIESTA+Platform+Logo" alt="SIESTA Platform Logo" class="img-fluid mb-3" style="max-height: 80px;">
+            </div>
+
+            <section id="mission" class="mb-5">
+                <h2 class="text-center">Nossa Missão</h2>
+                <p class="text-center">
+                    Facilitar e democratizar o acesso a simulações computacionais de materiais utilizando o SIESTA,
+                    fornecendo uma plataforma intuitiva, poderosa e integrada com ferramentas de análise modernas,
+                    como a Inteligência Artificial, para acelerar a descoberta científica e a inovação tecnológica.
+                </p>
+            </section>
+
+            <section id="vision" class="mb-5">
+                <h2 class="text-center">Nossa Visão</h2>
+                <p class="text-center">
+                    Ser a plataforma de referência para pesquisadores e estudantes na área de ciência dos materiais,
+                    promovendo a colaboração, o aprendizado e o avanço do conhecimento através de simulações
+                    computacionais acessíveis e eficientes.
+                </p>
+            </section>
+
+            <section id="what-we-do" class="mb-5">
+                <h2 class="text-center">O Que Fazemos?</h2>
+                <p>
+                    A SIESTA Platform oferece um ambiente completo para o ciclo de vida de simulações com o SIESTA:
+                </p>
+                <ul>
+                    <li><strong>Conversão de Arquivos:</strong> Transforme facilmente seus arquivos de coordenadas (como XYZ) para o formato FDF do SIESTA, com opções de customização detalhadas.</li>
+                    <li><strong>Visualização Interativa:</strong> Visualize suas estruturas moleculares em 3D diretamente no navegador antes de iniciar as simulações.</li>
+                    <li><strong>Execução de Simulações:</strong> (Funcionalidade futura) Submeta e gerencie suas simulações SIESTA em nossa infraestrutura ou conecte-se à sua.</li>
+                    <li><strong>Análise Inteligente:</strong> (Funcionalidade futura) Utilize ferramentas baseadas em IA para interpretar os resultados das simulações, extrair insights e prever propriedades de materiais.</li>
+                </ul>
+            </section>
+
+             <section id="join-us" class="text-center">
+                <h2>Junte-se a Nós</h2>
+                <p>
+                    Seja você um pesquisador experiente, um estudante curioso ou um entusiasta da ciência,
+                    a SIESTA Platform está aqui para apoiar sua jornada. Crie sua conta e comece a explorar
+                    o mundo das simulações de materiais hoje mesmo!
+                </p>
+                <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Criar Conta</a>
+                <a href="{% url 'contact' %}" class="btn btn-outline-primary btn-lg ms-2">Entre em Contato</a>
+            </section>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
