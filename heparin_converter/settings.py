@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(*aavk-(3o@g-5n5sj!h9w2x90(45@ct)v!xbp@3*+gehpm9yt'
-
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+
 
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
@@ -78,8 +78,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
-if os.environ.get('DEBUG'):
+if os.environ.get('ambientes') == "development":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -87,19 +86,22 @@ if os.environ.get('DEBUG'):
         }
     }
 else:
-
-
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql', # Ou o backend apropriado para seu banco
-            'NAME': os.environ.get('DB_NAME'),         # Mapeia para 'Database'
-            'USER': os.environ.get('DB_USER'),         # Mapeia para 'Username'
-            'PASSWORD': os.environ.get('DB_PASSWORD'), # Mapeia para 'Password'
-            'HOST': os.environ.get('DB_HOST'),         # Mapeia para 'Hostname'
-            'PORT': os.environ.get('DB_PORT', '5432'), # Mapeia para 'Port', com 5432 como padrão para PostgreSQL
+            'ENGINE': os.environ.get('DB_ENGINE'),
+            'NAME': os.environ.get('DB_NAME'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
+            'HOST': os.environ.get('DB_HOST'),
+            'PORT': os.environ.get('DB_PORT'),
+            'OPTIONS': {
+                'sslmode': os.environ.get('DB_SSLMODE', default='require'),
+                # Você pode precisar de outras opções SSL dependendo da configuração do servidor,
+                # como 'sslrootcert', 'sslcert', 'sslkey', mas 'require' é um bom começo
+                # para bancos de dados hospedados que fornecem SSL automaticamente.
+            }
         }
     }
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
