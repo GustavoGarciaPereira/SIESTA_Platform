@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 import dj_database_url
-from dotenv import load_dotenv # Se você usa python-dotenv
+from dotenv import load_dotenv 
 
 load_dotenv() # Carrega variáveis do .env
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,14 +21,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
+if DEBUG and not SECRET_KEY:
+    SECRET_KEY = 'django-insecure-fallback-key-for-development'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-
-ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+if DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+else:
+    # Em produção, adicione o domínio do seu serviço no Render.
+    # É uma boa prática também pegar isso de uma variável de ambiente se você tiver múltiplos domínios.
+    ALLOWED_HOSTS = ['.onrender.com']
 
 # Application definition
 
@@ -79,7 +85,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if os.environ.get('ambientes') == "development":
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
