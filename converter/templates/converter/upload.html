@@ -59,44 +59,6 @@
                 </div>
             </div>
         </div>
-        
-        <div class="card mb-3">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">Parâmetros de Base e Malha</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.PAO_BasisSize.label_tag }}
-                            {{ form.PAO_BasisSize }}
-                            {% if form.PAO_BasisSize.errors %}
-                            <div class="invalid-feedback d-block">{{ form.PAO_BasisSize.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.PAO_EnergyShift.label_tag }}
-                            {{ form.PAO_EnergyShift }}
-                            {% if form.PAO_EnergyShift.errors %}
-                            <div class="invalid-feedback d-block">{{ form.PAO_EnergyShift.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.MeshCutoff.label_tag }}
-                            {{ form.MeshCutoff }}
-                            {% if form.MeshCutoff.errors %}
-                            <div class="invalid-feedback d-block">{{ form.MeshCutoff.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 
         <div class="card mb-3">
             <div class="card-header bg-success text-white">
