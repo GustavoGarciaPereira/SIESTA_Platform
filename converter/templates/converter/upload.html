@@ -347,6 +347,14 @@
 
         <!-- Botões de ação no final do formulário -->
         <div class="d-flex gap-2 justify-content-end mt-4 mb-4">
+            <div class="mb-3">
+                {{ form.download_pseudos.label_tag }}
+                {{ form.download_pseudos }}
+                {% if form.download_pseudos.errors %}
+                <div class="invalid-feedback d-block">{{ form.download_pseudos.errors }}</div>
+                {% endif %}
+                <div class="form-text">{{ form.lattice_constant.help_text }}</div>
+            </div>
             <button type="button" id="previewButton" class="btn btn-info">
                 <i class="bi bi-eye-fill"></i> Pré-visualizar FDF
             </button>

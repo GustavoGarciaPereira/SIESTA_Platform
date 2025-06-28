@@ -43,6 +43,17 @@
         .container {
             flex: 1; /* Faz com que o conteúdo principal ocupe o espaço restante */
         }
+        input[type="checkbox"] {
+            /* Aumenta o tamanho do checkbox. Ajuste o valor 1.8 como desejar. */
+            transform: scale(1.8);
+          
+            /* Opcional, mas recomendado: Adiciona um espaço para não colar no texto. */
+            margin-right: 9px;
+            margin-left: 8px;
+          
+            /* Opcional, mas recomendado: Melhora o alinhamento vertical com o texto. */
+            vertical-align: middle;
+          }
     </style>
     {% block extra_css %}{% endblock %}  <!-- Bloco para CSS adicional específico de páginas -->
 </head>

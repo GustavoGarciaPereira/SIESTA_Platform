@@ -82,6 +82,7 @@ WSGI_APPLICATION = 'heparin_converter.wsgi.application'
 # Configurações de mídia para uploads de arquivos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+PSEUDOPOTENTIALS_DIR = os.path.join(BASE_DIR, 'pseudos')
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
