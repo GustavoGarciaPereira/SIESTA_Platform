@@ -72,7 +72,7 @@ class SIESTAParametersForm(forms.Form):
     xyz_file = forms.FileField(label='Arquivo XYZ')
     system_name = forms.CharField(label='Nome do Sistema', required=False,
                                  help_text='Deixe em branco para usar o nome do arquivo')
-    padding = forms.FloatField(label='Espaçamento de borda (Å)', initial=10.0, min_value=0.0)
+    padding = forms.FloatField(label='Espaçamento de borda (Å)', initial=1.0, min_value=0.0)
 
     # Parâmetros de base
     PAO_BasisSize = forms.ChoiceField(
