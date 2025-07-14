@@ -8,3 +8,6 @@ __pycache__/*.pyc
 .env
 /venv
 ddddd.mmd
+.env copy
+backup2.sql
+backup3.sql

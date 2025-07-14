@@ -439,7 +439,7 @@ class AboutView(TemplateView):
             {
                 'name': 'Gustavo Garcia Pereira',
                 'role': 'Aluno/Programador',
-                'bio': 'Graduado em Ciência da Computação (UFN).',
+                'bio': 'Graduado em Ciência da Computação (UFN). Desenvovedor principal da plataforma',
                 'image_url': 'https://avatars.githubusercontent.com/u/19331198?v=4', # Substitua pela URL da imagem real
                 'email': 'gusgurtavo@gmail.com', # Opcional
                 'lattes_url': 'http://lattes.cnpq.br/SEU_ID_LATTES_ANDRE', # Opcional

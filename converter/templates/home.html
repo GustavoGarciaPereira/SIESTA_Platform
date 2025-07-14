@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Página Inicial - SIESTA Platform{% endblock %}
+{% block title %}Página Inicial - Gus Platform{% endblock %}
 
 {% block content %}
 <div class="hero-section text-center">
     <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
         <i class="bi bi-cone-striped me-2"></i>
-        <strong>Atenção:</strong> A SIESTA Platform ainda está em fase <strong>Beta</strong>!
+        <strong>Atenção:</strong> A Gus Platform ainda está em fase <strong>Beta</strong>!
         Algumas funcionalidades podem estar em desenvolvimento ou apresentar comportamento inesperado.
         Agradecemos sua compreensão e feedback.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <h1>Bem-vindo à SIESTA Platform</h1>
+    <h1>Bem-vindo à Gus Platform</h1>
     <p class="lead">Simulações computacionais de materiais de forma simples e eficiente.</p>
     <div>
         {% if not request.user.is_authenticated %}

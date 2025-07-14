@@ -288,61 +288,61 @@
         </div>
 
                
-    <div class="card mb-3">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Constante de Rede e Vetores</h4>
-        </div>
-        <div class="card-body">
-            <div class="mb-3">
-                {{ form.lattice_constant.label_tag }}
-                {{ form.lattice_constant }}
-                {% if form.lattice_constant.errors %}
-                <div class="invalid-feedback d-block">{{ form.lattice_constant.errors }}</div>
-                {% endif %}
-                <div class="form-text">{{ form.lattice_constant.help_text }}</div>
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Constante de Rede e Vetores</h4>
             </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    {{ form.lattice_constant.label_tag }}
+                    {{ form.lattice_constant }}
+                    {% if form.lattice_constant.errors %}
+                    <div class="invalid-feedback d-block">{{ form.lattice_constant.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">{{ form.lattice_constant.help_text }}</div>
+                </div>
 
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        {{ form.cell_size_x.label_tag }}
-                        {{ form.cell_size_x }}
-                        {% if form.cell_size_x.errors %}
-                        <div class="invalid-feedback d-block">{{ form.cell_size_x.errors }}</div>
-                        {% endif %}
-                        <div class="form-text">{{ form.cell_size_x.help_text }}</div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.cell_size_x.label_tag }}
+                            {{ form.cell_size_x }}
+                            {% if form.cell_size_x.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cell_size_x.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">{{ form.cell_size_x.help_text }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.cell_size_y.label_tag }}
+                            {{ form.cell_size_y }}
+                            {% if form.cell_size_y.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cell_size_y.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">{{ form.cell_size_y.help_text }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.cell_size_z.label_tag }}
+                            {{ form.cell_size_z }}
+                            {% if form.cell_size_z.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cell_size_z.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">{{ form.cell_size_z.help_text }}</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        {{ form.cell_size_y.label_tag }}
-                        {{ form.cell_size_y }}
-                        {% if form.cell_size_y.errors %}
-                        <div class="invalid-feedback d-block">{{ form.cell_size_y.errors }}</div>
-                        {% endif %}
-                        <div class="form-text">{{ form.cell_size_y.help_text }}</div>
-                    </div>
+                <div class="form-text">
+                    <strong>Nota:</strong> Os vetores da rede serão gerados como uma matriz diagonal:
+                    <br>A = [cell_size_x, 0, 0]
+                    <br>B = [0, cell_size_y, 0]
+                    <br>C = [0, 0, cell_size_z]
+                    <br>Estes valores são adimensionais e serão multiplicados pela 'LatticeConstant' no arquivo de entrada do SIESTA.
                 </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        {{ form.cell_size_z.label_tag }}
-                        {{ form.cell_size_z }}
-                        {% if form.cell_size_z.errors %}
-                        <div class="invalid-feedback d-block">{{ form.cell_size_z.errors }}</div>
-                        {% endif %}
-                        <div class="form-text">{{ form.cell_size_z.help_text }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-text">
-                <strong>Nota:</strong> Os vetores da rede serão gerados como uma matriz diagonal:
-                <br>A = [cell_size_x, 0, 0]
-                <br>B = [0, cell_size_y, 0]
-                <br>C = [0, 0, cell_size_z]
-                <br>Estes valores são adimensionais e serão multiplicados pela 'LatticeConstant' no arquivo de entrada do SIESTA.
             </div>
         </div>
-    </div>
 
 
         <!-- Botões de ação no final do formulário -->
