@@ -1,99 +1,128 @@
-### Passo a Passo do Projeto
+# SIESTA Platform - Conversor XYZ para FDF
 
-**1. Preparação do Ambiente (Semana 1-2)**
-- Instalar Docker e Docker Compose
-- Configurar imagem Docker do SIESTA (verificar se já existe uma oficial ou criar uma)
-- Configurar ambiente Python virtual para o Django
-- Criar projeto Django básico (`django-admin startproject`)
-- Estudar formato de arquivos XYZ e FDF (checar documentação do SIESTA)
+**SIESTA Platform** é uma aplicação web desenvolvida em Django, projetada para simplificar o fluxo de trabalho de pesquisadores e estudantes que utilizam o software de simulação de materiais [SIESTA](https://siesta-project.org/siesta/). A plataforma oferece uma interface intuitiva para converter arquivos de coordenadas moleculares (formato `.xyz`) em arquivos de entrada para o SIESTA (formato `.fdf`), com controle total sobre os parâmetros de simulação.
 
-**2. Conversor XYZ para FDF (Semana 3-4)**
-- Desenvolver script Python para conversão:
-  - Ler arquivo XYZ (usar pandas/numpy para manipulação)
-  - Mapear dados para formato FDF
-  - Validar estrutura do arquivo gerado
-  - Criar testes unitários para a conversão
-- Integrar o conversor ao Django como módulo/app
+[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Django](https://img.shields.io/badge/Django-4.2-green.svg)](https://www.djangoproject.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**3. Integração com SIESTA/Docker (Semana 5-6)**
-- Configurar comunicação Django-Docker:
-  - Usar SDK Docker para Python
-  - Criar serviço para executar containers sob demanda
-- Desenvolver sistema de filas para processamento
-- Implementar monitoramento de execução:
-  - Capturar logs do container
-  - Verificar conclusão dos cálculos
-  - Lidar com erros de execução
+ <!-- Substitua pelo URL de um screenshot da sua aplicação -->
 
-**4. Interface Web (Semana 7-8)**
-- Criar views e templates Django para:
-  - Upload de arquivos XYZ
-  - Exibição de status de processamento
-  - Visualização de resultados
-- Implementar autenticação de usuários
-- Desenvolver dashboard de monitoramento
-- Adicionar download de resultados
+## ✨ Funcionalidades Principais
 
-**5. Testes e Otimização (Semana 9)**
-- Testes de integração completa
-- Otimizar performance:
-  - Processamento assíncrono (Celery/RQ)
-  - Caching de resultados
-  - Gerenciamento de containers
-- Testes de carga/stress
-- Documentação do sistema
+- **Conversor XYZ para FDF**: Faça o upload de um arquivo `.xyz` e obtenha um arquivo `.fdf` pronto para uso, configurado através de um formulário web detalhado.
+- **Visualizador 3D Interativo**: Visualize sua molécula em 3D diretamente no navegador antes de gerar o arquivo de entrada, utilizando a biblioteca [3Dmol.js](https://3dmol.csb.pitt.edu/).
+- **Configuração Abrangente**: Ajuste dezenas de parâmetros do SIESTA, incluindo base de orbitais (PAO), dinâmica molecular (MD), parâmetros de SCF, funcional de troca e correlação (XC), e muito mais.
+- **Download de Pseudopotenciais**: Opção para baixar um arquivo `.zip` contendo não apenas o `.fdf` gerado, mas também todos os arquivos de pseudopotencial (`.psf`) necessários para a simulação.
+- **Sistema de Autenticação**: Crie uma conta, faça login e gerencie suas sessões. (Preparado para futuras funcionalidades de histórico de conversões).
+- **Interface Moderna e Responsiva**: Construída com Bootstrap 5, a plataforma é fácil de usar em desktops e dispositivos móveis.
+- **Pronto para Produção**: O projeto está totalmente containerizado com Docker e configurado para deploy em serviços como Render, Heroku, etc.
 
-**6. Redação do TCC (Contínuo)**
-- Estruturar documento:
-  1. Introdução
-  2. Revisão teórica
-  3. Metodologia
-  4. Implementação
-  5. Resultados
-  6. Conclusão
-- Preparar materiais complementares:
-  - Diagramas de arquitetura
-  - Fluxogramas do sistema
-  - Capturas de tela da interface
+## 🚀 Começando
 
-### Cronograma Sugerido (12 semanas)
+Você pode executar o projeto localmente usando Docker (recomendado) ou manualmente com um ambiente virtual Python.
 
-| Semana | Atividades-Chave |
-|--------|------------------|
-| 1      | Configuração inicial do ambiente, estudos dos formatos de arquivo |
-| 2      | Dockerização do SIESTA, projeto Django base |
-| 3      | Desenvolvimento do conversor XYZ-FDF |
-| 4      | Testes do conversor, integração inicial com Django |
-| 5      | Comunicação Django-Docker, sistema de filas |
-| 6      | Integração completa com SIESTA, tratamento de erros |
-| 7      | Desenvolvimento da interface web (front-end) |
-| 8      | Sistema de autenticação, dashboard de resultados |
-| 9      | Testes de integração, otimizações de performance |
-| 10     | Redação do TCC (capítulos 1-3) |
-| 11     | Redação do TCC (capítulos 4-6), ajustes finais |
-| 12     | Revisão final, preparação da apresentação |
+### Pré-requisitos
 
-### Ferramentas Recomendadas:
-1. **Django**: Para gestão web do projeto
-2. **Docker SDK for Python**: Para controle de containers
-3. **Celery**: Para tarefas assíncronas (se necessário)
-4. **Plotly/D3.js**: Para visualização de resultados
-5. **Git**: Para controle de versão
-6. **Sphinx**: Para documentação técnica
+- [Docker](https://www.docker.com/get-started) e [Docker Compose](https://docs.docker.com/compose/install/)
+- Ou [Python 3.10+](https://www.python.org/) e `pip`
 
-### Pontos Críticos para Atenção:
-1. Comunicação entre Django e Docker (evitar chamadas síncronas)
-2. Formatação exata dos arquivos FDF (checar requirements do SIESTA)
-3. Gestão de recursos computacionais (limite de containers simultâneos)
-4. Segurança no upload de arquivos
-5. Persistência de dados entre execuções de containers
+### 1. Instalação com Docker (Recomendado)
 
-### Dicas Extras:
-- Comece a escrever o TCC desde a primeira semana
-- Mantenha um repositório Git organizado
-- Use issues e milestones para controle
-- Documente TODAS as decisões técnicas
-- Faça testes intermediários com usuários reais
-- Mantenha comunicação constante com seu orientador
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/GustavoGarciaPereira/SIESTA_Platform.git
+    cd SIESTA_Platform
+    ```
 
-Quer que detalhe mais alguma parte específica do projeto?
+2.  **Crie um arquivo de ambiente (`.env`):**
+    Crie um arquivo chamado `.env` na raiz do projeto. Você pode começar com estas configurações básicas:
+    ```env
+    DEBUG=True
+    SECRET_KEY='django-insecure-fallback-key-for-local-development'
+    ```
+
+3.  **Construa e inicie os containers:**
+    ```bash
+    docker-compose up --build
+    ```
+    O servidor estará rodando e aplicará as migrações automaticamente.
+
+4.  **Acesse a aplicação:**
+    Abra seu navegador e acesse `http://localhost:8000`.
+
+### 2. Instalação Manual (Ambiente Virtual)
+
+1.  **Clone o repositório e navegue até ele:**
+    ```bash
+    git clone https://github.com/GustavoGarciaPereira/SIESTA_Platform.git
+    cd SIESTA_Platform
+    ```
+
+2.  **Crie e ative um ambiente virtual:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # No Windows: venv\Scripts\activate
+    ```
+
+3.  **Instale as dependências:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Crie um arquivo `.env` na raiz do projeto:**
+    ```env
+    DEBUG=True
+    SECRET_KEY='django-insecure-fallback-key-for-local-development'
+    ```
+
+5.  **Aplique as migrações do banco de dados:**
+    ```bash
+    python manage.py migrate
+    ```
+
+6.  **Crie um superusuário (opcional, para acesso ao admin):**
+    ```bash
+    python manage.py createsuperuser
+    ```
+
+7.  **Inicie o servidor de desenvolvimento:**
+    ```bash
+    python manage.py runserver
+    ```
+
+8.  **Acesse a aplicação:**
+    Abra seu navegador e acesse `http://localhost:8000`.
+
+## 🛠️ Estrutura do Projeto
+
+O projeto segue a arquitetura padrão do Django, com uma clara separação de responsabilidades:
+
+-   `heparin_converter/`: O diretório principal do projeto Django, contendo as configurações (`settings.py`) e as URLs principais (`urls.py`).
+-   `converter/`: A aplicação Django responsável por toda a lógica de conversão, incluindo:
+    -   `views.py`: Contém a `ConvertView` que processa os uploads e gera os arquivos.
+    -   `forms.py`: Define o `SIESTAParametersForm` com todos os campos para os parâmetros do SIESTA.
+    -   `templates/converter/`: Contém o template `upload.html`, a interface principal do conversor.
+-   `user/`: A aplicação Django para gerenciamento de usuários e páginas estáticas (home, sobre, contato).
+-   `Dockerfile` e `entrypoint.sh`: Arquivos de configuração para containerização com Docker.
+-   `requirements.txt`: Lista de dependências Python do projeto.
+
+## 💡 Pontos de Melhoria e Futuro do Projeto
+
+A plataforma atual é uma base robusta. As próximas etapas podem incluir:
+
+1.  **Modelos de Dados**: Implementar modelos no banco de dados para salvar o histórico de conversões de cada usuário e permitir que salvem configurações de simulação favoritas.
+2.  **Processamento Assíncrono**: Utilizar Celery ou Django-RQ para processar conversões em segundo plano, melhorando a experiência do usuário em arquivos grandes.
+3.  **Integração Direta com SIESTA**: Adicionar a capacidade de submeter e executar simulações diretamente da plataforma, gerenciando filas e recursos computacionais.
+4.  **Análise de Resultados**: Integrar ferramentas para visualizar e analisar os arquivos de saída do SIESTA (ex: gráficos de bandas, densidade de estados).
+5.  **API REST**: Desenvolver uma API para permitir que outras ferramentas ou scripts interajam com o conversor de forma programática.
+6.  **Cobertura de Testes**: Expandir os testes unitários e de integração para garantir a robustez da lógica de conversão.
+
+## 🤝 Contribuições
+
+Contribuições são muito bem-vindas! Se você tem sugestões de melhorias ou encontrou algum bug, sinta-se à vontade para abrir uma **Issue** ou enviar um **Pull Request**.
+
+## 📄 Licença
+
+Este projeto está licenciado sob a Licença MIT.
