@@ -30,7 +30,7 @@ if DEBUG and not SECRET_KEY:
 
 
 if DEBUG:
-    ALLOWED_HOSTS = ['.onrender.com','localhost', '127.0.0.1']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 else:
     # Em produção, adicione o domínio do seu serviço no Render.
     # É uma boa prática também pegar isso de uma variável de ambiente se você tiver múltiplos domínios.
@@ -87,23 +87,30 @@ PSEUDOPOTENTIALS_DIR = os.path.join(BASE_DIR, 'pseudos')
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('DB_ENGINE'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-        'OPTIONS': {
-            'sslmode': os.environ.get('DB_SSLMODE', default='require'),
-            # Você pode precisar de outras opções SSL dependendo da configuração do servidor,
-            # como 'sslrootcert', 'sslcert', 'sslkey', mas 'require' é um bom começo
-            # para bancos de dados hospedados que fornecem SSL automaticamente.
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.environ.get('DB_ENGINE'),
+            'NAME': os.environ.get('DB_NAME'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
+            'HOST': os.environ.get('DB_HOST'),
+            'PORT': os.environ.get('DB_PORT'),
+            'OPTIONS': {
+                'sslmode': os.environ.get('DB_SSLMODE', default='require'),
+                # Você pode precisar de outras opções SSL dependendo da configuração do servidor,
+                # como 'sslrootcert', 'sslcert', 'sslkey', mas 'require' é um bom começo
+                # para bancos de dados hospedados que fornecem SSL automaticamente.
+            }
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
