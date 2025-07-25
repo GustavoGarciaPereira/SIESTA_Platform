@@ -30,7 +30,7 @@ if DEBUG and not SECRET_KEY:
 
 
 if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    ALLOWED_HOSTS = ['.onrender.com','localhost', '127.0.0.1']
 else:
     # Em produção, adicione o domínio do seu serviço no Render.
     # É uma boa prática também pegar isso de uma variável de ambiente se você tiver múltiplos domínios.
