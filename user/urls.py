@@ -1,7 +1,7 @@
 
 from django.urls import path
 
-from .views import HomeView, SignupView,AboutView,ContactView, contact_submit_view
+from .views import HomeView, SignupView,AboutView,ContactView, contact_submit_view, profile_view
 from django.contrib.auth import views as auth_views
 
 
@@ -35,7 +35,8 @@ urlpatterns = [
     # path('signup/', SignupView.as_view(), name='signup'),  # View de criação de conta
     path('about/', AboutView.as_view(), name='about'),
     path('contact/', ContactView.as_view(), name='contact'),
-    path('contact/submit/', contact_submit_view, name='contact_submit')
+    path('contact/submit/', contact_submit_view, name='contact_submit'),
+    path('profile/', profile_view, name='profile')
     
 ]
 

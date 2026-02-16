@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('converter/', include('converter.urls')),  # Inclua as URLs do aplicativo converter
     path('', include('user.urls')),  # Inclua as URLs do aplicativo converter
+    path('dashboard/', include('dashboard.urls')),  # Inclua as URLs do dashboard
 ]
 
 if settings.DEBUG:

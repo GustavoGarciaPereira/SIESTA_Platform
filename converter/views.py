@@ -1,17 +1,23 @@
 import io
 import os
 import zipfile
+import hashlib
+import json
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse, Http404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import slugify
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from .forms import (
     SIESTAParametersForm
 )
+from .models import UploadedFile, ConversionHistory, SavedConfiguration
 class ConvertView(View):
     template_name = 'converter/upload.html'
 
@@ -38,6 +44,50 @@ class ConvertView(View):
 
         # Converte o arquivo
         fdf_content, unique_species = self.convert_xyz_to_fdf(xyz_file, system_name, params)
+
+        # Registrar histórico se usuário estiver autenticado
+        conversion_history = None
+        if request.user.is_authenticated:
+            try:
+                # Calcular checksum do conteúdo
+                xyz_file.seek(0)
+                content = xyz_file.read().decode('utf-8')
+                checksum = hashlib.sha256(content.encode()).hexdigest()
+                
+                # 1. Criar registro do arquivo enviado
+                uploaded = UploadedFile.objects.create(
+                    user=request.user,
+                    file=xyz_file,
+                    original_name=xyz_file.name,
+                    file_type='xyz',
+                    size=xyz_file.size,
+                    checksum=checksum,
+                    upload_date=datetime.now(),
+                    is_temp=False
+                )
+                
+                # 2. Salvar histórico
+                conversion_history = ConversionHistory.objects.create(
+                    user=request.user,
+                    uploaded_file=uploaded,
+                    original_filename=xyz_file.name,
+                    system_name=system_name,
+                    fdf_content=fdf_content,
+                    parameters=params,
+                    conversion_date=datetime.now(),
+                    completion_date=datetime.now(),
+                    file_size=xyz_file.size,
+                    status='completed',
+                    error_message='',
+                    download_count=0
+                )
+                
+                # Guardar o ID da conversão na sessão para uso posterior
+                request.session['last_conversion_id'] = conversion_history.id
+                
+            except Exception as e:
+                # Log do erro, mas não interrompe o fluxo principal
+                print(f"Erro ao registrar histórico: {e}")
 
         if 'preview' in request.POST:
             # Lógica de preview permanece a mesma
@@ -211,3 +261,150 @@ class ConvertView(View):
 
         # ### ALTERADO ###: Retorna o conteúdo e a lista de espécies
         return output.getvalue(), unique_species
+
+
+# History views
+@login_required
+def history_view(request):
+    """View para exibir o histórico de conversões do usuário."""
+    conversions = ConversionHistory.objects.filter(user=request.user).order_by('-conversion_date')
+    return render(request, 'converter/history.html', {'conversions': conversions})
+
+
+@login_required
+def download_fdf(request, conv_id):
+    """View para baixar o arquivo FDF de uma conversão específica."""
+    try:
+        conv = ConversionHistory.objects.get(id=conv_id, user=request.user)
+    except ConversionHistory.DoesNotExist:
+        raise Http404("Conversão não encontrada.")
+    
+    response = HttpResponse(conv.fdf_content, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{slugify(conv.system_name)}.fdf"'
+    
+    # Incrementar contador de downloads
+    conv.download_count += 1
+    conv.save()
+    
+    return response
+
+
+@login_required
+def download_pseudos(request, conv_id):
+    """View para baixar pseudopotenciais de uma conversão específica."""
+    conv = get_object_or_404(ConversionHistory, id=conv_id, user=request.user)
+    
+    # Extrair elementos do conteúdo FDF
+    # Procura por linhas que contenham ChemicalSpeciesLabel
+    elements = []
+    lines = conv.fdf_content.split('\n')
+    in_block = False
+    for line in lines:
+        if '%block ChemicalSpeciesLabel' in line:
+            in_block = True
+            continue
+        if '%endblock ChemicalSpeciesLabel' in line:
+            break
+        if in_block and line.strip():
+            parts = line.strip().split()
+            if len(parts) >= 3:
+                # Formato: "idx atomic_number symbol.lda"
+                symbol_part = parts[2]
+                # Remove o sufixo .lda
+                if '.' in symbol_part:
+                    symbol = symbol_part.split('.')[0]
+                    elements.append(symbol)
+    
+    # Gerar o zip
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # Adicionar o arquivo FDF
+        fdf_filename = f"{slugify(conv.system_name)}.fdf"
+        zip_file.writestr(fdf_filename, conv.fdf_content)
+        
+        # Adicionar pseudopotenciais
+        pseudos_dir = settings.PSEUDOPOTENTIALS_DIR if hasattr(settings, 'PSEUDOPOTENTIALS_DIR') else 'pseudos'
+        for el in elements:
+            pseudo_filename = f"{el}.lda.psf"
+            pseudo_path = os.path.join(pseudos_dir, pseudo_filename)
+            if os.path.exists(pseudo_path):
+                zip_file.write(pseudo_path, arcname=pseudo_filename)
+    
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="{slugify(conv.system_name)}_pseudos.zip"'
+    
+    return response
+
+
+# Saved Configuration views
+@login_required
+def save_configuration(request):
+    """View para salvar uma configuração atual."""
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description', '')
+        parameters = request.POST.get('parameters')  # JSON string vindo do formulário
+        
+        if not name:
+            return JsonResponse({'status': 'error', 'message': 'Nome é obrigatório'}, status=400)
+        
+        try:
+            # Converter string JSON para dict
+            params_dict = json.loads(parameters) if parameters else {}
+            
+            # Criar configuração salva
+            config = SavedConfiguration.objects.create(
+                user=request.user,
+                name=name,
+                description=description,
+                parameters=params_dict,
+                is_default=False,
+                created_at=datetime.now(),
+                last_used=datetime.now(),
+                use_count=0
+            )
+            
+            return JsonResponse({'status': 'ok', 'config_id': config.id})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Parâmetros inválidos'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+    return JsonResponse({'status': 'error', 'message': 'Método não permitido'}, status=405)
+
+
+@login_required
+def my_configurations(request):
+    """View para listar as configurações salvas do usuário."""
+    configs = SavedConfiguration.objects.filter(user=request.user).order_by('-last_used')
+    return render(request, 'converter/my_configs.html', {'configs': configs})
+
+
+@login_required
+def load_configuration(request, config_id):
+    """View para carregar uma configuração salva."""
+    config = get_object_or_404(SavedConfiguration, id=config_id, user=request.user)
+    
+    # Atualizar contador de uso
+    config.use_count += 1
+    config.last_used = datetime.now()
+    config.save()
+    
+    # Armazenar configuração na sessão
+    request.session['loaded_config'] = config.parameters
+    request.session['loaded_config_name'] = config.name
+    
+    messages.success(request, f'Configuração "{config.name}" carregada com sucesso!')
+    return redirect('convert')
+
+
+@login_required
+def delete_configuration(request, config_id):
+    """View para excluir uma configuração salva."""
+    config = get_object_or_404(SavedConfiguration, id=config_id, user=request.user)
+    config_name = config.name
+    config.delete()
+    
+    messages.success(request, f'Configuração "{config_name}" excluída com sucesso!')
+    return redirect('my_configurations')

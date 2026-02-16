@@ -355,6 +355,13 @@
                 {% endif %}
                 <div class="form-text">{{ form.lattice_constant.help_text }}</div>
             </div>
+            
+            {% if user.is_authenticated %}
+            <button type="button" id="saveConfigButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveConfigModal">
+                <i class="bi bi-save"></i> Salvar Configuração
+            </button>
+            {% endif %}
+            
             <button type="button" id="previewButton" class="btn btn-info">
                 <i class="bi bi-eye-fill"></i> Pré-visualizar FDF
             </button>
@@ -398,6 +405,41 @@
             </div>
         </div>
     {% endif %}
+    
+    <!-- Modal para Salvar Configuração -->
+    <div class="modal fade" id="saveConfigModal" tabindex="-1" aria-labelledby="saveConfigModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveConfigModalLabel">Salvar Configuração Atual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="saveConfigForm">
+                        <div class="mb-3">
+                            <label for="configName" class="form-label">Nome da Configuração *</label>
+                            <input type="text" class="form-control" id="configName" name="name" required>
+                            <div class="form-text">Dê um nome descritivo para esta configuração</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="configDescription" class="form-label">Descrição (opcional)</label>
+                            <textarea class="form-control" id="configDescription" name="description" rows="3"></textarea>
+                            <div class="form-text">Descreva os parâmetros ou quando usar esta configuração</div>
+                        </div>
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="bi bi-info-circle"></i> Esta configuração salvará todos os parâmetros atuais do formulário, exceto o arquivo XYZ.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="saveConfigSubmit" class="btn btn-primary">Salvar Configuração</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="mt-4">
         <h4>O que faz este conversor?</h4>
@@ -471,51 +513,201 @@ document.addEventListener('DOMContentLoaded', function() {
     // Novo Script para Visualização 3D com 3Dmol.js
     // O Django renderiza o input de arquivo com id="id_xyz_file" e name="xyz_file"
     // Usaremos o 'name' pois é mais genérico, mas 'id_xyz_file' também funcionaria.
-    let xyzFileElement = document.querySelector('input[name="xyz_file"]'); 
-    let viewerContainer = document.getElementById('molviewer');
-    let glviewer = null;
+    function initialize3DViewer() {
+        console.log('🔍 Inicializando visualizador 3D...');
+        
+        let xyzFileElement = document.querySelector('input[name="xyz_file"]'); 
+        let viewerContainer = document.getElementById('molviewer');
+        let glviewer = null;
 
-    if (xyzFileElement && viewerContainer) {
-        xyzFileElement.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const xyzData = e.target.result;
-                    
-                    // Limpa o container antes de adicionar novo viewer
-                    viewerContainer.innerHTML = ''; 
+        console.log('📋 Elementos encontrados:');
+        console.log('  - input[name="xyz_file"]:', xyzFileElement);
+        console.log('  - div#molviewer:', viewerContainer);
+        console.log('  - $3Dmol definido?', typeof $3Dmol !== 'undefined' ? '✅ Sim' : '❌ Não');
 
+        if (!xyzFileElement) {
+            // Tentar encontrar por ID também
+            xyzFileElement = document.getElementById('id_xyz_file');
+            console.log('  - Tentando id_xyz_file:', xyzFileElement);
+        }
+
+        if (xyzFileElement && viewerContainer) {
+            console.log('✅ Elementos encontrados, configurando event listener...');
+            
+            xyzFileElement.addEventListener('change', function(event) {
+                console.log('📁 Arquivo selecionado:', event.target.files[0] ? event.target.files[0].name : 'Nenhum');
+                
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const xyzData = e.target.result;
+                        console.log('📄 Arquivo lido, tamanho:', xyzData.length, 'caracteres');
+                        
+                        // Limpa o container antes de adicionar novo viewer
+                        viewerContainer.innerHTML = ''; 
+
+                        try {
+                            if (typeof $3Dmol === 'undefined') {
+                                throw new Error('3Dmol.js não está carregado');
+                            }
+                            
+                            glviewer = $3Dmol.createViewer(viewerContainer, { backgroundColor: 'white' });
+                            glviewer.addModel(xyzData, 'xyz');
+                            glviewer.setStyle({}, {stick: {radius: 0.15}, sphere: {scale: 0.25}});
+                            glviewer.zoomTo();
+                            glviewer.render();
+                            
+                            console.log('✅ Molécula renderizada com sucesso!');
+                        } catch (error) {
+                            console.error('❌ Erro ao criar visualizador 3D:', error);
+                            viewerContainer.innerHTML = '<div class="alert alert-danger text-center p-3">Erro ao renderizar molécula 3D: ' + error.message + '</div>';
+                        }
+                    };
+                    reader.onerror = function() {
+                        console.error("❌ Erro ao ler o arquivo:", reader.error);
+                        viewerContainer.innerHTML = '<div class="alert alert-danger text-center p-3">Erro ao ler o arquivo XYZ.</div>';
+                    };
+                    reader.readAsText(file);
+                } else {
+                    // Se nenhum arquivo for selecionado (ou for des-selecionado)
+                    console.log('📭 Nenhum arquivo selecionado');
+                    viewerContainer.innerHTML = '<div class="text-center p-5 text-muted">Selecione um arquivo XYZ acima para visualizar a molécula.</div>';
                     if (glviewer) {
-                        // Se você quiser manter o objeto viewer e apenas atualizar o modelo:
-                        // glviewer.clear(); 
-                        // glviewer.addModel(xyzData, 'xyz');
-                        // Mas criar um novo viewer a cada vez é mais simples e robusto aqui.
+                        glviewer.clear();
+                        glviewer = null; 
                     }
-                    glviewer = $3Dmol.createViewer(viewerContainer, { backgroundColor: 'white' });
-                    glviewer.addModel(xyzData, 'xyz');
-                    glviewer.setStyle({}, {stick: {radius: 0.15}, sphere: {scale: 0.25}}); // Estilo stick com esferas menores
-                    glviewer.zoomTo();
-                    glviewer.render();
-                    // glviewer.zoom(0.8, 1000); // Zoom inicial pode ser ajustado conforme preferência
-                };
-                reader.onerror = function() {
-                    viewerContainer.innerHTML = '<div class="alert alert-danger text-center p-3">Erro ao ler o arquivo XYZ.</div>';
-                    console.error("Erro ao ler o arquivo:", reader.error);
-                };
-                reader.readAsText(file);
+                }
+            });
+            
+            console.log('✅ Event listener configurado com sucesso!');
+        } else {
+            if (!xyzFileElement) {
+                console.error("❌ Elemento input[name='xyz_file'] ou #id_xyz_file não encontrado.");
+                // Tentar encontrar todos os inputs de arquivo
+                const allFileInputs = document.querySelectorAll('input[type="file"]');
+                console.log('📋 Todos os inputs de arquivo encontrados:', allFileInputs.length);
+                allFileInputs.forEach((input, i) => {
+                    console.log(`  ${i}: name="${input.name}", id="${input.id}"`);
+                });
+            }
+            if (!viewerContainer) console.error("❌ Elemento div#molviewer não encontrado.");
+        }
+    }
+
+    // Inicializar o visualizador 3D
+    // Aguardar um pouco para garantir que 3Dmol.js está carregado
+    if (typeof $3Dmol !== 'undefined') {
+        initialize3DViewer();
+    } else {
+        console.log('⏳ 3Dmol.js ainda não carregado, aguardando...');
+        // Tentar novamente após um delay
+        setTimeout(function() {
+            if (typeof $3Dmol !== 'undefined') {
+                initialize3DViewer();
             } else {
-                // Se nenhum arquivo for selecionado (ou for des-selecionado)
-                viewerContainer.innerHTML = '<div class="text-center p-5 text-muted">Selecione um arquivo XYZ acima para visualizar a molécula.</div>';
-                if (glviewer) {
-                    glviewer.clear();
-                    glviewer = null; 
+                console.error('❌ 3Dmol.js não carregado após timeout');
+                const viewerContainer = document.getElementById('molviewer');
+                if (viewerContainer) {
+                    viewerContainer.innerHTML = '<div class="alert alert-warning text-center p-3">A biblioteca 3Dmol.js não foi carregada. A visualização 3D não está disponível.</div>';
                 }
             }
+        }, 1000);
+    }
+
+    // Script para Salvar Configuração
+    const saveConfigButton = document.getElementById('saveConfigSubmit');
+    const saveConfigForm = document.getElementById('saveConfigForm');
+    const saveConfigModalElement = document.getElementById('saveConfigModal');
+    
+    if (saveConfigButton && saveConfigForm) {
+        saveConfigButton.addEventListener('click', function() {
+            const configName = document.getElementById('configName').value;
+            const configDescription = document.getElementById('configDescription').value;
+            
+            if (!configName.trim()) {
+                alert('Por favor, informe um nome para a configuração.');
+                return;
+            }
+            
+            // Coletar todos os dados do formulário principal
+            const formData = new FormData(form);
+            const params = {};
+            
+            // Converter FormData para objeto JSON
+            for (let [key, value] of formData.entries()) {
+                // Ignorar arquivos e CSRF token
+                if (key !== 'xyz_file' && key !== 'csrfmiddlewaretoken') {
+                    // Converter valores booleanos
+                    if (value === 'on') {
+                        params[key] = true;
+                    } else if (value === 'off') {
+                        params[key] = false;
+                    } else {
+                        // Tentar converter para número se possível
+                        const numValue = parseFloat(value);
+                        params[key] = isNaN(numValue) ? value : numValue;
+                    }
+                }
+            }
+            
+            // Adicionar nome e descrição
+            const saveData = {
+                name: configName,
+                description: configDescription,
+                parameters: JSON.stringify(params)
+            };
+            
+            // Mostrar loading
+            saveConfigButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
+            saveConfigButton.disabled = true;
+            
+            // Enviar para o servidor
+            fetch('{% url "save_configuration" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: new URLSearchParams(saveData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    // Fechar modal e mostrar mensagem de sucesso
+                    if (saveConfigModalElement) {
+                        const modal = bootstrap.Modal.getInstance(saveConfigModalElement);
+                        if (modal) modal.hide();
+                    }
+                    
+                    // Mostrar mensagem de sucesso
+                    alert('Configuração salva com sucesso!');
+                    
+                    // Limpar formulário
+                    saveConfigForm.reset();
+                } else {
+                    alert('Erro ao salvar configuração: ' + (data.message || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao salvar configuração:', error);
+                alert('Erro ao salvar configuração. Verifique sua conexão e tente novamente.');
+            })
+            .finally(() => {
+                // Restaurar botão
+                saveConfigButton.innerHTML = 'Salvar Configuração';
+                saveConfigButton.disabled = false;
+            });
         });
-    } else {
-        if (!xyzFileElement) console.error("Elemento input[name='xyz_file'] não encontrado.");
-        if (!viewerContainer) console.error("Elemento div#molviewer não encontrado.");
+    }
+    
+    // Limpar formulário quando modal for fechado
+    if (saveConfigModalElement) {
+        saveConfigModalElement.addEventListener('hidden.bs.modal', function() {
+            if (saveConfigForm) {
+                saveConfigForm.reset();
+            }
+        });
     }
 });
 </script>

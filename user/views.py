@@ -1,11 +1,15 @@
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
+from django.utils.decorators import method_decorator
 
 from .forms import (
     UserCreationForm,
+    UserProfileForm
 )
+from .models import UserProfile
 
 
 def contact_submit_view(request):
@@ -78,3 +82,20 @@ class AboutView(TemplateView):
         # Você pode manter as outras seções ou removê-las se a página for só sobre a equipe
         context['show_mission_vision'] = False # Defina como True se quiser mostrar as outras seções
         return context
+
+
+@login_required
+def profile_view(request):
+    """View para edição do perfil do usuário."""
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=profile)
+    
+    return render(request, 'user/profile.html', {'form': form})
