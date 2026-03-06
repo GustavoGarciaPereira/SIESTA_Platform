@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Minhas Configurações - SIESTA Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .configs-table {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .configs-table thead {
+        background-color: var(--color-primary);
+        color: white;
+    }
+    
+    .configs-table th {
+        font-weight: 600;
+        border: none;
+    }
+    
+    .configs-table td {
+        vertical-align: middle;
+    }
+    
+    .config-card {
+        border-left: 3px solid var(--color-accent);
+        transition: transform 0.2s ease;
+    }
+    
+    .config-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .config-parameters {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.4;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Minhas Configurações Salvas</h2>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="mb-3">
+        <a href="{% url 'convert' %}" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Voltar para Conversão
+        </a>
+        <a href="{% url 'converter_history' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-clock-history"></i> Histórico
+        </a>
+    </div>
+    
+    {% if configs %}
+        <div class="table-responsive configs-table">
+            <table class="table table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Criada em</th>
+                        <th>Último uso</th>
+                        <th>Usos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for config in configs %}
+                    <tr>
+                        <td>
+                            <strong>{{ config.name }}</strong>
+                            {% if config.is_default %}
+                                <span class="badge bg-info">Padrão</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ config.description|truncatechars:50 }}</td>
+                        <td>{{ config.created_at|date:"d/m/Y" }}</td>
+                        <td>{{ config.last_used|date:"d/m/Y" }}</td>
+                        <td>{{ config.use_count }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'load_configuration' config.id %}" class="btn btn-sm btn-success">
+                                    <i class="bi bi-play-circle"></i> Carregar
+                                </a>
+                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal{{ config.id }}">
+                                    <i class="bi bi-info-circle"></i> Detalhes
+                                </button>
+                                <a href="{% url 'delete_configuration' config.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta configuração?')">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </a>
+                            </div>
+                            
+                            <!-- Modal para detalhes -->
+                            <div class="modal fade" id="detailsModal{{ config.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ config.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="detailsModalLabel{{ config.id }}">Detalhes da Configuração: {{ config.name }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p><strong>Descrição:</strong> {{ config.description }}</p>
+                                            <p><strong>Criada em:</strong> {{ config.created_at|date:"d/m/Y H:i" }}</p>
+                                            <p><strong>Último uso:</strong> {{ config.last_used|date:"d/m/Y H:i" }}</p>
+                                            <p><strong>Número de usos:</strong> {{ config.use_count }}</p>
+                                            
+                                            <h6>Parâmetros:</h6>
+                                            <div class="card config-card">
+                                                <div class="card-body">
+                                                    <pre class="mb-0 config-parameters" style="max-height: 300px; overflow-y: auto;">{{ config.parameters|pprint }}</pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            <a href="{% url 'load_configuration' config.id %}" class="btn btn-primary">Carregar esta configuração</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p class="mb-0">Você ainda não tem configurações salvas.</p>
+            <p class="mb-0">Vá para a <a href="{% url 'convert' %}">página de conversão</a> para criar uma configuração.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

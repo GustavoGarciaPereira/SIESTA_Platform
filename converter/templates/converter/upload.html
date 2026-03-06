@@ -1,6 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Conversor XYZ para FDF com Visualizador 3D{% endblock %}
+{% block title %}Conversor XYZ para FDF - SIESTA Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .parameter-card {
+        border-top: 3px solid var(--color-accent);
+        transition: transform 0.2s ease;
+    }
+    
+    .parameter-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .card-header.bg-primary { background-color: var(--color-primary) !important; }
+    .card-header.bg-success { background-color: var(--color-success) !important; }
+    .card-header.bg-info { background-color: var(--color-accent) !important; }
+    .card-header.bg-warning { background-color: var(--color-warning) !important; color: var(--color-text-primary); }
+    .card-header.bg-secondary { background-color: var(--color-text-secondary) !important; }
+    .card-header.bg-dark { background-color: var(--color-text-primary) !important; }
+    
+    #molviewer {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        background-color: #f8f9fa;
+    }
+    
+    .fdf-preview {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
+<script src="{% static 'js/upload.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -9,7 +47,7 @@
     <form method="post" enctype="multipart/form-data" id="convertForm">
         {% csrf_token %}
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Arquivo e Configurações Básicas</h4>
             </div>
@@ -49,7 +87,7 @@
         </div>
 
         <!-- Container para o Visualizador 3Dmol.js -->
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-success text-white">
                 <h4 class="mb-0">Visualização 3D da Molécula (do arquivo XYZ selecionado)</h4>
             </div>
@@ -60,7 +98,7 @@
             </div>
         </div>
 
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-success text-white">
                 <h4 class="mb-0">Parâmetros de Base e Malha</h4>
             </div>
@@ -97,7 +135,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-info text-white">
                 <h4 class="mb-0">Parâmetros de Dinâmica Molecular</h4>
             </div>
@@ -146,7 +184,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-warning">
                 <h4 class="mb-0">Parâmetros SCF e DM</h4>
             </div>
@@ -206,7 +244,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-secondary text-white">
                 <h4 class="mb-0">Funcional XC e Parâmetros de Solução</h4>
             </div>
@@ -260,7 +298,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-dark text-white">
                 <h4 class="mb-0">Saídas e Análises</h4>
             </div>
@@ -288,7 +326,7 @@
         </div>
 
                
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Constante de Rede e Vetores</h4>
             </div>
@@ -355,6 +393,19 @@
                 {% endif %}
                 <div class="form-text">{{ form.lattice_constant.help_text }}</div>
             </div>
+            
+            {% if user.is_authenticated %}
+            <a href="{% url 'converter_history' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-clock-history"></i> Histórico
+            </a>
+            <a href="{% url 'my_configurations' %}" class="btn btn-secondary">
+                <i class="bi bi-gear-fill"></i> Minhas Configurações
+            </a>
+            <button type="button" id="saveConfigButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveConfigModal">
+                <i class="bi bi-save"></i> Salvar Configuração
+            </button>
+            {% endif %}
+            
             <button type="button" id="previewButton" class="btn btn-info">
                 <i class="bi bi-eye-fill"></i> Pré-visualizar FDF
             </button>
@@ -373,7 +424,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <pre id="previewContent" class="bg-light p-3" style="max-height: 70vh; overflow: auto;"></pre>
+                    <pre id="previewContent" class="bg-light p-3 fdf-preview" style="max-height: 70vh; overflow: auto;"></pre>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -394,10 +445,45 @@
                 </button>
             </div>
             <div class="card-body">
-                <pre class="bg-light p-3" style="max-height: 500px; overflow: auto;">{{ preview_content }}</pre>
+                <pre class="bg-light p-3 fdf-preview" style="max-height: 500px; overflow: auto;">{{ preview_content }}</pre>
             </div>
         </div>
     {% endif %}
+    
+    <!-- Modal para Salvar Configuração -->
+    <div class="modal fade" id="saveConfigModal" tabindex="-1" aria-labelledby="saveConfigModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveConfigModalLabel">Salvar Configuração Atual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="saveConfigForm">
+                        <div class="mb-3">
+                            <label for="configName" class="form-label">Nome da Configuração *</label>
+                            <input type="text" class="form-control" id="configName" name="name" required>
+                            <div class="form-text">Dê um nome descritivo para esta configuração</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="configDescription" class="form-label">Descrição (opcional)</label>
+                            <textarea class="form-control" id="configDescription" name="description" rows="3"></textarea>
+                            <div class="form-text">Descreva os parâmetros ou quando usar esta configuração</div>
+                        </div>
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="bi bi-info-circle"></i> Esta configuração salvará todos os parâmetros atuais do formulário, exceto o arquivo XYZ.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="saveConfigSubmit" class="btn btn-primary" data-url="{% url 'save_configuration' %}">Salvar Configuração</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="mt-4">
         <h4>O que faz este conversor?</h4>
@@ -414,109 +500,4 @@
     </div>
 </div>
 
-<!-- Incluir a biblioteca 3Dmol.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
-
-<!-- JavaScript para a funcionalidade de pré-visualização FDF e Visualização 3D -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Script para pré-visualização FDF (existente)
-    const previewButton = document.getElementById('previewButton');
-    const downloadPreviewButton = document.getElementById('downloadPreviewButton');
-    const previewContent = document.getElementById('previewContent');
-    const form = document.getElementById('convertForm');
-    const modalElement = document.getElementById('previewModal');
-    
-    let previewModal = null;
-    if (modalElement) {
-        previewModal = new bootstrap.Modal(modalElement);
-    }
-    
-    if (previewButton) {
-        previewButton.addEventListener('click', function() {
-            const formData = new FormData(form);
-            formData.append('preview', 'true');
-            
-            previewContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div><p class="mt-2">Gerando pré-visualização FDF...</p></div>';
-            
-            if (previewModal) previewModal.show();
-            
-            fetch(window.location.href, {
-                method: 'POST',
-                body: formData,
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                previewContent.textContent = data.content;
-                if (document.getElementById('previewModalLabel')) {
-                    document.getElementById('previewModalLabel').textContent = 'Pré-visualização FDF: ' + data.filename;
-                }
-            })
-            .catch(error => {
-                console.error('Erro na pré-visualização FDF:', error);
-                previewContent.innerHTML = '<div class="alert alert-danger">Erro ao gerar pré-visualização FDF. Verifique se o arquivo XYZ é válido.</div>';
-            });
-        });
-    }
-
-    if (downloadPreviewButton) {
-        downloadPreviewButton.addEventListener('click', function() {
-            const previewInput = form.querySelector('input[name="preview"]');
-            if (previewInput) previewInput.remove();
-            form.submit();
-        });
-    }
-
-    // Novo Script para Visualização 3D com 3Dmol.js
-    // O Django renderiza o input de arquivo com id="id_xyz_file" e name="xyz_file"
-    // Usaremos o 'name' pois é mais genérico, mas 'id_xyz_file' também funcionaria.
-    let xyzFileElement = document.querySelector('input[name="xyz_file"]'); 
-    let viewerContainer = document.getElementById('molviewer');
-    let glviewer = null;
-
-    if (xyzFileElement && viewerContainer) {
-        xyzFileElement.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const xyzData = e.target.result;
-                    
-                    // Limpa o container antes de adicionar novo viewer
-                    viewerContainer.innerHTML = ''; 
-
-                    if (glviewer) {
-                        // Se você quiser manter o objeto viewer e apenas atualizar o modelo:
-                        // glviewer.clear(); 
-                        // glviewer.addModel(xyzData, 'xyz');
-                        // Mas criar um novo viewer a cada vez é mais simples e robusto aqui.
-                    }
-                    glviewer = $3Dmol.createViewer(viewerContainer, { backgroundColor: 'white' });
-                    glviewer.addModel(xyzData, 'xyz');
-                    glviewer.setStyle({}, {stick: {radius: 0.15}, sphere: {scale: 0.25}}); // Estilo stick com esferas menores
-                    glviewer.zoomTo();
-                    glviewer.render();
-                    // glviewer.zoom(0.8, 1000); // Zoom inicial pode ser ajustado conforme preferência
-                };
-                reader.onerror = function() {
-                    viewerContainer.innerHTML = '<div class="alert alert-danger text-center p-3">Erro ao ler o arquivo XYZ.</div>';
-                    console.error("Erro ao ler o arquivo:", reader.error);
-                };
-                reader.readAsText(file);
-            } else {
-                // Se nenhum arquivo for selecionado (ou for des-selecionado)
-                viewerContainer.innerHTML = '<div class="text-center p-5 text-muted">Selecione um arquivo XYZ acima para visualizar a molécula.</div>';
-                if (glviewer) {
-                    glviewer.clear();
-                    glviewer = null; 
-                }
-            }
-        });
-    } else {
-        if (!xyzFileElement) console.error("Elemento input[name='xyz_file'] não encontrado.");
-        if (!viewerContainer) console.error("Elemento div#molviewer não encontrado.");
-    }
-});
-</script>
 {% endblock %}

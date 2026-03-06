@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from .models import UserProfile
 
 
 
@@ -49,4 +50,24 @@ class UserCreationForm(BaseUserCreationForm):
     # Atualiza o Meta para incluir o campo email
     class Meta(BaseUserCreationForm.Meta):
         fields = ["username", "email", "password1", "password2"]
+
+
+class UserProfileForm(forms.ModelForm):
+    """Formulário para edição do perfil do usuário."""
+    class Meta:
+        model = UserProfile
+        fields = ['institution', 'research_area', 'profile_picture']
+        widgets = {
+            'institution': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sua instituição'}),
+            'research_area': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sua área de pesquisa'}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'institution': 'Instituição',
+            'research_area': 'Área de Pesquisa',
+            'profile_picture': 'Foto de Perfil',
+        }
+        help_texts = {
+            'profile_picture': 'Envie uma imagem para seu perfil (opcional)',
+        }
         

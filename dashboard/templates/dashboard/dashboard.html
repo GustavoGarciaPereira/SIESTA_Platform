@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard de URLs - SIESTA Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        border-top: 3px solid var(--color-accent);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s ease;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .dashboard-table {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .dashboard-table thead {
+        background-color: var(--color-primary);
+        color: white;
+    }
+    
+    .dashboard-table th {
+        font-weight: 600;
+        border: none;
+    }
+    
+    .dashboard-table td {
+        vertical-align: middle;
+    }
+    
+    .dashboard-table code {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        background-color: var(--color-bg);
+        padding: 0.125rem 0.25rem;
+        border-radius: 4px;
+    }
+    
+    .lead {
+        color: var(--color-text-secondary);
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Central de URLs da Plataforma</h1>
+    <p class="lead">Abaixo estão listadas todas as rotas disponíveis no projeto. Clique nos botões para acessar as páginas ou visualize os parâmetros necessários para rotas dinâmicas.</p>
+
+    {% for group in url_groups %}
+    <div class="card mb-4 dashboard-card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">{{ group.name }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive dashboard-table">
+                <table class="table table-striped table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>URL</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for url_item in group.urls %}
+                        <tr>
+                            <td><strong>{{ url_item.name }}</strong></td>
+                            <td>{{ url_item.description }}</td>
+                            <td>
+                                <code class="font-mono">
+                                    {% if url_item.params %}
+                                        {% url url_item.url_name as the_url %}
+                                        {% if the_url %}
+                                            {{ the_url }}
+                                        {% else %}
+                                            {% url url_item.url_name 1 as example_url %}  {# exemplo com ID=1 #}
+                                            {{ example_url|default:'' }} (exemplo com ID=1)
+                                        {% endif %}
+                                    {% else %}
+                                        {% url url_item.url_name as the_url %}
+                                        {{ the_url }}
+                                    {% endif %}
+                                </code>
+                            </td>
+                            <td>
+                                {% if not url_item.params %}
+                                    <a href="{% url url_item.url_name %}" class="btn btn-sm btn-success" target="_blank">Acessar</a>
+                                {% else %}
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#paramModal{{ forloop.parentloop.counter }}{{ forloop.counter }}">
+                                        <i class="bi bi-info-circle"></i> Requer parâmetros
+                                    </button>
+
+                                    <!-- Modal para explicar parâmetros -->
+                                    <div class="modal fade" id="paramModal{{ forloop.parentloop.counter }}{{ forloop.counter }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-primary text-white">
+                                                    <h5 class="modal-title mb-0">{{ url_item.name }}</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Esta URL requer os seguintes parâmetros:</p>
+                                                    <ul class="mb-3">
+                                                        {% for param in url_item.params %}
+                                                        <li><code class="bg-light p-1 rounded">{{ param }}</code></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    <p class="mb-2">Exemplo de uso:</p>
+                                                    <code class="d-block bg-light p-2 rounded font-mono">{% url url_item.url_name 1 as example_url %}{{ example_url }}</code>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
