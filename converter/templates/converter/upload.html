@@ -363,6 +363,9 @@
             </div>
             
             {% if user.is_authenticated %}
+            <a href="{% url 'my_configurations' %}" class="btn btn-secondary">
+                <i class="bi bi-gear-fill"></i> Minhas Configurações
+            </a>
             <button type="button" id="saveConfigButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveConfigModal">
                 <i class="bi bi-save"></i> Salvar Configuração
             </button>
