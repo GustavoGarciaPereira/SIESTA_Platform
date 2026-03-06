@@ -1,4 +1,42 @@
 {% extends 'base.html' %}
+
+{% block title %}Histórico de Conversões - SIESTA Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .history-table {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .history-table thead {
+        background-color: var(--color-primary);
+        color: white;
+    }
+    
+    .history-table th {
+        font-weight: 600;
+        border: none;
+    }
+    
+    .history-table td {
+        vertical-align: middle;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h2>Meu Histórico de Conversões</h2>
@@ -21,8 +59,8 @@
     </div>
     
     {% if conversions %}
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
+        <div class="table-responsive history-table">
+            <table class="table table-striped table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Sistema</th>

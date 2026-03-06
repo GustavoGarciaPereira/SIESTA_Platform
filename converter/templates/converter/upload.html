@@ -1,6 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}Conversor XYZ para FDF com Visualizador 3D{% endblock %}
+{% block title %}Conversor XYZ para FDF - SIESTA Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .parameter-card {
+        border-top: 3px solid var(--color-accent);
+        transition: transform 0.2s ease;
+    }
+    
+    .parameter-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .card-header.bg-primary { background-color: var(--color-primary) !important; }
+    .card-header.bg-success { background-color: var(--color-success) !important; }
+    .card-header.bg-info { background-color: var(--color-accent) !important; }
+    .card-header.bg-warning { background-color: var(--color-warning) !important; color: var(--color-text-primary); }
+    .card-header.bg-secondary { background-color: var(--color-text-secondary) !important; }
+    .card-header.bg-dark { background-color: var(--color-text-primary) !important; }
+    
+    #molviewer {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        background-color: #f8f9fa;
+    }
+    
+    .fdf-preview {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+</style>
+{% endblock %}
 
 {% block extra_js %}
 {% load static %}
@@ -15,7 +47,7 @@
     <form method="post" enctype="multipart/form-data" id="convertForm">
         {% csrf_token %}
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Arquivo e Configurações Básicas</h4>
             </div>
@@ -55,7 +87,7 @@
         </div>
 
         <!-- Container para o Visualizador 3Dmol.js -->
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-success text-white">
                 <h4 class="mb-0">Visualização 3D da Molécula (do arquivo XYZ selecionado)</h4>
             </div>
@@ -66,7 +98,7 @@
             </div>
         </div>
 
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-success text-white">
                 <h4 class="mb-0">Parâmetros de Base e Malha</h4>
             </div>
@@ -103,7 +135,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-info text-white">
                 <h4 class="mb-0">Parâmetros de Dinâmica Molecular</h4>
             </div>
@@ -152,7 +184,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-warning">
                 <h4 class="mb-0">Parâmetros SCF e DM</h4>
             </div>
@@ -212,7 +244,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-secondary text-white">
                 <h4 class="mb-0">Funcional XC e Parâmetros de Solução</h4>
             </div>
@@ -266,7 +298,7 @@
             </div>
         </div>
         
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-dark text-white">
                 <h4 class="mb-0">Saídas e Análises</h4>
             </div>
@@ -294,7 +326,7 @@
         </div>
 
                
-        <div class="card mb-3">
+        <div class="card mb-3 parameter-card">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Constante de Rede e Vetores</h4>
             </div>
@@ -392,7 +424,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <pre id="previewContent" class="bg-light p-3" style="max-height: 70vh; overflow: auto;"></pre>
+                    <pre id="previewContent" class="bg-light p-3 fdf-preview" style="max-height: 70vh; overflow: auto;"></pre>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -413,7 +445,7 @@
                 </button>
             </div>
             <div class="card-body">
-                <pre class="bg-light p-3" style="max-height: 500px; overflow: auto;">{{ preview_content }}</pre>
+                <pre class="bg-light p-3 fdf-preview" style="max-height: 500px; overflow: auto;">{{ preview_content }}</pre>
             </div>
         </div>
     {% endif %}
