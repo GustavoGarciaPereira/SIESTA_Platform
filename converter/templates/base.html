@@ -9,52 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons (para ícones no formulário de contato e outros lugares) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* Garante que o body ocupe pelo menos a altura da tela */
-            background-color:rgb(240, 241, 243);
-            font-family: Arial, sans-serif;
-        }
-        .navbar {
-            background-color: #007bff;
-        }
-        .navbar-brand, .navbar-nav .nav-link {
-            color: white !important;
-        }
-        .navbar-nav .nav-link:hover {
-            color: #e0e0e0 !important;
-        }
-        .footer {
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            margin-top: auto; /* Empurra o rodapé para o final da página */
-        }
-        .footer a {
-            color: white;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        .container {
-            flex: 1; /* Faz com que o conteúdo principal ocupe o espaço restante */
-        }
-        input[type="checkbox"] {
-            /* Aumenta o tamanho do checkbox. Ajuste o valor 1.8 como desejar. */
-            transform: scale(1.8);
-          
-            /* Opcional, mas recomendado: Adiciona um espaço para não colar no texto. */
-            margin-right: 9px;
-            margin-left: 8px;
-          
-            /* Opcional, mas recomendado: Melhora o alinhamento vertical com o texto. */
-            vertical-align: middle;
-          }
-    </style>
+    <!-- Estilos base do projeto -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}  <!-- Bloco para CSS adicional específico de páginas -->
 </head>
 <body>
