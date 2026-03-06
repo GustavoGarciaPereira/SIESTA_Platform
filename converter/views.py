@@ -50,7 +50,16 @@ class ConvertView(View):
         Returns:
             HttpResponse: Resposta HTTP com formulário de conversão
         """
-        form = SIESTAParametersForm()
+        # Verificar se há configuração carregada na sessão
+        loaded_config = request.session.get('loaded_config')
+        if loaded_config:
+            # Criar formulário com dados da configuração carregada
+            form = SIESTAParametersForm(initial=loaded_config)
+            # Limpar a configuração da sessão após usar (opcional, mas evita reuso acidental)
+            # request.session.pop('loaded_config', None)
+            # request.session.pop('loaded_config_name', None)
+        else:
+            form = SIESTAParametersForm()
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
