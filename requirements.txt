@@ -6,6 +6,6 @@ typing_extensions
 gunicorn
 psycopg2-binary
 dj-database-url
-dotenv
+python-dotenv
 whitenoise
 Pillow
