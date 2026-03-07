@@ -1,15 +1,46 @@
-__pycache__/*.pyc
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
 *.sqlite3
-.vscode/settings.json
-*/__pycache__/__init__.cpython-38.pyc
-*/__pycache__/__init__.cpython-312.pyc
-*/__pycache__/*.*.pyc
-*/*/__pycache__/*.*.pyc
+media/
+staticfiles/
+
+# Environment
 .env
-/venv
+.env.*
+!.env.example
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
 ddddd.mmd
-.env copy
-backup2.sql
-backup3.sql
-AI/*
+backup*.sql
+AI/
 *.xyz
+.env copy
+validation_plan.md
+fix_profile_table.sql
+diagnostic_report.md
+create_converter_tables.sql
+code_audit_report.md
+audit_report_comprehensive.md
+.1
+.clinerules
+CLAUDE.md
