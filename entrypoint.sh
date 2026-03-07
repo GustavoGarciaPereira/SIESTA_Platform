@@ -38,7 +38,7 @@ else
     echo "==> Skipping superuser creation (DJANGO_SUPERUSER_USERNAME/PASSWORD not set)."
 fi
 
-WORKERS=${GUNICORN_WORKERS:-$(( $(nproc) * 2 + 1 ))}
+WORKERS=${GUNICORN_WORKERS:-2}
 TIMEOUT=${GUNICORN_TIMEOUT:-120}
 
 echo "==> Starting Gunicorn (workers=$WORKERS, timeout=${TIMEOUT}s)..."
