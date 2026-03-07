@@ -27,7 +27,6 @@ class UploadedFile(models.Model):
     class Meta:
         """Metadados do modelo UploadedFile."""
         db_table = 'converter_uploadedfile'
-        managed = False  # Tabela já existe, Django não deve gerenciá-la
 
 
 class ConversionHistory(models.Model):
@@ -70,7 +69,6 @@ class ConversionHistory(models.Model):
     class Meta:
         """Metadados do modelo ConversionHistory."""
         db_table = 'converter_conversionhistory'
-        managed = False  # Tabela já existe, Django não deve gerenciá-la
 
 
 class SavedConfiguration(models.Model):
@@ -98,5 +96,4 @@ class SavedConfiguration(models.Model):
     class Meta:
         """Metadados do modelo SavedConfiguration."""
         db_table = 'converter_savedconfiguration'
-        managed = False  # Tabela já existe, Django não deve gerenciá-la
         unique_together = [['user', 'name']]
