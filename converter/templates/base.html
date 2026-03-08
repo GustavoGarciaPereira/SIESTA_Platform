@@ -33,9 +33,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'convert' %}">Conversor</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'converter_history' %}">Histórico</a>
                     </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'about' %}">Sobre Nós</a>
                     </li>
