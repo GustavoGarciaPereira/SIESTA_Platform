@@ -1,3 +1,5 @@
+import io
+
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -6,6 +8,52 @@ import json
 
 from .models import UploadedFile, ConversionHistory, SavedConfiguration
 from .forms import SIESTAParametersForm
+from .utils import read_xyz
+
+
+def _make_xyz_file(atom_lines):
+    """Cria um objeto BytesIO simulando um arquivo XYZ a partir de linhas de átomos."""
+    n = len(atom_lines)
+    content = f"{n}\ncomentario\n" + "\n".join(atom_lines)
+    return io.BytesIO(content.encode('utf-8'))
+
+
+class ReadXyzTests(TestCase):
+    """Testes para a função read_xyz em converter/utils.py."""
+
+    def test_symbols_unchanged(self):
+        """XYZ com símbolos químicos: retorna os átomos corretamente, flag=False."""
+        file_obj = _make_xyz_file(["H  0.0  0.0  0.0", "O  1.0  0.0  0.0"])
+        atoms, detected = read_xyz(file_obj)
+        self.assertFalse(detected)
+        self.assertEqual(len(atoms), 2)
+        self.assertEqual(atoms[0][0], 'H')
+        self.assertEqual(atoms[1][0], 'O')
+
+    def test_atomic_numbers_converted(self):
+        """XYZ com números atômicos: converte para símbolos, flag=True."""
+        file_obj = _make_xyz_file(["1  0.0  0.0  0.0", "8  1.0  0.0  0.0"])
+        atoms, detected = read_xyz(file_obj)
+        self.assertTrue(detected)
+        self.assertEqual(len(atoms), 2)
+        self.assertEqual(atoms[0][0], 'H')
+        self.assertEqual(atoms[1][0], 'O')
+
+    def test_unknown_atomic_number_raises(self):
+        """Número atômico desconhecido deve levantar ValueError."""
+        file_obj = _make_xyz_file(["999  0.0  0.0  0.0"])
+        with self.assertRaises(ValueError):
+            read_xyz(file_obj)
+
+    def test_coordinates_preserved(self):
+        """As coordenadas devem ser preservadas corretamente após conversão."""
+        file_obj = _make_xyz_file(["6  1.5  2.5  3.5"])
+        atoms, detected = read_xyz(file_obj)
+        self.assertTrue(detected)
+        self.assertEqual(atoms[0][0], 'C')
+        self.assertAlmostEqual(atoms[0][1], 1.5)
+        self.assertAlmostEqual(atoms[0][2], 2.5)
+        self.assertAlmostEqual(atoms[0][3], 3.5)
 
 
 class ModelTests(TestCase):

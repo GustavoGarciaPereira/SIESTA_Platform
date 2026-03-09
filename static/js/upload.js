@@ -3,6 +3,33 @@
  * Inclui pré-visualização FDF, visualização 3D e salvamento de configurações
  */
 
+// Mapeamento número atômico → símbolo químico
+// Espelho do PT definido em converter/utils.py — manter sincronizado
+const ATOMIC_NUMBER_TO_SYMBOL = {
+    1: 'H', 6: 'C', 7: 'N', 8: 'O', 9: 'F',
+    15: 'P', 16: 'S', 17: 'Cl', 35: 'Br', 53: 'I'
+};
+
+/**
+ * Normaliza um arquivo XYZ substituindo números atômicos por símbolos químicos.
+ * O 3Dmol.js não reconhece números atômicos e lança erro ao tentar processar.
+ *
+ * @param {string} xyzData - Conteúdo bruto do arquivo XYZ
+ * @returns {string} - Conteúdo XYZ com símbolos químicos na primeira coluna
+ */
+function normalizeXYZSymbols(xyzData) {
+    return xyzData.split('\n').map((line, index) => {
+        // Linhas 0 e 1 são cabeçalho (nº de átomos e linha de comentário)
+        if (index < 2) return line;
+        const parts = line.trim().split(/\s+/);
+        if (parts.length >= 4 && /^\d+$/.test(parts[0])) {
+            const symbol = ATOMIC_NUMBER_TO_SYMBOL[parseInt(parts[0])];
+            if (symbol) parts[0] = symbol;
+        }
+        return parts.length >= 4 ? parts.join('  ') : line;
+    }).join('\n');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Script para pré-visualização FDF
     const previewButton = document.getElementById('previewButton');
@@ -75,7 +102,6 @@ function initialize3DViewer() {
     console.log('  - $3Dmol definido?', typeof $3Dmol !== 'undefined' ? '✅ Sim' : '❌ Não');
 
     if (!xyzFileElement) {
-        // Tentar encontrar por ID também
         xyzFileElement = document.getElementById('id_xyz_file');
         console.log('  - Tentando id_xyz_file:', xyzFileElement);
     }
@@ -90,9 +116,18 @@ function initialize3DViewer() {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const xyzData = e.target.result;
-                    console.log('📄 Arquivo lido, tamanho:', xyzData.length, 'caracteres');
-                    
+                    const rawXyzData = e.target.result;
+                    console.log('📄 Arquivo lido, tamanho:', rawXyzData.length, 'caracteres');
+
+                    console.log('=== RAW (primeiras 5 linhas) ===');
+                    console.log(rawXyzData.split('\n').slice(0, 7).join('\n'));
+
+                    // Normaliza números atômicos → símbolos químicos antes de passar ao 3Dmol
+                    const xyzData = normalizeXYZSymbols(rawXyzData);
+
+                    console.log('=== NORMALIZADO (primeiras 5 linhas) ===');
+                    console.log(xyzData.split('\n').slice(0, 7).join('\n'));
+
                     // Limpa o container antes de adicionar novo viewer
                     viewerContainer.innerHTML = ''; 
 
@@ -119,7 +154,6 @@ function initialize3DViewer() {
                 };
                 reader.readAsText(file);
             } else {
-                // Se nenhum arquivo for selecionado (ou for des-selecionado)
                 console.log('📭 Nenhum arquivo selecionado');
                 viewerContainer.innerHTML = '<div class="text-center p-5 text-muted">Selecione um arquivo XYZ acima para visualizar a molécula.</div>';
                 if (glviewer) {
@@ -133,7 +167,6 @@ function initialize3DViewer() {
     } else {
         if (!xyzFileElement) {
             console.error("❌ Elemento input[name='xyz_file'] ou #id_xyz_file não encontrado.");
-            // Tentar encontrar todos os inputs de arquivo
             const allFileInputs = document.querySelectorAll('input[type="file"]');
             console.log('📋 Todos os inputs de arquivo encontrados:', allFileInputs.length);
             allFileInputs.forEach((input, i) => {
@@ -162,40 +195,32 @@ function initializeSaveConfiguration() {
                 return;
             }
             
-            // Coletar todos os dados do formulário principal
             const form = document.getElementById('convertForm');
             const formData = new FormData(form);
             const params = {};
             
-            // Converter FormData para objeto JSON
             for (let [key, value] of formData.entries()) {
-                // Ignorar arquivos e CSRF token
                 if (key !== 'xyz_file' && key !== 'csrfmiddlewaretoken') {
-                    // Converter valores booleanos
                     if (value === 'on') {
                         params[key] = true;
                     } else if (value === 'off') {
                         params[key] = false;
                     } else {
-                        // Tentar converter para número se possível
                         const numValue = parseFloat(value);
                         params[key] = isNaN(numValue) ? value : numValue;
                     }
                 }
             }
             
-            // Adicionar nome e descrição
             const saveData = {
                 name: configName,
                 description: configDescription,
                 parameters: JSON.stringify(params)
             };
             
-            // Mostrar loading
             saveConfigButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
             saveConfigButton.disabled = true;
             
-            // Enviar para o servidor
             const saveUrl = saveConfigButton.dataset.url;
             if (!saveUrl) {
                 console.error('URL para salvar configuração não encontrada');
@@ -214,16 +239,11 @@ function initializeSaveConfiguration() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    // Fechar modal e mostrar mensagem de sucesso
                     if (saveConfigModalElement) {
                         const modal = bootstrap.Modal.getInstance(saveConfigModalElement);
                         if (modal) modal.hide();
                     }
-                    
-                    // Mostrar mensagem de sucesso
                     alert('Configuração salva com sucesso!');
-                    
-                    // Limpar formulário
                     saveConfigForm.reset();
                 } else {
                     alert('Erro ao salvar configuração: ' + (data.message || 'Erro desconhecido'));
@@ -234,14 +254,12 @@ function initializeSaveConfiguration() {
                 alert('Erro ao salvar configuração. Verifique sua conexão e tente novamente.');
             })
             .finally(() => {
-                // Restaurar botão
                 saveConfigButton.innerHTML = 'Salvar Configuração';
                 saveConfigButton.disabled = false;
             });
         });
     }
     
-    // Limpar formulário quando modal for fechado
     if (saveConfigModalElement) {
         saveConfigModalElement.addEventListener('hidden.bs.modal', function() {
             if (saveConfigForm) {
@@ -256,12 +274,10 @@ if (typeof $3Dmol !== 'undefined') {
     // Já inicializado no DOMContentLoaded
 } else {
     console.log('⏳ 3Dmol.js ainda não carregado, aguardando...');
-    // Tentar novamente após um delay
     setTimeout(function() {
         if (typeof $3Dmol !== 'undefined') {
             const viewerContainer = document.getElementById('molviewer');
             if (viewerContainer && viewerContainer.innerHTML.includes('Selecione um arquivo')) {
-                // Re-inicializar se necessário
                 initialize3DViewer();
             }
         } else {

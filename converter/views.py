@@ -85,7 +85,14 @@ class ConvertView(View):
             system_name = xyz_file.name.rsplit('.', 1)[0]
 
         # Converte o arquivo
-        fdf_content, unique_species = convert_xyz_to_fdf(xyz_file, system_name, params, self.PT)
+        fdf_content, unique_species, atomic_numbers_detected = convert_xyz_to_fdf(xyz_file, system_name, params, self.PT)
+
+        if atomic_numbers_detected:
+            messages.warning(
+                request,
+                "Números atômicos detectados no arquivo XYZ. "
+                "Eles foram automaticamente convertidos para símbolos químicos."
+            )
 
         # Registrar histórico se usuário estiver autenticado
         conversion_history = None

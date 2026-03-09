@@ -15,35 +15,51 @@ from django.utils.text import slugify
 # Tabela periódica mínima (principais elementos para biomoléculas)
 PT = {'H': 1, 'C': 6, 'N': 7, 'O': 8, 'F': 9, 'P': 15, 'S': 16, 'Cl': 17, 'Br': 35, 'I': 53}
 
+# Lookup reverso: número atômico → símbolo (derivado de PT, sem hardcoding)
+ATOMIC_NUMBER_TO_SYMBOL = {v: k for k, v in PT.items()}
+
 
 def read_xyz(file_obj):
     """Lê um arquivo XYZ e retorna uma lista de tuplas (símbolo, x, y, z).
-    
+
+    Detecta automaticamente se a primeira coluna contém números atômicos em vez de
+    símbolos químicos e os converte.
+
     Args:
         file_obj: Objeto de arquivo ou similar a arquivo contendo dados XYZ
-        
+
     Returns:
-        list: Lista de tuplas no formato [(símbolo, x, y, z), ...]
-        
+        tuple: (atoms, atomic_numbers_detected)
+            - atoms: Lista de tuplas no formato [(símbolo, x, y, z), ...]
+            - atomic_numbers_detected: True se a entrada usava números atômicos
+
     Raises:
-        ValueError: Se o formato do arquivo for inválido
+        ValueError: Se o formato do arquivo for inválido ou número atômico desconhecido
     """
     # Decodifica cada linha para texto
     lines = [line.decode('utf-8').strip() for line in file_obj]
 
     n = int(lines[0])  # Número de átomos
-    comment = lines[1]  # Linha de comentário
     atoms = []
+    atomic_numbers_detected = False
 
     for i in range(2, 2 + n):
         if i < len(lines) and lines[i].strip():
             parts = lines[i].split()
             if len(parts) >= 4:
-                symbol = parts[0]
+                symbol_or_number = parts[0]
+                if symbol_or_number.isdigit():
+                    atomic_number = int(symbol_or_number)
+                    if atomic_number not in ATOMIC_NUMBER_TO_SYMBOL:
+                        raise ValueError(f"Número atômico desconhecido: {atomic_number}")
+                    symbol = ATOMIC_NUMBER_TO_SYMBOL[atomic_number]
+                    atomic_numbers_detected = True
+                else:
+                    symbol = symbol_or_number
                 x, y, z = map(float, parts[1:4])
                 atoms.append((symbol, x, y, z))
 
-    return atoms
+    return atoms, atomic_numbers_detected
 
 
 def bounding_box(atoms):
@@ -81,8 +97,8 @@ def convert_xyz_to_fdf(xyz_file, system_name, params, pt_table=None):
     if hasattr(xyz_file, 'seek'):
         xyz_file.seek(0)
 
-    atoms = read_xyz(xyz_file)
-    
+    atoms, atomic_numbers_detected = read_xyz(xyz_file)
+
     # Simplifiquei a identificação de espécies
     unique_species = sorted(list(set(atom[0] for atom in atoms)))
 
@@ -157,8 +173,8 @@ def convert_xyz_to_fdf(xyz_file, system_name, params, pt_table=None):
     output.write(f"ElectronicTemperature  {params.get('ElectronicTemperature', 80)} meV\n")
     output.write(f"DM.Tolerance    {params.get('DM_Tolerance', 1.0E-3):.8E}\n")
 
-    # Retorna o conteúdo e a lista de espécies
-    return output.getvalue(), unique_species
+    # Retorna o conteúdo, a lista de espécies e o flag de detecção de números atômicos
+    return output.getvalue(), unique_species, atomic_numbers_detected
 
 
 def create_zip_archive(request, fdf_content, system_name, unique_species):
