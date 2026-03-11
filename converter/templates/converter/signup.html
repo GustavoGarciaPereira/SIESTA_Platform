@@ -32,7 +32,15 @@
         font-size: 0.8125rem;
         color: var(--color-text-secondary);
         margin-bottom: 0.25rem;
+        transition: color 0.2s ease;
+        list-style: none;
     }
+
+    .req-neutral { color: #6c757d; }
+    .req-valid   { color: #198754; }
+    .req-invalid { color: #dc3545; }
+
+    .req-icon { margin-right: 0.4rem; }
 </style>
 {% endblock %}
 
@@ -120,11 +128,19 @@
                             </div>
                             {% endif %}
                             <div class="password-requirements">
-                                <ul class="ps-3 mb-0">
-                                    <li>Sua senha não pode ser muito similar às suas outras informações pessoais.</li>
-                                    <li>Sua senha deve conter pelo menos 8 caracteres.</li>
-                                    <li>Sua senha não pode ser uma senha comumente utilizada.</li>
-                                    <li>Sua senha não pode ser inteiramente numérica.</li>
+                                <ul class="ps-0 mb-0" id="password-requirements-list">
+                                    <li id="req-similar" class="req-neutral">
+                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha não pode ser muito similar ao nome de usuário ou e-mail.
+                                    </li>
+                                    <li id="req-length" class="req-neutral">
+                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha deve conter pelo menos 8 caracteres.
+                                    </li>
+                                    <li id="req-common" class="req-neutral">
+                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha não pode ser uma senha comumente utilizada.
+                                    </li>
+                                    <li id="req-numeric" class="req-neutral">
+                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha não pode ser inteiramente numérica.
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -178,4 +194,75 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const passwordInput  = document.getElementById('id_password1');
+    const usernameInput  = document.getElementById('id_username');
+    const emailInput     = document.getElementById('id_email');
+
+    const reqSimilar = document.getElementById('req-similar');
+    const reqLength  = document.getElementById('req-length');
+    const reqCommon  = document.getElementById('req-common');
+    const reqNumeric = document.getElementById('req-numeric');
+
+    function setReq(el, state) {
+        // state: 'neutral' | 'valid' | 'invalid'
+        el.classList.remove('req-neutral', 'req-valid', 'req-invalid');
+        const icons   = { neutral: '⚪', valid: '✅', invalid: '❌' };
+        const classes = { neutral: 'req-neutral', valid: 'req-valid', invalid: 'req-invalid' };
+        el.classList.add(classes[state]);
+        el.querySelector('.req-icon').textContent = icons[state];
+    }
+
+    function isSimilar(password, reference) {
+        if (!reference || reference.length < 3) return false;
+        const pw  = password.toLowerCase();
+        const ref = reference.toLowerCase();
+        if (pw.includes(ref) || ref.includes(pw)) return true;
+        // check substrings of length >= 4
+        for (let i = 0; i <= ref.length - 4; i++) {
+            if (pw.includes(ref.substring(i, i + 4))) return true;
+        }
+        return false;
+    }
+
+    function validate() {
+        const password = passwordInput.value;
+
+        if (password.length === 0) {
+            setReq(reqSimilar, 'neutral');
+            setReq(reqLength,  'neutral');
+            setReq(reqCommon,  'neutral');
+            setReq(reqNumeric, 'neutral');
+            return;
+        }
+
+        // Commonly used — cannot be checked on the frontend; assume valid while typing
+        setReq(reqCommon, 'valid');
+
+        // Length check
+        setReq(reqLength, password.length >= 8 ? 'valid' : 'invalid');
+
+        // Entirely numeric check
+        setReq(reqNumeric, /^\d+$/.test(password) ? 'invalid' : 'valid');
+
+        // Similarity check (frontend approximation using username and email local part)
+        const username  = usernameInput ? usernameInput.value : '';
+        const emailFull = emailInput    ? emailInput.value    : '';
+        const emailLocal = emailFull.split('@')[0];
+
+        const similar = isSimilar(password, username) || isSimilar(password, emailLocal);
+        setReq(reqSimilar, similar ? 'invalid' : 'valid');
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener('input', validate);
+        if (usernameInput) usernameInput.addEventListener('input', validate);
+        if (emailInput)    emailInput.addEventListener('input', validate);
+    }
+}());
+</script>
 {% endblock %}
