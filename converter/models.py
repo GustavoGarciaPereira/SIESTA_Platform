@@ -53,7 +53,7 @@ class ConversionHistory(models.Model):
         ('failed', 'Failed'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversions', db_column='user_id')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='conversions', db_column='user_id')
     uploaded_file = models.ForeignKey('UploadedFile', on_delete=models.SET_NULL, null=True, blank=True, db_column='uploaded_file_id')
     original_filename = models.CharField(max_length=255)
     system_name = models.CharField(max_length=255)

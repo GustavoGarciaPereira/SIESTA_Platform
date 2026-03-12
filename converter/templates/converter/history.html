@@ -9,30 +9,40 @@
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    
+
     .history-table thead {
         background-color: var(--color-primary);
         color: white;
     }
-    
+
     .history-table th {
         font-weight: 600;
         border: none;
     }
-    
+
     .history-table td {
         vertical-align: middle;
     }
-    
+
     .badge {
         font-size: 0.75rem;
         font-weight: 500;
         padding: 0.25rem 0.5rem;
     }
-    
+
     .btn-group .btn {
         padding: 0.25rem 0.5rem;
         font-size: 0.875rem;
+    }
+
+    .parameters-pre {
+        font-family: var(--font-mono, monospace);
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        max-height: 350px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
     }
 </style>
 {% endblock %}
@@ -40,7 +50,7 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Meu Histórico de Conversões</h2>
-    
+
     {% if messages %}
     <div class="messages">
         {% for message in messages %}
@@ -51,20 +61,25 @@
         {% endfor %}
     </div>
     {% endif %}
-    
+
     <div class="mb-3">
+        <a href="{% url 'convert' %}" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Voltar para Conversão
+        </a>
         <a href="{% url 'my_configurations' %}" class="btn btn-secondary">
             <i class="bi bi-gear-fill"></i> Minhas Configurações
         </a>
     </div>
-    
+
     {% if conversions %}
         <div class="table-responsive history-table">
             <table class="table table-striped table-hover mb-0">
                 <thead>
                     <tr>
+                        <th>Arquivo</th>
                         <th>Sistema</th>
                         <th>Data</th>
+                        <th>Tamanho</th>
                         <th>Status</th>
                         <th>Downloads</th>
                         <th>Ações</th>
@@ -73,8 +88,10 @@
                 <tbody>
                     {% for conv in conversions %}
                     <tr>
+                        <td><small class="text-muted">{{ conv.original_filename }}</small></td>
                         <td>{{ conv.system_name }}</td>
                         <td>{{ conv.conversion_date|date:"d/m/Y H:i" }}</td>
+                        <td><small>{{ conv.file_size|filesizeformat }}</small></td>
                         <td>
                             {% if conv.status == 'completed' %}
                                 <span class="badge bg-success">Concluído</span>
@@ -89,12 +106,49 @@
                         <td>{{ conv.download_count }}</td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'download_fdf' conv.id %}" class="btn btn-sm btn-primary">
+                                <a href="{% url 'download_fdf' conv.id %}" class="btn btn-sm btn-primary" title="Baixar FDF">
                                     <i class="bi bi-download"></i> FDF
                                 </a>
-                                <a href="{% url 'download_pseudos' conv.id %}" class="btn btn-sm btn-secondary">
-                                    <i class="bi bi-file-zip"></i> Pseudos
+                                <button type="button" class="btn btn-sm btn-info" title="Ver parâmetros"
+                                        data-bs-toggle="modal" data-bs-target="#paramsModal{{ conv.id }}">
+                                    <i class="bi bi-sliders"></i>
+                                </button>
+                                <a href="{% url 'delete_history' conv.id %}"
+                                   class="btn btn-sm btn-danger" title="Excluir"
+                                   onclick="return confirm('Tem certeza que deseja excluir esta entrada do histórico?')">
+                                    <i class="bi bi-trash"></i>
                                 </a>
+                            </div>
+
+                            <!-- Modal de parâmetros -->
+                            <div class="modal fade" id="paramsModal{{ conv.id }}" tabindex="-1"
+                                 aria-labelledby="paramsModalLabel{{ conv.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="paramsModalLabel{{ conv.id }}">
+                                                Parâmetros: {{ conv.system_name }}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p><strong>Arquivo:</strong> {{ conv.original_filename }}</p>
+                                            <p><strong>Data:</strong> {{ conv.conversion_date|date:"d/m/Y H:i" }}</p>
+                                            <h6>Parâmetros SIESTA:</h6>
+                                            <div class="card">
+                                                <div class="card-body p-2">
+                                                    <pre class="mb-0 parameters-pre">{{ conv.parameters|pprint }}</pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            <a href="{% url 'download_fdf' conv.id %}" class="btn btn-primary">
+                                                <i class="bi bi-download"></i> Baixar FDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -102,9 +156,9 @@
                 </tbody>
             </table>
         </div>
-        
+
         {% if conversions.has_other_pages %}
-        <nav aria-label="Page navigation">
+        <nav aria-label="Page navigation" class="mt-3">
             <ul class="pagination justify-content-center">
                 {% if conversions.has_previous %}
                 <li class="page-item">
@@ -115,7 +169,7 @@
                     <span class="page-link">Anterior</span>
                 </li>
                 {% endif %}
-                
+
                 {% for i in conversions.paginator.page_range %}
                     {% if conversions.number == i %}
                     <li class="page-item active">
@@ -127,7 +181,7 @@
                     </li>
                     {% endif %}
                 {% endfor %}
-                
+
                 {% if conversions.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ conversions.next_page_number }}">Próxima</a>

@@ -5,14 +5,14 @@ import json
 import logging
 import os
 import zipfile
-from datetime import datetime
-
 # Django imports
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.utils.text import slugify
 from django.views import View
 
@@ -94,16 +94,16 @@ class ConvertView(View):
                 "Eles foram automaticamente convertidos para símbolos químicos."
             )
 
-        # Registrar histórico se usuário estiver autenticado
+        # Registrar histórico (para usuários autenticados e anônimos)
         conversion_history = None
-        if request.user.is_authenticated:
-            try:
+        try:
+            uploaded = None
+            if request.user.is_authenticated:
                 # Calcular checksum do conteúdo
                 xyz_file.seek(0)
                 content = xyz_file.read().decode('utf-8')
                 checksum = hashlib.sha256(content.encode()).hexdigest()
-                
-                # 1. Criar registro do arquivo enviado
+
                 uploaded = UploadedFile.objects.create(
                     user=request.user,
                     file=xyz_file,
@@ -111,32 +111,38 @@ class ConvertView(View):
                     file_type='xyz',
                     size=xyz_file.size,
                     checksum=checksum,
-                    upload_date=datetime.now(),
+                    upload_date=timezone.now(),
                     is_temp=False
                 )
-                
-                # 2. Salvar histórico
-                conversion_history = ConversionHistory.objects.create(
-                    user=request.user,
-                    uploaded_file=uploaded,
-                    original_filename=xyz_file.name,
-                    system_name=system_name,
-                    fdf_content=fdf_content,
-                    parameters=params,
-                    conversion_date=datetime.now(),
-                    completion_date=datetime.now(),
-                    file_size=xyz_file.size,
-                    status='completed',
-                    error_message='',
-                    download_count=0
-                )
-                
-                # Guardar o ID da conversão na sessão para uso posterior
+
+            # Serializar parâmetros excluindo campos não serializáveis (ex: InMemoryUploadedFile)
+            serializable_params = {
+                k: v for k, v in params.items()
+                if isinstance(v, (str, int, float, bool, list, dict, type(None)))
+            }
+
+            now = timezone.now()
+            conversion_history = ConversionHistory.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                uploaded_file=uploaded,
+                original_filename=xyz_file.name,
+                system_name=system_name,
+                fdf_content=fdf_content,
+                parameters=serializable_params,
+                conversion_date=now,
+                completion_date=now,
+                file_size=xyz_file.size,
+                status='completed',
+                error_message='',
+                download_count=0
+            )
+
+            if request.user.is_authenticated:
                 request.session['last_conversion_id'] = conversion_history.id
-                
-            except Exception as e:
-                # Log do erro, mas não interrompe o fluxo principal
-                logger.error(f"Erro ao registrar histórico: {e}")
+
+        except Exception as e:
+            # Log do erro, mas não interrompe o fluxo principal
+            logger.error(f"Erro ao registrar histórico: {e}")
 
         if 'preview' in request.POST:
             # Lógica de preview permanece a mesma
@@ -168,7 +174,10 @@ class ConvertView(View):
 @login_required
 def history_view(request):
     """View para exibir o histórico de conversões do usuário."""
-    conversions = ConversionHistory.objects.filter(user=request.user).order_by('-conversion_date')
+    qs = ConversionHistory.objects.filter(user=request.user).order_by('-conversion_date')
+    paginator = Paginator(qs, 10)
+    page_number = request.GET.get('page')
+    conversions = paginator.get_page(page_number)
     return render(request, 'converter/history.html', {'conversions': conversions})
 
 
@@ -188,6 +197,15 @@ def download_fdf(request, conv_id):
     conv.save()
     
     return response
+
+
+@login_required
+def delete_history(request, conv_id):
+    """View para excluir uma entrada do histórico de conversões."""
+    conv = get_object_or_404(ConversionHistory, id=conv_id, user=request.user)
+    conv.delete()
+    messages.success(request, 'Entrada do histórico excluída com sucesso.')
+    return redirect('converter_history')
 
 
 @login_required
@@ -261,8 +279,8 @@ def save_configuration(request):
                 description=description,
                 parameters=params_dict,
                 is_default=False,
-                created_at=datetime.now(),
-                last_used=datetime.now(),
+                created_at=timezone.now(),
+                last_used=timezone.now(),
                 use_count=0
             )
             
@@ -289,7 +307,7 @@ def load_configuration(request, config_id):
     
     # Atualizar contador de uso
     config.use_count += 1
-    config.last_used = datetime.now()
+    config.last_used = timezone.now()
     config.save()
     
     # Armazenar configuração na sessão
