@@ -23,6 +23,9 @@ class UserProfile(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
     class Meta:
         """Metadados do modelo UserProfile."""
         db_table = 'user_userprofile'

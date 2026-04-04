@@ -44,3 +44,8 @@ audit_report_comprehensive.md
 .1
 .clinerules
 CLAUDE.md
+
+# OpenClaude
+.ai/.env
+.ai/*
+integrate-openclaude.sh

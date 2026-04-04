@@ -242,12 +242,13 @@ def download_pseudos(request, conv_id):
         zip_file.writestr(fdf_filename, conv.fdf_content)
         
         # Adicionar pseudopotenciais
-        pseudos_dir = settings.PSEUDOPOTENTIALS_DIR if hasattr(settings, 'PSEUDOPOTENTIALS_DIR') else 'pseudos'
-        for el in elements:
-            pseudo_filename = f"{el}.lda.psf"
-            pseudo_path = os.path.join(pseudos_dir, pseudo_filename)
-            if os.path.exists(pseudo_path):
-                zip_file.write(pseudo_path, arcname=pseudo_filename)
+        pseudos_dir = settings.PSEUDOPOTENTIALS_DIR if hasattr(settings, 'PSEUDOPOTENTIALS_DIR') else None
+        if pseudos_dir:
+            for el in elements:
+                pseudo_filename = f"{el}.lda.psf"
+                pseudo_path = os.path.join(pseudos_dir, pseudo_filename)
+                if os.path.exists(pseudo_path):
+                    zip_file.write(pseudo_path, arcname=pseudo_filename)
     
     zip_buffer.seek(0)
     response = HttpResponse(zip_buffer, content_type='application/zip')

@@ -99,6 +99,9 @@ def convert_xyz_to_fdf(xyz_file, system_name, params, pt_table=None):
 
     atoms, atomic_numbers_detected = read_xyz(xyz_file)
 
+    if not atoms:
+        raise ValueError("O arquivo XYZ está vazio ou não contém átomos.")
+
     # Simplifiquei a identificação de espécies
     unique_species = sorted(list(set(atom[0] for atom in atoms)))
 
