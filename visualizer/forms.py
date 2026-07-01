@@ -1,6 +1,7 @@
 """Formulários do app visualizer."""
 
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from .models import OutFile
 
@@ -18,16 +19,16 @@ class OutFileForm(forms.ModelForm):
             "system_name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ex: Molecula_H2O",
+                    "placeholder": _("Ex: Molecula_H2O"),
                 }
             ),
         }
         labels = {
-            "file": "Arquivo .out do SIESTA",
-            "system_name": "Nome do sistema (opcional)",
+            "file": _("Arquivo .out do SIESTA"),
+            "system_name": _("Nome do sistema (opcional)"),
         }
         help_texts = {
-            "file": (
+            "file": _(
                 "Selecione um arquivo de saída (.out) do SIESTA. "
                 "Deve conter as seções 'Atomic coordinates (Ang)' "
                 "e 'Mulliken populations'."
@@ -40,10 +41,10 @@ class OutFileForm(forms.ModelForm):
             ext = f.name.rsplit(".", 1)[-1].lower() if "." in f.name else ""
             if ext not in ("out", "txt"):
                 raise forms.ValidationError(
-                    "Apenas arquivos .out ou .txt são permitidos."
+                    _("Apenas arquivos .out ou .txt são permitidos.")
                 )
             if f.size > 10 * 1024 * 1024:
                 raise forms.ValidationError(
-                    "Arquivo muito grande. Limite: 10 MB."
+                    _("Arquivo muito grande. Limite: 10 MB.")
                 )
         return f

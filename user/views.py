@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views.generic import CreateView, TemplateView
 from django.utils.decorators import method_decorator
 
@@ -22,11 +23,10 @@ def contact_submit_view(request):
         # Lógica de processamento (ex: enviar email, salvar no DB) iria aqui.
         # Por enquanto, apenas simulamos o sucesso.
         
-        messages.success(request, 'Sua mensagem foi "enviada" com sucesso! Entraremos em contato em breve (esta é uma simulação).')
-        return redirect('contact') # Redireciona de volta para a página de contato
+        messages.success(request, _('Sua mensagem foi enviada com sucesso! Entraremos em contato em breve.'))
+        return redirect('contact')
 
-    # Se não for POST, redireciona para a página de contato (ou pode mostrar um erro)
-    messages.error(request, 'Método inválido para esta ação.')
+    messages.error(request, _('Método inválido para esta ação.'))
     return redirect('contact')
 
 
@@ -92,7 +92,7 @@ def profile_view(request):
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Perfil atualizado com sucesso!')
+            messages.success(request, _('Perfil atualizado com sucesso!'))
             return redirect('profile')
     else:
         form = UserProfileForm(instance=profile)

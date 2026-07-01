@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.text import slugify
+from django.utils.translation import gettext as _
 
 # Local imports
 from .periodic_table import SYMBOL_TO_ATOMIC_NUMBER as PT, ATOMIC_NUMBER_TO_SYMBOL
@@ -191,7 +192,8 @@ def create_zip_archive(request, fdf_content, system_name, unique_species):
     """
     # Verifica se o diretório de pseudopotenciais foi configurado
     if not hasattr(settings, 'PSEUDOPOTENTIALS_DIR') or not os.path.isdir(settings.PSEUDOPOTENTIALS_DIR):
-        messages.error(request, "O diretório de pseudopotenciais não está configurado no servidor. Apenas o arquivo .fdf será baixado.")
+        messages.error(request, _("O diretório de pseudopotenciais não está configurado no servidor. "
+                                   "Apenas o arquivo .fdf será baixado."))
         response = HttpResponse(fdf_content, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename="{slugify(system_name)}.fdf"'
         return response
@@ -215,7 +217,9 @@ def create_zip_archive(request, fdf_content, system_name, unique_species):
                 zip_f.write(pseudo_path, arcname=pseudo_filename)
             else:
                 # Informa ao usuário que um arquivo .psf não foi encontrado
-                messages.warning(request, f"Aviso: O arquivo de pseudopotencial '{pseudo_filename}' não foi encontrado no servidor e não foi incluído no .zip.")
+                messages.warning(request, _("Aviso: O arquivo de pseudopotencial '%(name)s' "
+                                             "não foi encontrado no servidor e não foi incluído no .zip.")
+                                 % {'name': pseudo_filename})
 
     # Prepara a resposta HTTP para o arquivo ZIP
     zip_buffer.seek(0)

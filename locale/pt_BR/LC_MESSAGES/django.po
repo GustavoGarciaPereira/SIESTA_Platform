@@ -1,0 +1,400 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-01 21:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: converter/forms.py:9
+msgid "Incluir arquivos de pseudopotencial (.psf) no download"
+msgstr "Incluir arquivos de pseudopotencial (.psf) no download"
+
+#: converter/forms.py:13
+msgid ""
+"Se marcado, o download será um arquivo .zip contendo o .fdf e os arquivos ."
+"psf necessários."
+msgstr ""
+
+#: converter/forms.py:19
+msgid "LatticeConstant (Ang)"
+msgstr "LatticeConstant (Ang)"
+
+#: converter/forms.py:22
+msgid ""
+"Valor da constante de rede em Angstroms. Os vetores da rede (abaixo) são "
+"multiplicados por este valor pelo SIESTA."
+msgstr ""
+
+#: converter/forms.py:27
+msgid "Tamanho da Célula X (para Vetor A: [X, 0, 0])"
+msgstr "Tamanho da Célula X (para Vetor A: [X, 0, 0])"
+
+#: converter/forms.py:30
+msgid ""
+"Componente X do primeiro vetor da rede (A_x). Valor adimensional, "
+"multiplicado pela LatticeConstant."
+msgstr ""
+
+#: converter/forms.py:35
+msgid "Tamanho da Célula Y (para Vetor B: [0, Y, 0])"
+msgstr "Tamanho da Célula Y (para Vetor B: [0, Y, 0])"
+
+#: converter/forms.py:38
+msgid ""
+"Componente Y do segundo vetor da rede (B_y). Valor adimensional, "
+"multiplicado pela LatticeConstant."
+msgstr ""
+
+#: converter/forms.py:43
+msgid "Tamanho da Célula Z (para Vetor C: [0, 0, Z])"
+msgstr "Tamanho da Célula Z (para Vetor C: [0, 0, Z])"
+
+#: converter/forms.py:46
+msgid ""
+"Componente Z do terceiro vetor da rede (C_z). Valor adimensional, "
+"multiplicado pela LatticeConstant."
+msgstr ""
+
+#: converter/forms.py:51
+msgid "Arquivo XYZ"
+msgstr "Arquivo XYZ"
+
+#: converter/forms.py:53
+msgid "Nome do Sistema"
+msgstr "Nome do Sistema"
+
+#: converter/forms.py:55
+msgid "Deixe em branco para usar o nome do arquivo"
+msgstr "Deixe em branco para usar o nome do arquivo"
+
+#: converter/forms.py:58
+msgid "Espaçamento de borda (Å)"
+msgstr "Espaçamento de borda (Å)"
+
+#: converter/forms.py:64
+msgid "PAO.BasisSize"
+msgstr "PAO.BasisSize"
+
+#: converter/forms.py:69
+msgid "PAO.EnergyShift (eV)"
+msgstr "PAO.EnergyShift (eV)"
+
+#: converter/forms.py:72
+msgid "Valor em eV"
+msgstr "Valor em eV"
+
+#: converter/forms.py:76
+msgid "MD.TypeOfRun"
+msgstr "MD.TypeOfRun"
+
+#: converter/forms.py:87
+msgid "MD.NumCGsteps"
+msgstr "MD.NumCGsteps"
+
+#: converter/forms.py:90
+msgid "MD.MaxForceTol (eV/Ang)"
+msgstr "MD.MaxForceTol (eV/Ang)"
+
+#: converter/forms.py:94
+msgid "MaxSCFIterations"
+msgstr "MaxSCFIterations"
+
+#: converter/forms.py:97
+msgid "SpinPolarized"
+msgstr "SpinPolarized"
+
+#: converter/forms.py:100
+msgid "MeshCutoff (Ry)"
+msgstr "MeshCutoff (Ry)"
+
+#: converter/forms.py:104
+msgid "DM.UseSaveDM"
+msgstr "DM.UseSaveDM"
+
+#: converter/forms.py:107
+msgid "UseSaveData"
+msgstr "UseSaveData"
+
+#: converter/forms.py:110
+msgid "MD.UseSaveXV"
+msgstr "MD.UseSaveXV"
+
+#: converter/forms.py:113
+msgid "MD.UseSaveCG"
+msgstr "MD.UseSaveCG"
+
+#: converter/forms.py:116
+msgid "DM.MixingWeight"
+msgstr "DM.MixingWeight"
+
+#: converter/forms.py:119
+msgid "DM.NumberPulay"
+msgstr "DM.NumberPulay"
+
+#: converter/forms.py:122
+msgid "DM.Tolerance"
+msgstr "DM.Tolerance"
+
+#: converter/forms.py:124
+msgid "Valor em formato científico (ex: 1.0E-3)"
+msgstr "Valor em formato científico (ex: 1.0E-3)"
+
+#: converter/forms.py:128
+msgid "WriteCoorXmol"
+msgstr "WriteCoorXmol"
+
+#: converter/forms.py:131
+msgid "WriteMullikenPop"
+msgstr "WriteMullikenPop"
+
+#: converter/forms.py:135
+msgid "XC.functional"
+msgstr "XC.functional"
+
+#: converter/forms.py:140
+msgid "XC.authors"
+msgstr "XC.authors"
+
+#: converter/forms.py:152
+msgid "SolutionMethod"
+msgstr "SolutionMethod"
+
+#: converter/forms.py:157
+msgid "ElectronicTemperature (meV)"
+msgstr "ElectronicTemperature (meV)"
+
+#: converter/forms.py:160
+msgid "Valor em meV"
+msgstr "Valor em meV"
+
+#: converter/templates/base.html:26
+msgid "Alternar navegação"
+msgstr "Alternar navegação"
+
+#: converter/templates/base.html:32 converter/templates/base.html:124
+msgid "Início"
+msgstr "Início"
+
+#: converter/templates/base.html:35
+msgid "Conversor"
+msgstr "Conversor"
+
+#: converter/templates/base.html:39
+msgid "Histórico"
+msgstr "Histórico"
+
+#: converter/templates/base.html:43 converter/templates/base.html:125
+msgid "Sobre Nós"
+msgstr "Sobre Nós"
+
+#: converter/templates/base.html:46 converter/templates/base.html:126
+msgid "Contato"
+msgstr "Contato"
+
+#: converter/templates/base.html:75
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: converter/templates/base.html:79
+msgid "Minhas Configurações"
+msgstr "Minhas Configurações"
+
+#: converter/templates/base.html:83
+msgid "Visualizar .out"
+msgstr "Visualizar .out"
+
+#: converter/templates/base.html:87
+msgid "Olá"
+msgstr "Olá"
+
+#: converter/templates/base.html:90
+msgid "Logout"
+msgstr "Logout"
+
+#: converter/templates/base.html:94
+msgid "Login"
+msgstr "Login"
+
+#: converter/templates/base.html:97
+msgid "Criar Conta"
+msgstr "Criar Conta"
+
+#: converter/templates/base.html:111
+msgid "Fechar"
+msgstr "Fechar"
+
+#: converter/templates/base.html:127
+msgid "Termos de Serviço"
+msgstr "Termos de Serviço"
+
+#: converter/templates/base.html:128
+msgid "Política de Privacidade"
+msgstr "Política de Privacidade"
+
+#: converter/templates/base.html:130
+msgid "Todos os direitos reservados."
+msgstr "Todos os direitos reservados."
+
+#: converter/utils.py:195
+msgid ""
+"O diretório de pseudopotenciais não está configurado no servidor. Apenas o "
+"arquivo .fdf será baixado."
+msgstr ""
+
+#: converter/utils.py:220
+#, python-format
+msgid ""
+"Aviso: O arquivo de pseudopotencial '%(name)s' não foi encontrado no "
+"servidor e não foi incluído no .zip."
+msgstr ""
+
+#: converter/views.py:98
+#, python-format
+msgid ""
+"Dimensão X da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
+"%(mol).1f Å + padding: %(pad).1f Å)."
+msgstr ""
+
+#: converter/views.py:104
+#, python-format
+msgid ""
+"Dimensão Y da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
+"%(mol).1f Å + padding: %(pad).1f Å)."
+msgstr ""
+
+#: converter/views.py:110
+#, python-format
+msgid ""
+"Dimensão Z da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
+"%(mol).1f Å + padding: %(pad).1f Å)."
+msgstr ""
+
+#: converter/views.py:121
+msgid ""
+"Números atômicos detectados no arquivo XYZ. Eles foram automaticamente "
+"convertidos para símbolos químicos."
+msgstr ""
+
+#: converter/views.py:235
+msgid "Entrada do histórico excluída com sucesso."
+msgstr "Entrada do histórico excluída com sucesso."
+
+#: converter/views.py:334
+#, python-format
+msgid "Configuração \"%(name)s\" carregada com sucesso!"
+msgstr "Configuração \"%(name)s\" carregada com sucesso!"
+
+#: converter/views.py:345
+#, python-format
+msgid "Configuração \"%(name)s\" excluída com sucesso!"
+msgstr "Configuração \"%(name)s\" excluída com sucesso!"
+
+#: user/forms.py:13
+msgid "Email"
+msgstr "Email"
+
+#: user/forms.py:15
+msgid "seu.email@exemplo.com"
+msgstr "seu.email@exemplo.com"
+
+#: user/forms.py:21
+msgid "Nome de usuário"
+msgstr "Nome de usuário"
+
+#: user/forms.py:22
+msgid "Senha"
+msgstr "Senha"
+
+#: user/forms.py:23
+msgid "Confirme a senha"
+msgstr "Confirme a senha"
+
+#: user/forms.py:48
+msgid "Este email já está em uso."
+msgstr "Este email já está em uso."
+
+#: user/forms.py:67
+msgid "Instituição"
+msgstr "Instituição"
+
+#: user/forms.py:68
+msgid "Área de Pesquisa"
+msgstr "Área de Pesquisa"
+
+#: user/forms.py:69
+msgid "Foto de Perfil"
+msgstr "Foto de Perfil"
+
+#: user/forms.py:72
+msgid "Envie uma imagem para seu perfil (opcional)"
+msgstr "Envie uma imagem para seu perfil (opcional)"
+
+#: user/views.py:26
+msgid "Sua mensagem foi enviada com sucesso! Entraremos em contato em breve."
+msgstr "Sua mensagem foi enviada com sucesso! Entraremos em contato em breve."
+
+#: user/views.py:29
+msgid "Método inválido para esta ação."
+msgstr "Método inválido para esta ação."
+
+#: user/views.py:95
+msgid "Perfil atualizado com sucesso!"
+msgstr "Perfil atualizado com sucesso!"
+
+#: visualizer/forms.py:22
+msgid "Ex: Molecula_H2O"
+msgstr "Ex: Molecula_H2O"
+
+#: visualizer/forms.py:27
+msgid "Arquivo .out do SIESTA"
+msgstr "Arquivo .out do SIESTA"
+
+#: visualizer/forms.py:28
+msgid "Nome do sistema (opcional)"
+msgstr "Nome do sistema (opcional)"
+
+#: visualizer/forms.py:32
+msgid ""
+"Selecione um arquivo de saída (.out) do SIESTA. Deve conter as seções "
+"'Atomic coordinates (Ang)' e 'Mulliken populations'."
+msgstr ""
+
+#: visualizer/forms.py:44
+msgid "Apenas arquivos .out ou .txt são permitidos."
+msgstr "Apenas arquivos .out ou .txt são permitidos."
+
+#: visualizer/forms.py:48
+msgid "Arquivo muito grande. Limite: 10 MB."
+msgstr "Arquivo muito grande. Limite: 10 MB."
+
+#: visualizer/templates/visualizer/visualize.html:5
+msgid "SIESTA 3D"
+msgstr "SIESTA 3D"
+
+#: visualizer/templates/visualizer/visualize.html:5
+msgid "Visualização"
+msgstr "Visualização"
+
+#: visualizer/templates/visualizer/visualize.html:38
+msgid "Novo Upload"
+msgstr "Novo Upload"
+
+#: visualizer/templates/visualizer/visualize.html:56
+msgid "Renderizar 3D"
+msgstr "Renderizar 3D"
+
+#: visualizer/templates/visualizer/visualize.html:59
+msgid "Traçar Linhas"
+msgstr "Traçar Linhas"

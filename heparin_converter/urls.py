@@ -23,9 +23,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('converter/', include('converter.urls')),  # Inclua as URLs do aplicativo converter
-    path('', include('user.urls')),  # Inclua as URLs do aplicativo converter
-    path('dashboard/', include('dashboard.urls')),  # Inclua as URLs do dashboard
+    path('i18n/', include('django.conf.urls.i18n')),
+    path('converter/', include('converter.urls')),
+    path('', include('user.urls')),
+    path('dashboard/', include('dashboard.urls')),
     path('visualizer/', include('visualizer.urls')),
 ]
 

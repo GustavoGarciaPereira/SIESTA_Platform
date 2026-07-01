@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+
 from .models import UserProfile
 
 
@@ -11,15 +12,15 @@ class UserCreationForm(BaseUserCreationForm):
     email = forms.EmailField(
         label=_("Email"),
         required=True,
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'seu.email@exemplo.com'})
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': _('seu.email@exemplo.com')})
     )
 
     # Adiciona classes Bootstrap aos widgets
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Nome de usuário'})
-        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Senha'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirme a senha'})
+        self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': _('Nome de usuário')})
+        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': _('Senha')})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': _('Confirme a senha')})
 
     def clean_username(self):
         """Reject usernames that differ only in case."""
@@ -63,11 +64,11 @@ class UserProfileForm(forms.ModelForm):
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
         }
         labels = {
-            'institution': 'Instituição',
-            'research_area': 'Área de Pesquisa',
-            'profile_picture': 'Foto de Perfil',
+            'institution': _('Instituição'),
+            'research_area': _('Área de Pesquisa'),
+            'profile_picture': _('Foto de Perfil'),
         }
         help_texts = {
-            'profile_picture': 'Envie uma imagem para seu perfil (opcional)',
+            'profile_picture': _('Envie uma imagem para seu perfil (opcional)'),
         }
         

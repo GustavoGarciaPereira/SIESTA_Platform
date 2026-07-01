@@ -4,6 +4,7 @@ import json
 import logging
 # Django imports
 from django.contrib import messages
+from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse, JsonResponse
@@ -94,18 +95,21 @@ class ConvertView(View):
 
             if params['cell_size_x'] < rec_x:
                 messages.info(request,
-                    f"Dimensão X da célula ajustada de {params['cell_size_x']:.1f} "
-                    f"para {rec_x:.1f} Å (molécula: {mol_dx:.1f} Å + padding: {pad:.1f} Å).")
+                    _("Dimensão X da célula ajustada de %(old).1f "
+                      "para %(new).1f Å (molécula: %(mol).1f Å + padding: %(pad).1f Å).")
+                    % {'old': params['cell_size_x'], 'new': rec_x, 'mol': mol_dx, 'pad': pad})
                 params['cell_size_x'] = rec_x
             if params['cell_size_y'] < rec_y:
                 messages.info(request,
-                    f"Dimensão Y da célula ajustada de {params['cell_size_y']:.1f} "
-                    f"para {rec_y:.1f} Å (molécula: {mol_dy:.1f} Å + padding: {pad:.1f} Å).")
+                    _("Dimensão Y da célula ajustada de %(old).1f "
+                      "para %(new).1f Å (molécula: %(mol).1f Å + padding: %(pad).1f Å).")
+                    % {'old': params['cell_size_y'], 'new': rec_y, 'mol': mol_dy, 'pad': pad})
                 params['cell_size_y'] = rec_y
             if params['cell_size_z'] < rec_z:
                 messages.info(request,
-                    f"Dimensão Z da célula ajustada de {params['cell_size_z']:.1f} "
-                    f"para {rec_z:.1f} Å (molécula: {mol_dz:.1f} Å + padding: {pad:.1f} Å).")
+                    _("Dimensão Z da célula ajustada de %(old).1f "
+                      "para %(new).1f Å (molécula: %(mol).1f Å + padding: %(pad).1f Å).")
+                    % {'old': params['cell_size_z'], 'new': rec_z, 'mol': mol_dz, 'pad': pad})
                 params['cell_size_z'] = rec_z
 
         # Converte o arquivo
@@ -114,8 +118,8 @@ class ConvertView(View):
         if atomic_numbers_detected:
             messages.warning(
                 request,
-                "Números atômicos detectados no arquivo XYZ. "
-                "Eles foram automaticamente convertidos para símbolos químicos."
+                _("Números atômicos detectados no arquivo XYZ. "
+                  "Eles foram automaticamente convertidos para símbolos químicos."),
             )
 
         # Registrar histórico (para usuários autenticados e anônimos)
@@ -228,7 +232,7 @@ def delete_history(request, conv_id):
     """View para excluir uma entrada do histórico de conversões."""
     conv = get_object_or_404(ConversionHistory, id=conv_id, user=request.user)
     conv.delete()
-    messages.success(request, 'Entrada do histórico excluída com sucesso.')
+    messages.success(request, _('Entrada do histórico excluída com sucesso.'))
     return redirect('converter_history')
 
 
@@ -327,7 +331,7 @@ def load_configuration(request, config_id):
     request.session['loaded_config'] = config.parameters
     request.session['loaded_config_name'] = config.name
     
-    messages.success(request, f'Configuração "{config.name}" carregada com sucesso!')
+    messages.success(request, _('Configuração "%(name)s" carregada com sucesso!') % {'name': config.name})
     return redirect('convert')
 
 
@@ -338,5 +342,5 @@ def delete_configuration(request, config_id):
     config_name = config.name
     config.delete()
     
-    messages.success(request, f'Configuração "{config_name}" excluída com sucesso!')
+    messages.success(request, _('Configuração "%(name)s" excluída com sucesso!') % {'name': config_name})
     return redirect('my_configurations')

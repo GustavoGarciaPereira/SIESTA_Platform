@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}SIESTA 3D — {{ out_file.system_name|default:"Visualização" }}{% endblock %}
+{% block title %}{% trans "SIESTA 3D" %} — {{ out_file.system_name|default:_("Visualização") }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -34,7 +35,7 @@
       SIESTA 3D — {{ out_file.system_name|default:out_file.file.name|slugify }}
     </h4>
     <a href="{% url 'visualizer:upload_out' %}" class="btn btn-outline-primary btn-sm">
-      <i class="bi bi-upload me-1"></i>Novo Upload
+      <i class="bi bi-upload me-1"></i>{% trans "Novo Upload" %}
     </a>
   </div>
 
@@ -52,10 +53,10 @@
           <output id="grid-value">8</output><sup>3</sup>
         </div>
         <button id="btn-render" class="btn btn-primary btn-sm">
-          <i class="bi bi-play-fill"></i> Renderizar 3D
+          <i class="bi bi-play-fill"></i> {% trans "Renderizar 3D" %}
         </button>
         <button id="btn-lines" class="btn btn-outline-success btn-sm">
-          <i class="bi bi-lightning-charge-fill"></i> Traçar Linhas
+          <i class="bi bi-lightning-charge-fill"></i> {% trans "Traçar Linhas" %}
         </button>
         <button id="btn-zoom-in" class="btn btn-outline-secondary btn-sm" title="Zoom +">➕</button>
         <button id="btn-zoom-out" class="btn btn-outline-secondary btn-sm" title="Zoom −">➖</button>

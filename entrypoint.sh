@@ -28,6 +28,9 @@ python manage.py migrate --fake-initial
 echo "==> Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
+echo "==> Compiling translation messages..."
+python manage.py compilemessages
+
 if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
     echo "==> Creating superuser '$DJANGO_SUPERUSER_USERNAME'..."
     python manage.py createsuperuser --noinput \

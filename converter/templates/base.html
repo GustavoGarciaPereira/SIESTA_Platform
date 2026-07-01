@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+{% load i18n %}
+{% load static %}
+<html lang="{{ LANGUAGE_CODE|default:'pt-br' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SIESTA Platform{% endblock %}</title>
-    {% load static %}
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,83 +16,104 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Estilos base do projeto -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% block extra_css %}{% endblock %}  <!-- Bloco para CSS adicional específico de páginas -->
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Cabeçalho/Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">SIESTA Platform</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="{% trans 'Alternar navegação' %}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav"> <!-- Removido ms-auto para alinhar à esquerda e adicionar mais itens depois -->
+                <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Início</a>
+                        <a class="nav-link" href="{% url 'home' %}">{% trans "Início" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'convert' %}">Conversor</a>
+                        <a class="nav-link" href="{% url 'convert' %}">{% trans "Conversor" %}</a>
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'converter_history' %}">Histórico</a>
+                        <a class="nav-link" href="{% url 'converter_history' %}">{% trans "Histórico" %}</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about' %}">Sobre Nós</a>
+                        <a class="nav-link" href="{% url 'about' %}">{% trans "Sobre Nós" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'contact' %}">Contato</a>
+                        <a class="nav-link" href="{% url 'contact' %}">{% trans "Contato" %}</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto">                    
+                <ul class="navbar-nav ms-auto">
+                    <!-- Language Switcher -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-translate"></i>
+                            {% get_current_language as CURRENT_LANG %}
+                            {% if CURRENT_LANG == 'en' %}English{% else %}Português{% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% get_available_languages as LANGUAGES %}
+                            {% for lang_code, lang_name in LANGUAGES %}
+                            <li>
+                                <form action="{% url 'set_language' %}" method="post" class="px-0">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="language" value="{{ lang_code }}">
+                                    <button type="submit" class="dropdown-item{% if lang_code == CURRENT_LANG %} active{% endif %}">
+                                        {{ lang_name }}
+                                    </button>
+                                </form>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                     {% if user.is_authenticated %}
                         {% if user.is_staff %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                            <a class="nav-link" href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a>
                         </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'my_configurations' %}">Minhas Configurações</a>
+                            <a class="nav-link" href="{% url 'my_configurations' %}">{% trans "Minhas Configurações" %}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'visualizer:upload_out' %}">
-                                <i class="bi bi-badge-3d"></i> Visualizar .out
+                                <i class="bi bi-badge-3d"></i> {% trans "Visualizar .out" %}
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"  href="{% url 'profile' %}">Olá, {{ user.username }}</a>
+                            <a class="nav-link" href="{% url 'profile' %}">{% trans "Olá" %}, {{ user.username }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                            <a class="nav-link" href="{% url 'logout' %}">{% trans "Logout" %}</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            <a class="nav-link" href="{% url 'login' %}">{% trans "Login" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'signup' %}">Criar Conta</a>
+                            <a class="nav-link" href="{% url 'signup' %}">{% trans "Criar Conta" %}</a>
                         </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-        
+
     <main class="container mt-4">
         {% if messages %}
         <div class="mb-3">
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Fechar' %}"></button>
             </div>
             {% endfor %}
         </div>
         {% endif %}
         {% block content %}
-        <!-- O conteúdo específico de cada página será inserido aqui -->
         {% endblock %}
     </main>
 
@@ -99,18 +121,18 @@
     <footer class="footer">
         <div class="container">
             <p class="mb-1">
-                <a href="{% url 'home' %}">Início</a> |
-                <a href="{% url 'about' %}">Sobre Nós</a> |
-                <a href="{% url 'contact' %}">Contato</a> |
-                <a href="#">Termos de Serviço</a> |
-                <a href="#">Política de Privacidade</a>
+                <a href="{% url 'home' %}">{% trans "Início" %}</a> |
+                <a href="{% url 'about' %}">{% trans "Sobre Nós" %}</a> |
+                <a href="{% url 'contact' %}">{% trans "Contato" %}</a> |
+                <a href="#">{% trans "Termos de Serviço" %}</a> |
+                <a href="#">{% trans "Política de Privacidade" %}</a>
             </p>
-            <p class="mb-0">© {% now "Y" %} SIESTA Platform. Todos os direitos reservados.</p>
+            <p class="mb-0">&copy; {% now "Y" %} SIESTA Platform. {% trans "Todos os direitos reservados." %}</p>
         </div>
     </footer>
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}  <!-- Bloco para JavaScript adicional específico de páginas -->
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
