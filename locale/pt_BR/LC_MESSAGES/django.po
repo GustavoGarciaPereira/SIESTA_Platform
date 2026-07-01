@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-01 21:04+0000\n"
+"POT-Creation-Date: 2026-07-01 21:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr "Incluir arquivos de pseudopotencial (.psf) no download"
 msgid ""
 "Se marcado, o download será um arquivo .zip contendo o .fdf e os arquivos ."
 "psf necessários."
-msgstr ""
+msgstr "Se marcado, o download será um arquivo .zip contendo o .fdf e os arquivos .psf necessários."
 
 #: converter/forms.py:19
 msgid "LatticeConstant (Ang)"
@@ -35,7 +35,7 @@ msgstr "LatticeConstant (Ang)"
 msgid ""
 "Valor da constante de rede em Angstroms. Os vetores da rede (abaixo) são "
 "multiplicados por este valor pelo SIESTA."
-msgstr ""
+msgstr "Valor da constante de rede em Angstroms. Os vetores da rede (abaixo) são multiplicados por este valor pelo SIESTA."
 
 #: converter/forms.py:27
 msgid "Tamanho da Célula X (para Vetor A: [X, 0, 0])"
@@ -45,7 +45,7 @@ msgstr "Tamanho da Célula X (para Vetor A: [X, 0, 0])"
 msgid ""
 "Componente X do primeiro vetor da rede (A_x). Valor adimensional, "
 "multiplicado pela LatticeConstant."
-msgstr ""
+msgstr "Componente X do primeiro vetor da rede (A_x). Valor adimensional, multiplicado pela LatticeConstant."
 
 #: converter/forms.py:35
 msgid "Tamanho da Célula Y (para Vetor B: [0, Y, 0])"
@@ -55,7 +55,7 @@ msgstr "Tamanho da Célula Y (para Vetor B: [0, Y, 0])"
 msgid ""
 "Componente Y do segundo vetor da rede (B_y). Valor adimensional, "
 "multiplicado pela LatticeConstant."
-msgstr ""
+msgstr "Componente Y do segundo vetor da rede (B_y). Valor adimensional, multiplicado pela LatticeConstant."
 
 #: converter/forms.py:43
 msgid "Tamanho da Célula Z (para Vetor C: [0, 0, Z])"
@@ -65,7 +65,7 @@ msgstr "Tamanho da Célula Z (para Vetor C: [0, 0, Z])"
 msgid ""
 "Componente Z do terceiro vetor da rede (C_z). Valor adimensional, "
 "multiplicado pela LatticeConstant."
-msgstr ""
+msgstr "Componente Z do terceiro vetor da rede (C_z). Valor adimensional, multiplicado pela LatticeConstant."
 
 #: converter/forms.py:51
 msgid "Arquivo XYZ"
@@ -228,18 +228,23 @@ msgid "Login"
 msgstr "Login"
 
 #: converter/templates/base.html:97
+#: converter/templates/converter/signup.html:55
 msgid "Criar Conta"
 msgstr "Criar Conta"
 
 #: converter/templates/base.html:111
+#: converter/templates/converter/history.html:146
+#: converter/templates/converter/upload.html:431
 msgid "Fechar"
 msgstr "Fechar"
 
 #: converter/templates/base.html:127
+#: converter/templates/converter/signup.html:191
 msgid "Termos de Serviço"
 msgstr "Termos de Serviço"
 
 #: converter/templates/base.html:128
+#: converter/templates/converter/signup.html:192
 msgid "Política de Privacidade"
 msgstr "Política de Privacidade"
 
@@ -247,45 +252,338 @@ msgstr "Política de Privacidade"
 msgid "Todos os direitos reservados."
 msgstr "Todos os direitos reservados."
 
+#: converter/templates/converter/history.html:53
+msgid "Meu Histórico de Conversões"
+msgstr "Meu Histórico de Conversões"
+
+#: converter/templates/converter/history.html:80
+msgid "Arquivo"
+msgstr "Arquivo"
+
+#: converter/templates/converter/history.html:81
+msgid "Sistema"
+msgstr "Sistema"
+
+#: converter/templates/converter/history.html:82
+msgid "Data"
+msgstr "Data"
+
+#: converter/templates/converter/history.html:83
+msgid "Tamanho"
+msgstr "Tamanho"
+
+#: converter/templates/converter/history.html:84
+msgid "Status"
+msgstr "Status"
+
+#: converter/templates/converter/history.html:85
+msgid "Downloads"
+msgstr "Downloads"
+
+#: converter/templates/converter/history.html:86
+#: converter/templates/converter/my_configs.html:79
+msgid "Ações"
+msgstr "Ações"
+
+#: converter/templates/converter/history.html:98
+msgid "Concluído"
+msgstr "Concluído"
+
+#: converter/templates/converter/history.html:100
+msgid "Pendente"
+msgstr "Pendente"
+
+#: converter/templates/converter/history.html:102
+msgid "Processando"
+msgstr "Processando"
+
+#: converter/templates/converter/history.html:104
+msgid "Falha"
+msgstr "Falha"
+
+#: converter/templates/converter/history.html:166
+#: converter/templates/converter/history.html:170
+msgid "Anterior"
+msgstr "Anterior"
+
+#: converter/templates/converter/history.html:188
+#: converter/templates/converter/history.html:192
+msgid "Próxima"
+msgstr "Próxima"
+
+#: converter/templates/converter/history.html:200
+msgid "Você ainda não realizou nenhuma conversão."
+msgstr "Você ainda não realizou nenhuma conversão."
+
+#: converter/templates/converter/history.html:201
+#: converter/templates/converter/my_configs.html:145
+msgid "página de conversão"
+msgstr "página de conversão"
+
+#: converter/templates/converter/login.html:39
+msgid "Bem-vindo de volta"
+msgstr "Bem-vindo de volta"
+
+#: converter/templates/converter/login.html:40
+msgid "Entre na sua conta SIESTA Platform"
+msgstr "Entre na sua conta SIESTA Platform"
+
+#: converter/templates/converter/login.html:125
+msgid "Lembrar meus dados"
+msgstr "Lembrar meus dados"
+
+#: converter/templates/converter/login.html:143
+msgid "Registre-se"
+msgstr "Registre-se"
+
+#: converter/templates/converter/login.html:156
+msgid "Acesso Completo"
+msgstr "Acesso Completo"
+
+#: converter/templates/converter/login.html:157
+msgid "Às ferramentas de simulação SIESTA"
+msgstr "Às ferramentas de simulação SIESTA"
+
+#: converter/templates/converter/login.html:167
+msgid "Recursos Exclusivos"
+msgstr "Recursos Exclusivos"
+
+#: converter/templates/converter/login.html:168
+msgid "Para seu trabalho científico"
+msgstr "Para seu trabalho científico"
+
+#: converter/templates/converter/my_configs.html:47
+msgid "Minhas Configurações Salvas"
+msgstr "Minhas Configurações Salvas"
+
+#: converter/templates/converter/my_configs.html:74
+msgid "Nome"
+msgstr "Nome"
+
+#: converter/templates/converter/my_configs.html:75
+msgid "Descrição"
+msgstr "Descrição"
+
+#: converter/templates/converter/my_configs.html:76
+msgid "Criada em"
+msgstr "Criada em"
+
+#: converter/templates/converter/my_configs.html:77
+msgid "Último uso"
+msgstr "Último uso"
+
+#: converter/templates/converter/my_configs.html:78
+msgid "Usos"
+msgstr "Usos"
+
+#: converter/templates/converter/my_configs.html:88
+msgid "Padrão"
+msgstr "Padrão"
+
+#: converter/templates/converter/my_configs.html:122
+msgid "Parâmetros:"
+msgstr "Parâmetros:"
+
+#: converter/templates/converter/my_configs.html:131
+msgid "Carregar esta configuração"
+msgstr "Carregar esta configuração"
+
+#: converter/templates/converter/my_configs.html:144
+msgid "Você ainda não tem configurações salvas."
+msgstr "Você ainda não tem configurações salvas."
+
+#: converter/templates/converter/signup.html:56
+msgid "Junte-se à comunidade SIESTA Platform"
+msgstr "Junte-se à comunidade SIESTA Platform"
+
+#: converter/templates/converter/signup.html:89
+msgid "Escolha um nome único para acessar sua conta."
+msgstr "Escolha um nome único para acessar sua conta."
+
+#: converter/templates/converter/signup.html:110
+msgid "Seu email será usado para recuperação de senha e notificações."
+msgstr "Seu email será usado para recuperação de senha e notificações."
+
+#: converter/templates/converter/signup.html:167
+msgid "Digite a mesma senha novamente para verificação."
+msgstr "Digite a mesma senha novamente para verificação."
+
+#: converter/templates/converter/signup.html:182
+msgid "Faça login"
+msgstr "Faça login"
+
+#: converter/templates/converter/upload.html:4
+msgid "Conversor XYZ para FDF — SIESTA Platform"
+msgstr "Conversor XYZ para FDF — SIESTA Platform"
+
+#: converter/templates/converter/upload.html:46
+msgid "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
+msgstr "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
+
+#: converter/templates/converter/upload.html:53
+msgid "Arquivo e Configurações Básicas"
+msgstr "Arquivo e Configurações Básicas"
+
+#: converter/templates/converter/upload.html:62
+msgid ""
+"Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione "
+"um arquivo para visualização 3D abaixo."
+msgstr "Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione um arquivo para visualização 3D abaixo."
+
+#: converter/templates/converter/upload.html:83
+msgid "Espaço extra em Å ao redor da molécula"
+msgstr "Espaço extra em Å ao redor da molécula"
+
+#: converter/templates/converter/upload.html:93
+msgid "Visualização 3D da Molécula (do arquivo XYZ selecionado)"
+msgstr "Visualização 3D da Molécula (do arquivo XYZ selecionado)"
+
+#: converter/templates/converter/upload.html:97
+msgid "Selecione um arquivo XYZ acima para visualizar a molécula."
+msgstr "Selecione um arquivo XYZ acima para visualizar a molécula."
+
+#: converter/templates/converter/upload.html:104
+msgid "Parâmetros de Base e Malha"
+msgstr "Parâmetros de Base e Malha"
+
+#: converter/templates/converter/upload.html:141
+msgid "Parâmetros de Dinâmica Molecular"
+msgstr "Parâmetros de Dinâmica Molecular"
+
+#: converter/templates/converter/upload.html:190
+msgid "Parâmetros SCF e DM"
+msgstr "Parâmetros SCF e DM"
+
+#: converter/templates/converter/upload.html:250
+msgid "Funcional XC e Parâmetros de Solução"
+msgstr "Funcional XC e Parâmetros de Solução"
+
+#: converter/templates/converter/upload.html:304
+msgid "Saídas e Análises"
+msgstr "Saídas e Análises"
+
+#: converter/templates/converter/upload.html:312
+msgid "Exporta coordenadas em formato Xmol"
+msgstr "Exporta coordenadas em formato Xmol"
+
+#: converter/templates/converter/upload.html:322
+msgid "Análise populacional de Mulliken"
+msgstr "Análise populacional de Mulliken"
+
+#: converter/templates/converter/upload.html:332
+msgid "Constante de Rede e Vetores"
+msgstr "Constante de Rede e Vetores"
+
+#: converter/templates/converter/upload.html:424
+msgid "Pré-visualização do arquivo FDF"
+msgstr "Pré-visualização do arquivo FDF"
+
+#: converter/templates/converter/upload.html:459
+msgid "Salvar Configuração Atual"
+msgstr "Salvar Configuração Atual"
+
+#: converter/templates/converter/upload.html:465
+msgid "Nome da Configuração *"
+msgstr "Nome da Configuração *"
+
+#: converter/templates/converter/upload.html:467
+msgid "Dê um nome descritivo para esta configuração"
+msgstr "Dê um nome descritivo para esta configuração"
+
+#: converter/templates/converter/upload.html:470
+msgid "Descrição (opcional)"
+msgstr "Descrição (opcional)"
+
+#: converter/templates/converter/upload.html:472
+msgid "Descreva os parâmetros ou quando usar esta configuração"
+msgstr "Descreva os parâmetros ou quando usar esta configuração"
+
+#: converter/templates/converter/upload.html:482
+msgid "Cancelar"
+msgstr "Cancelar"
+
+#: converter/templates/converter/upload.html:483
+msgid "Salvar Configuração"
+msgstr "Salvar Configuração"
+
+#: converter/templates/converter/upload.html:490
+msgid "O que faz este conversor?"
+msgstr "O que faz este conversor?"
+
+#: converter/templates/converter/upload.html:491
+msgid ""
+"Este conversor transforma arquivos XYZ em arquivos de entrada FDF para o "
+"SIESTA, permitindo ajuste completo de todos os parâmetros de simulação e "
+"visualização 3D da molécula carregada."
+msgstr "Este conversor transforma arquivos XYZ em arquivos de entrada FDF para o SIESTA, permitindo ajuste completo de todos os parâmetros de simulação e visualização 3D da molécula carregada."
+
+#: converter/templates/converter/upload.html:493
+msgid "Lê a geometria do arquivo XYZ"
+msgstr "Lê a geometria do arquivo XYZ"
+
+#: converter/templates/converter/upload.html:494
+msgid "Renderiza a molécula em 3D interativamente no navegador"
+msgstr "Renderiza a molécula em 3D interativamente no navegador"
+
+#: converter/templates/converter/upload.html:495
+msgid "Identifica elementos e cria bloco de espécies químicas"
+msgstr "Identifica elementos e cria bloco de espécies químicas"
+
+#: converter/templates/converter/upload.html:496
+msgid "Constrói uma caixa cúbica adequada baseada nas dimensões da molécula"
+msgstr "Constrói uma caixa cúbica adequada baseada nas dimensões da molécula"
+
+#: converter/templates/converter/upload.html:497
+msgid "Centraliza a molécula na caixa"
+msgstr "Centraliza a molécula na caixa"
+
+#: converter/templates/converter/upload.html:498
+msgid "Configura todos os parâmetros de cálculo SIESTA"
+msgstr "Configura todos os parâmetros de cálculo SIESTA"
+
+#: converter/templates/converter/upload.html:499
+msgid "Gera um arquivo FDF pronto para o SIESTA"
+msgstr "Gera um arquivo FDF pronto para o SIESTA"
+
 #: converter/utils.py:195
 msgid ""
 "O diretório de pseudopotenciais não está configurado no servidor. Apenas o "
 "arquivo .fdf será baixado."
-msgstr ""
+msgstr "O diretório de pseudopotenciais não está configurado no servidor. Apenas o arquivo .fdf será baixado."
 
 #: converter/utils.py:220
 #, python-format
 msgid ""
 "Aviso: O arquivo de pseudopotencial '%(name)s' não foi encontrado no "
 "servidor e não foi incluído no .zip."
-msgstr ""
+msgstr "Aviso: O arquivo de pseudopotencial '%(name)s' não foi encontrado no servidor e não foi incluído no .zip."
 
 #: converter/views.py:98
 #, python-format
 msgid ""
 "Dimensão X da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
 "%(mol).1f Å + padding: %(pad).1f Å)."
-msgstr ""
+msgstr "Dimensão X da célula ajustada de %(old).1f para %(new).1f Å (molécula: %(mol).1f Å + padding: %(pad).1f Å)."
 
 #: converter/views.py:104
 #, python-format
 msgid ""
 "Dimensão Y da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
 "%(mol).1f Å + padding: %(pad).1f Å)."
-msgstr ""
+msgstr "Dimensão Y da célula ajustada de %(old).1f para %(new).1f Å (molécula: %(mol).1f Å + padding: %(pad).1f Å)."
 
 #: converter/views.py:110
 #, python-format
 msgid ""
 "Dimensão Z da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
 "%(mol).1f Å + padding: %(pad).1f Å)."
-msgstr ""
+msgstr "Dimensão Z da célula ajustada de %(old).1f para %(new).1f Å (molécula: %(mol).1f Å + padding: %(pad).1f Å)."
 
 #: converter/views.py:121
 msgid ""
 "Números atômicos detectados no arquivo XYZ. Eles foram automaticamente "
 "convertidos para símbolos químicos."
-msgstr ""
+msgstr "Números atômicos detectados no arquivo XYZ. Eles foram automaticamente convertidos para símbolos químicos."
 
 #: converter/views.py:235
 msgid "Entrada do histórico excluída com sucesso."
@@ -369,7 +667,7 @@ msgstr "Nome do sistema (opcional)"
 msgid ""
 "Selecione um arquivo de saída (.out) do SIESTA. Deve conter as seções "
 "'Atomic coordinates (Ang)' e 'Mulliken populations'."
-msgstr ""
+msgstr "Selecione um arquivo de saída (.out) do SIESTA. Deve conter as seções 'Atomic coordinates (Ang)' e 'Mulliken populations'."
 
 #: visualizer/forms.py:44
 msgid "Apenas arquivos .out ou .txt são permitidos."

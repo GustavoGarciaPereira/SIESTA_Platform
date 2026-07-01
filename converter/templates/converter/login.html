@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}Entrar - SIESTA Platform{% endblock %}
 
@@ -35,8 +36,8 @@
             <div class="card login-card shadow-lg border-0">
                 <!-- Cabeçalho com gradiente -->
                 <div class="card-header login-header text-white text-center py-4">
-                    <h2 class="fw-bold mb-2">Bem-vindo de volta</h2>
-                    <p class="mb-0 opacity-75">Entre na sua conta SIESTA Platform</p>
+                    <h2 class="fw-bold mb-2">{% trans "Bem-vindo de volta" %}</h2>
+                    <p class="mb-0 opacity-75">{% trans "Entre na sua conta SIESTA Platform" %}</p>
                 </div>
                 
                 <div class="card-body p-4 p-lg-5">
@@ -121,7 +122,7 @@
                         <!-- Opção Lembrar-me -->
                         <div class="mb-4 form-check">
                             <input type="checkbox" class="form-check-input" id="remember-me" name="remember">
-                            <label class="form-check-label" for="remember-me">Lembrar meus dados</label>
+                            <label class="form-check-label" for="remember-me">{% trans "Lembrar meus dados" %}</label>
                         </div>
                         
                         <!-- Botão de Login -->
@@ -139,7 +140,7 @@
                 <!-- Rodapé -->
                 <div class="card-footer bg-light py-4 text-center">
                     <p class="mb-0 fw-bold">
-                        Não tem uma conta? <a href="{% url 'signup' %}" class="text-accent text-decoration-none fw-bold">Registre-se</a>
+                        Não tem uma conta? <a href="{% url 'signup' %}" class="text-accent text-decoration-none fw-bold">{% trans "Registre-se" %}</a>
                     </p>
                 </div>
             </div>
@@ -152,8 +153,8 @@
                             <div class="bg-accent rounded-circle p-3 d-inline-flex mb-3">
                                 <i class="bi bi-laptop text-white fs-4"></i>
                             </div>
-                            <h5 class="fw-bold">Acesso Completo</h5>
-                            <p class="small mb-0 text-muted">Às ferramentas de simulação SIESTA</p>
+                            <h5 class="fw-bold">{% trans "Acesso Completo" %}</h5>
+                            <p class="small mb-0 text-muted">{% trans "Às ferramentas de simulação SIESTA" %}</p>
                         </div>
                     </div>
                 </div>
@@ -163,8 +164,8 @@
                             <div class="bg-accent rounded-circle p-3 d-inline-flex mb-3">
                                 <i class="bi bi-file-earmark-code text-white fs-4"></i>
                             </div>
-                            <h5 class="fw-bold">Recursos Exclusivos</h5>
-                            <p class="small mb-0 text-muted">Para seu trabalho científico</p>
+                            <h5 class="fw-bold">{% trans "Recursos Exclusivos" %}</h5>
+                            <p class="small mb-0 text-muted">{% trans "Para seu trabalho científico" %}</p>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,385 @@
+$ venv/bin/python manage.py test converter user dashboard visualizer --verbosity=1 2>&1
+[exit 1]
+Found 107 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.........................................E..E.E.E.............................EE...........................
+======================================================================
+ERROR: test_history_view_authenticated (converter.tests.ViewTests)
+Testa o acesso à view de histórico com usuário autenticado.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 505, in parse
+    compile_func = self.tags[command]
+KeyError: 'trans'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/converter/tests.py", line 427, in test_history_view_authenticated
+    response = self.client.get(reverse('converter_history'))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 927, in get
+    response = super().get(path, data=data, secure=secure, headers=headers, **extra)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 457, in get
+    return self.generic(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 609, in generic
+    return self.request(**r)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 891, in request
+    self.check_exception(response)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 738, in check_exception
+    raise exc_value
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/converter/views.py", line 209, in history_view
+    return render(request, 'converter/history.html', {'conversions': conversions})
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/backends/django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 200, in compile_nodelist
+    return parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 558, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 52: 'trans', expected 'endblock'. Did you forget to register or load this tag?
+
+======================================================================
+ERROR: test_my_configurations_view (converter.tests.ViewTests)
+Testa o acesso à view de configurações salvas.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 505, in parse
+    compile_func = self.tags[command]
+KeyError: 'trans'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/converter/tests.py", line 441, in test_my_configurations_view
+    response = self.client.get(reverse('my_configurations'))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 927, in get
+    response = super().get(path, data=data, secure=secure, headers=headers, **extra)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 457, in get
+    return self.generic(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 609, in generic
+    return self.request(**r)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 891, in request
+    self.check_exception(response)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 738, in check_exception
+    raise exc_value
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/converter/views.py", line 317, in my_configurations
+    return render(request, 'converter/my_configs.html', {'configs': configs})
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/backends/django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 200, in compile_nodelist
+    return parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 558, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 46: 'trans', expected 'endblock'. Did you forget to register or load this tag?
+
+======================================================================
+ERROR: test_login_invalid_credentials (user.test_views.AuthenticationFlowTests)
+Testa login com credenciais inválidas.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 505, in parse
+    compile_func = self.tags[command]
+KeyError: 'trans'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/user/test_views.py", line 221, in test_login_invalid_credentials
+    response = self.client.post(reverse('login'), {
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 948, in post
+    response = super().post(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 482, in post
+    return self.generic(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 609, in generic
+    return self.request(**r)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 891, in request
+    self.check_exception(response)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 738, in check_exception
+    raise exc_value
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/backends/django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 200, in compile_nodelist
+    return parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 558, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 38: 'trans', expected 'endblock'. Did you forget to register or load this tag?
+
+======================================================================
+ERROR: test_login_view (user.test_views.AuthenticationFlowTests)
+Testa a view de login.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 505, in parse
+    compile_func = self.tags[command]
+KeyError: 'trans'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/user/test_views.py", line 199, in test_login_view
+    response = self.client.get(reverse('login'))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 927, in get
+    response = super().get(path, data=data, secure=secure, headers=headers, **extra)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 457, in get
+    return self.generic(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 609, in generic
+    return self.request(**r)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 891, in request
+    self.check_exception(response)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 738, in check_exception
+    raise exc_value
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/backends/django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 200, in compile_nodelist
+    return parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 558, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 38: 'trans', expected 'endblock'. Did you forget to register or load this tag?
+
+======================================================================
+ERROR: test_signup_view_get (user.test_views.UserViewsTests)
+Testa acesso GET à página de cadastro.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 505, in parse
+    compile_func = self.tags[command]
+KeyError: 'trans'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/user/test_views.py", line 83, in test_signup_view_get
+    response = self.client.get(reverse('signup'))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 927, in get
+    response = super().get(path, data=data, secure=secure, headers=headers, **extra)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 457, in get
+    return self.generic(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 609, in generic
+    return self.request(**r)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 891, in request
+    self.check_exception(response)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 738, in check_exception
+    raise exc_value
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/backends/django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 200, in compile_nodelist
+    return parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 513, in parse
+    raise self.error(token, e)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 558, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 54: 'trans', expected 'endblock'. Did you forget to register or load this tag?
+
+======================================================================
+ERROR: test_signup_view_post_invalid (user.test_views.UserViewsTests)
+Testa cadastro com dados inválidos.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/base.py", line 505, in parse
+    compile_func = self.tags[command]
+KeyError: 'trans'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/user/test_views.py", line 116, in test_signup_view_post_invalid
+    response = self.client.post(reverse('signup'), {
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 948, in post
+    response = super().post(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 482, in post
+    return self.generic(
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 609, in generic
+    return self.request(**r)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 891, in request
+    self.check_exception(response)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/test/client.py", line 738, in check_exception
+    raise exc_value
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/home/gustavo/tfg_2_gustavo_andre/heparin_converter/venv/lib/python3.8/site-pac
+
+[… truncated 3449 chars …]

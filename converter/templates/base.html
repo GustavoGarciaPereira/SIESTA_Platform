@@ -61,6 +61,7 @@
                                 <form action="{% url 'set_language' %}" method="post" class="px-0">
                                     {% csrf_token %}
                                     <input type="hidden" name="language" value="{{ lang_code }}">
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
                                     <button type="submit" class="dropdown-item{% if lang_code == CURRENT_LANG %} active{% endif %}">
                                         {{ lang_name }}
                                     </button>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}Criar Conta - SIESTA Platform{% endblock %}
 
@@ -51,8 +52,8 @@
             <div class="card signup-card shadow-lg border-0">
                 <!-- Cabeçalho com gradiente -->
                 <div class="card-header signup-header text-white text-center py-4">
-                    <h2 class="fw-bold mb-2">Criar Conta</h2>
-                    <p class="mb-0 opacity-75">Junte-se à comunidade SIESTA Platform</p>
+                    <h2 class="fw-bold mb-2">{% trans "Criar Conta" %}</h2>
+                    <p class="mb-0 opacity-75">{% trans "Junte-se à comunidade SIESTA Platform" %}</p>
                 </div>
                 
                 <div class="card-body p-4 p-lg-5">
@@ -85,7 +86,7 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            <div class="form-text">Escolha um nome único para acessar sua conta.</div>
+                            <div class="form-text">{% trans "Escolha um nome único para acessar sua conta." %}</div>
                         </div>
                         
                         <!-- Campo de Email -->
@@ -106,7 +107,7 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            <div class="form-text">Seu email será usado para recuperação de senha e notificações.</div>
+                            <div class="form-text">{% trans "Seu email será usado para recuperação de senha e notificações." %}</div>
                         </div>
                         
                         <!-- Campo de Senha -->
@@ -163,7 +164,7 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            <div class="form-text">Digite a mesma senha novamente para verificação.</div>
+                            <div class="form-text">{% trans "Digite a mesma senha novamente para verificação." %}</div>
                         </div>
                         
                         <!-- Botão de Cadastro -->
@@ -178,7 +179,7 @@
                 <!-- Rodapé -->
                 <div class="card-footer bg-light py-4 text-center">
                     <p class="mb-0 fw-bold">
-                        Já tem uma conta? <a href="{% url 'login' %}" class="text-accent text-decoration-none fw-bold">Faça login</a>
+                        Já tem uma conta? <a href="{% url 'login' %}" class="text-accent text-decoration-none fw-bold">{% trans "Faça login" %}</a>
                     </p>
                 </div>
             </div>
@@ -187,8 +188,8 @@
             <div class="text-center mt-4">
                 <p class="text-muted small">
                     Ao criar uma conta, você concorda com nossos 
-                    <a href="#" class="text-decoration-none text-accent">Termos de Serviço</a> e 
-                    <a href="#" class="text-decoration-none text-accent">Política de Privacidade</a>.
+                    <a href="#" class="text-decoration-none text-accent">{% trans "Termos de Serviço" %}</a> e 
+                    <a href="#" class="text-decoration-none text-accent">{% trans "Política de Privacidade" %}</a>.
                 </p>
             </div>
         </div>

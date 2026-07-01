@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}Histórico de Conversões - SIESTA Platform{% endblock %}
 
@@ -49,7 +50,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Meu Histórico de Conversões</h2>
+    <h2>{% trans "Meu Histórico de Conversões" %}</h2>
 
     {% if messages %}
     <div class="messages">
@@ -76,13 +77,13 @@
             <table class="table table-striped table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>Arquivo</th>
-                        <th>Sistema</th>
-                        <th>Data</th>
-                        <th>Tamanho</th>
-                        <th>Status</th>
-                        <th>Downloads</th>
-                        <th>Ações</th>
+                        <th>{% trans "Arquivo" %}</th>
+                        <th>{% trans "Sistema" %}</th>
+                        <th>{% trans "Data" %}</th>
+                        <th>{% trans "Tamanho" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Downloads" %}</th>
+                        <th>{% trans "Ações" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,13 +95,13 @@
                         <td><small>{{ conv.file_size|filesizeformat }}</small></td>
                         <td>
                             {% if conv.status == 'completed' %}
-                                <span class="badge bg-success">Concluído</span>
+                                <span class="badge bg-success">{% trans "Concluído" %}</span>
                             {% elif conv.status == 'pending' %}
-                                <span class="badge bg-warning">Pendente</span>
+                                <span class="badge bg-warning">{% trans "Pendente" %}</span>
                             {% elif conv.status == 'processing' %}
-                                <span class="badge bg-info">Processando</span>
+                                <span class="badge bg-info">{% trans "Processando" %}</span>
                             {% else %}
-                                <span class="badge bg-danger">Falha</span>
+                                <span class="badge bg-danger">{% trans "Falha" %}</span>
                             {% endif %}
                         </td>
                         <td>{{ conv.download_count }}</td>
@@ -142,7 +143,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Fechar" %}</button>
                                             <a href="{% url 'download_fdf' conv.id %}" class="btn btn-primary">
                                                 <i class="bi bi-download"></i> Baixar FDF
                                             </a>
@@ -162,11 +163,11 @@
             <ul class="pagination justify-content-center">
                 {% if conversions.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ conversions.previous_page_number }}">Anterior</a>
+                    <a class="page-link" href="?page={{ conversions.previous_page_number }}">{% trans "Anterior" %}</a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <span class="page-link">Anterior</span>
+                    <span class="page-link">{% trans "Anterior" %}</span>
                 </li>
                 {% endif %}
 
@@ -184,11 +185,11 @@
 
                 {% if conversions.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ conversions.next_page_number }}">Próxima</a>
+                    <a class="page-link" href="?page={{ conversions.next_page_number }}">{% trans "Próxima" %}</a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <span class="page-link">Próxima</span>
+                    <span class="page-link">{% trans "Próxima" %}</span>
                 </li>
                 {% endif %}
             </ul>
@@ -196,8 +197,8 @@
         {% endif %}
     {% else %}
         <div class="alert alert-info">
-            <p class="mb-0">Você ainda não realizou nenhuma conversão.</p>
-            <p class="mb-0">Vá para a <a href="{% url 'convert' %}">página de conversão</a> para começar.</p>
+            <p class="mb-0">{% trans "Você ainda não realizou nenhuma conversão." %}</p>
+            <p class="mb-0">Vá para a <a href="{% url 'convert' %}">{% trans "página de conversão" %}</a> para começar.</p>
         </div>
     {% endif %}
 </div>
