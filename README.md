@@ -1,128 +1,207 @@
-# SIESTA Platform - Conversor XYZ para FDF
+# 🧪 SIESTA Platform — Plataforma de Simulação de Materiais
 
-**SIESTA Platform** é uma aplicação web desenvolvida em Django, projetada para simplificar o fluxo de trabalho de pesquisadores e estudantes que utilizam o software de simulação de materiais [SIESTA](https://siesta-project.org/siesta/). A plataforma oferece uma interface intuitiva para converter arquivos de coordenadas moleculares (formato `.xyz`) em arquivos de entrada para o SIESTA (formato `.fdf`), com controle total sobre os parâmetros de simulação.
+**SIESTA Platform** é uma aplicação web Django 4.2 que cobre o ciclo completo de trabalho com o software de simulação de materiais [SIESTA](https://siesta-project.org/siesta/): da geração de arquivos de entrada (`.fdf`) à visualização 3D interativa de resultados (`.out`).
 
-[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-4.2-green.svg)](https://www.djangoproject.com/)
+[![Rust](https://img.shields.io/badge/Rust-WASM-orange.svg)](https://www.rust-lang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![Tests](https://img.shields.io/badge/tests-107%2F5%20passing-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
- <!-- Substitua pelo URL de um screenshot da sua aplicação -->
+---
 
-## ✨ Funcionalidades Principais
+## ✨ Funcionalidades
 
-- **Conversor XYZ para FDF**: Faça o upload de um arquivo `.xyz` e obtenha um arquivo `.fdf` pronto para uso, configurado através de um formulário web detalhado.
-- **Visualizador 3D Interativo**: Visualize sua molécula em 3D diretamente no navegador antes de gerar o arquivo de entrada, utilizando a biblioteca [3Dmol.js](https://3dmol.csb.pitt.edu/).
-- **Configuração Abrangente**: Ajuste dezenas de parâmetros do SIESTA, incluindo base de orbitais (PAO), dinâmica molecular (MD), parâmetros de SCF, funcional de troca e correlação (XC), e muito mais.
-- **Download de Pseudopotenciais**: Opção para baixar um arquivo `.zip` contendo não apenas o `.fdf` gerado, mas também todos os arquivos de pseudopotencial (`.psf`) necessários para a simulação.
-- **Sistema de Autenticação**: Crie uma conta, faça login e gerencie suas sessões. (Preparado para futuras funcionalidades de histórico de conversões).
-- **Interface Moderna e Responsiva**: Construída com Bootstrap 5, a plataforma é fácil de usar em desktops e dispositivos móveis.
-- **Pronto para Produção**: O projeto está totalmente containerizado com Docker e configurado para deploy em serviços como Render, Heroku, etc.
+### ⚛️ Conversor XYZ → FDF
+- Upload de arquivo `.xyz` com visualização 3D em tempo real ([3Dmol.js](https://3dmol.csb.pitt.edu/))
+- **Tabela periódica completa** (118 elementos) com detecção automática de números atômicos
+- **Célula automática**: `bounding_box()` + `padding` ajusta dimensões para conter a molécula
+- **~30 parâmetros SIESTA**: PAO, MD, SCF, DM, XC functional, SolutionMethod
+- Download do `.fdf` ou `.zip` com pseudopotenciais (`.psf`)
+- Preview AJAX do FDF antes do download
+
+### 🧲 Visualizador 3D de Resultados (`.out`)
+- Upload de arquivo `.out` do SIESTA
+- **Visualização 3D** com [Three.js](https://threejs.org/) + **Rust/WASM**:
+  - Átomos como esferas coloridas por carga de Mulliken (azul = negativo, vermelho = positivo)
+  - Vetores de campo elétrico em grade 3D configurável
+  - Linhas de campo traçadas via integração RK4
+- Todo o processamento ocorre no navegador (zero carga no servidor)
+
+### 👤 Autenticação e Histórico
+- Cadastro, login, logout, recuperação de senha
+- **Histórico de conversões** com paginação e download/reescuta
+- **Configurações salvas**: salve e reutilize conjuntos de parâmetros
+- Perfil de usuário com instituição e área de pesquisa
+- Dashboard administrativo (staff-only)
+
+### 🎨 Interface
+- Bootstrap 5 com tema escuro customizado (CSS variables)
+- Fontes Inter + JetBrains Mono
+- Totalmente responsivo (desktop e mobile)
+- Bootstrap Icons
+
+### 🐳 Deploy
+- Containerização completa com Docker + Docker Compose
+- PostgreSQL em produção, SQLite em desenvolvimento
+- WhiteNoise para servir arquivos estáticos (compressão Brotli/Gzip)
+- Gunicorn como servidor WSGI
+- Entrypoint com wait-for-db, migrações automáticas e criação de superusuário
+
+---
+
+## 🏗️ Arquitetura
+
+```
+heparin_converter/          # Configuração do projeto Django
+├── converter/              # App: conversão XYZ→FDF + histórico + configs
+├── user/                   # App: autenticação + páginas institucionais
+├── dashboard/              # App: painel staff-only
+├── visualizer/             # App: visualização 3D de resultados .out
+│   └── rust/               #   Crate Rust → WASM (siesta-field-wasm)
+├── static/                 # CSS/JS customizados
+├── pseudos/                # Arquivos de pseudopotencial (.psf)
+├── Dockerfile + entrypoint.sh
+└── docker-compose.yml
+```
+
+### Apps
+
+| App | URL prefix | Responsabilidade |
+|-----|-----------|-----------------|
+| `converter` | `/converter/` | Conversão XYZ→FDF, histórico, configurações salvas |
+| `user` | `/` | Home, login, signup, about, contact, perfil |
+| `dashboard` | `/dashboard/` | Lista de URLs (staff only) |
+| `visualizer` | `/visualizer/` | Upload e visualização 3D de `.out` |
+
+### Stack Tecnológica
+
+| Camada | Tecnologia |
+|--------|-----------|
+| Backend | Python 3.10 + Django 4.2 |
+| Frontend | Bootstrap 5.3 + Bootstrap Icons |
+| 3D (input) | 3Dmol.js 2.0 (CDN) |
+| 3D (resultados) | Three.js 0.160 + Rust/WASM |
+| Banco (dev) | SQLite3 |
+| Banco (prod) | PostgreSQL 13 |
+| WSGI | Gunicorn |
+| Estáticos | WhiteNoise (CompressedManifestStaticFilesStorage) |
+| Container | Docker + Docker Compose |
+
+---
 
 ## 🚀 Começando
 
-Você pode executar o projeto localmente usando Docker (recomendado) ou manualmente com um ambiente virtual Python.
-
 ### Pré-requisitos
 
-- [Docker](https://www.docker.com/get-started) e [Docker Compose](https://docs.docker.com/compose/install/)
-- Ou [Python 3.10+](https://www.python.org/) e `pip`
+- [Docker](https://www.docker.com/get-started) e Docker Compose (recomendado)
+- Ou Python 3.10+ com `pip` e virtualenv
+- Para compilar o WASM: [Rust](https://rustup.rs/) + [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
 
-### 1. Instalação com Docker (Recomendado)
+### Docker (Recomendado)
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/GustavoGarciaPereira/SIESTA_Platform.git
-    cd SIESTA_Platform
-    ```
+```bash
+git clone https://github.com/GustavoGarciaPereira/SIESTA_Platform.git
+cd SIESTA_Platform
 
-2.  **Crie um arquivo de ambiente (`.env`):**
-    Crie um arquivo chamado `.env` na raiz do projeto. Você pode começar com estas configurações básicas:
-    ```env
-    DEBUG=True
-    SECRET_KEY='django-insecure-fallback-key-for-local-development'
-    ```
+# Criar .env
+echo "DEBUG=True" > .env
+echo "SECRET_KEY='django-insecure-fallback-key-for-local-development'" >> .env
 
-3.  **Construa e inicie os containers:**
-    ```bash
-    docker-compose up --build
-    ```
-    O servidor estará rodando e aplicará as migrações automaticamente.
+# Iniciar
+docker-compose up --build
+# → http://localhost:8000
+```
 
-4.  **Acesse a aplicação:**
-    Abra seu navegador e acesse `http://localhost:8000`.
+### Instalação Manual
 
-### 2. Instalação Manual (Ambiente Virtual)
+```bash
+git clone https://github.com/GustavoGarciaPereira/SIESTA_Platform.git
+cd SIESTA_Platform
 
-1.  **Clone o repositório e navegue até ele:**
-    ```bash
-    git clone https://github.com/GustavoGarciaPereira/SIESTA_Platform.git
-    cd SIESTA_Platform
-    ```
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # No Windows: venv\Scripts\activate
-    ```
+echo "DEBUG=True" > .env
+echo "SECRET_KEY='django-insecure-dev-key'" >> .env
 
-3.  **Instale as dependências:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+python manage.py migrate
+python manage.py createsuperuser   # opcional
+python manage.py runserver
+# → http://localhost:8000
+```
 
-4.  **Crie um arquivo `.env` na raiz do projeto:**
-    ```env
-    DEBUG=True
-    SECRET_KEY='django-insecure-fallback-key-for-local-development'
-    ```
+### Compilar o WASM (visualizador 3D)
 
-5.  **Aplique as migrações do banco de dados:**
-    ```bash
-    python manage.py migrate
-    ```
+```bash
+cd visualizer/rust
+wasm-pack build --target web --out-dir pkg --release
+cp pkg/*.js pkg/*.wasm ../static/visualizer/wasm/
+cd ../..
+python manage.py collectstatic --noinput
+```
 
-6.  **Crie um superusuário (opcional, para acesso ao admin):**
-    ```bash
-    python manage.py createsuperuser
-    ```
+---
 
-7.  **Inicie o servidor de desenvolvimento:**
-    ```bash
-    python manage.py runserver
-    ```
+## 🧪 Testes
 
-8.  **Acesse a aplicação:**
-    Abra seu navegador e acesse `http://localhost:8000`.
+```bash
+# Todos os testes Django (107)
+python manage.py test converter user dashboard visualizer
 
-## 🛠️ Estrutura do Projeto
+# Testes Rust (5)
+cargo test --manifest-path visualizer/rust/Cargo.toml
 
-O projeto segue a arquitetura padrão do Django, com uma clara separação de responsabilidades:
+# App específico
+python manage.py test visualizer
+python manage.py test converter.tests.ReadXyzTests
+```
 
--   `heparin_converter/`: O diretório principal do projeto Django, contendo as configurações (`settings.py`) e as URLs principais (`urls.py`).
--   `converter/`: A aplicação Django responsável por toda a lógica de conversão, incluindo:
-    -   `views.py`: Contém a `ConvertView` que processa os uploads e gera os arquivos.
-    -   `forms.py`: Define o `SIESTAParametersForm` com todos os campos para os parâmetros do SIESTA.
-    -   `templates/converter/`: Contém o template `upload.html`, a interface principal do conversor.
--   `user/`: A aplicação Django para gerenciamento de usuários e páginas estáticas (home, sobre, contato).
--   `Dockerfile` e `entrypoint.sh`: Arquivos de configuração para containerização com Docker.
--   `requirements.txt`: Lista de dependências Python do projeto.
+---
 
-## 💡 Pontos de Melhoria e Futuro do Projeto
+## 📄 Variáveis de Ambiente (`.env`)
 
-A plataforma atual é uma base robusta. As próximas etapas podem incluir:
+| Variável | Padrão | Descrição |
+|----------|--------|-----------|
+| `DEBUG` | `False` | `True` = SQLite + console email |
+| `SECRET_KEY` | — | Chave secreta Django (obrigatória) |
+| `DB_ENGINE` | — | Engine PostgreSQL (produção) |
+| `DB_NAME` | — | Nome do banco (produção) |
+| `DB_USER` | — | Usuário do banco (produção) |
+| `DB_PASSWORD` | — | Senha do banco (produção) |
+| `DB_HOST` | — | Host do banco (produção) |
+| `DB_PORT` | — | Porta do banco (produção) |
+| `EMAIL_HOST` | `smtp.gmail.com` | Servidor SMTP (produção) |
+| `EMAIL_HOST_USER` | — | Email (produção) |
+| `EMAIL_HOST_PASSWORD` | — | Senha do email (produção) |
 
-1.  **Modelos de Dados**: Implementar modelos no banco de dados para salvar o histórico de conversões de cada usuário e permitir que salvem configurações de simulação favoritas.
-2.  **Processamento Assíncrono**: Utilizar Celery ou Django-RQ para processar conversões em segundo plano, melhorando a experiência do usuário em arquivos grandes.
-3.  **Integração Direta com SIESTA**: Adicionar a capacidade de submeter e executar simulações diretamente da plataforma, gerenciando filas e recursos computacionais.
-4.  **Análise de Resultados**: Integrar ferramentas para visualizar e analisar os arquivos de saída do SIESTA (ex: gráficos de bandas, densidade de estados).
-5.  **API REST**: Desenvolver uma API para permitir que outras ferramentas ou scripts interajam com o conversor de forma programática.
-6.  **Cobertura de Testes**: Expandir os testes unitários e de integração para garantir a robustez da lógica de conversão.
+---
+
+## 🗺️ Roadmap
+
+### ✅ Concluído
+- [x] Conversor XYZ → FDF com 30 parâmetros
+- [x] Tabela periódica completa (118 elementos)
+- [x] Cálculo automático de célula (`bounding_box` + `padding`)
+- [x] Histórico de conversões com paginação
+- [x] Configurações salvas (CRUD)
+- [x] Visualizador 3D de resultados `.out` (Rust/WASM + Three.js)
+- [x] Limpeza estrutural (dead code, phantom deps, duplicações)
+
+### 🔜 Em breve
+- [ ] Processamento assíncrono com Celery + Redis
+- [ ] API REST (Django REST Framework + JWT)
+- [ ] Modelo `Pseudopotential` com gestão no admin
+- [ ] Presets de simulação + tooltips
+
+---
 
 ## 🤝 Contribuições
 
-Contribuições são muito bem-vindas! Se você tem sugestões de melhorias ou encontrou algum bug, sinta-se à vontade para abrir uma **Issue** ou enviar um **Pull Request**.
+Contribuições são bem-vindas! Abra uma **Issue** ou envie um **Pull Request**.
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a Licença MIT.
+MIT License.
