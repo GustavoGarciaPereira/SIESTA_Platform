@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}SIESTA 3D — {{ out_file.system_name|default:"Visualização" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  #canvas3d {
+    display: block;
+    border-radius: 8px;
+    width: 100%;
+    height: 650px;
+    border: 1px solid #ced4da;
+    background: #11191f;
+  }
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .controls-row label { margin-bottom: 0; font-weight: 600; font-size: 0.875rem; }
+  #info-box { font-size: 0.875rem; color: var(--color-text-secondary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>
+      <i class="bi bi-cube me-2"></i>
+      SIESTA 3D — {{ out_file.system_name|default:out_file.file.name|slugify }}
+    </h4>
+    <a href="{% url 'visualizer:upload_out' %}" class="btn btn-outline-primary btn-sm">
+      <i class="bi bi-upload me-1"></i>Novo Upload
+    </a>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-body p-2">
+      <div class="controls-row">
+        <div>
+          <label for="k-slider"><em>k</em> (intensidade)</label>
+          <input type="range" id="k-slider" min="1" max="500" value="50" style="width:7rem;">
+          <output id="k-value">50</output>
+        </div>
+        <div>
+          <label for="grid-slider">Grade 3D</label>
+          <input type="range" id="grid-slider" min="4" max="16" value="8" style="width:7rem;">
+          <output id="grid-value">8</output><sup>3</sup>
+        </div>
+        <button id="btn-render" class="btn btn-primary btn-sm">
+          <i class="bi bi-play-fill"></i> Renderizar 3D
+        </button>
+        <button id="btn-lines" class="btn btn-outline-success btn-sm">
+          <i class="bi bi-lightning-charge-fill"></i> Traçar Linhas
+        </button>
+        <button id="btn-zoom-in" class="btn btn-outline-secondary btn-sm" title="Zoom +">➕</button>
+        <button id="btn-zoom-out" class="btn btn-outline-secondary btn-sm" title="Zoom −">➖</button>
+      </div>
+      <div id="canvas3d"></div>
+      <div id="info-box" class="mt-2 hidden">
+        <span id="info-text"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-box" class="alert alert-danger hidden">
+    <strong>Erro:</strong> <span id="error-msg"></span>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+<script type="module">
+  import init, { parse_siesta_out_full, compute_field_3d, trace_field_lines } from '{% static "visualizer/wasm/siesta_field_wasm.js" %}';
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  await init();
+
+  // ── DOM refs ──────────────────────────────────────────────────────────────
+  const apiUrl = "{{ api_url }}";
+  const kSlider = document.getElementById('k-slider');
+  const gridSlider = document.getElementById('grid-slider');
+  const kValue = document.getElementById('k-value');
+  const gridValue = document.getElementById('grid-value');
+  const renderBtn = document.getElementById('btn-render');
+  const linesBtn = document.getElementById('btn-lines');
+  const zoomInBtn = document.getElementById('btn-zoom-in');
+  const zoomOutBtn = document.getElementById('btn-zoom-out');
+  const container = document.getElementById('canvas3d');
+  const infoBox = document.getElementById('info-box');
+  const infoText = document.getElementById('info-text');
+  const errorBox = document.getElementById('error-box');
+  const errorMsg = document.getElementById('error-msg');
+
+  kSlider.addEventListener('input', () => kValue.textContent = kSlider.value);
+  gridSlider.addEventListener('input', () => gridValue.textContent = gridSlider.value);
+
+  function showError(m) {
+    errorMsg.textContent = m;
+    errorBox.classList.remove('hidden');
+  }
+  function hideError() { errorBox.classList.add('hidden'); }
+
+  // ── Fetch .out content ───────────────────────────────────────────────────
+  let fileContent = null;
+  async function loadContent() {
+    try {
+      const resp = await fetch(apiUrl);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      fileContent = await resp.text();
+      renderBtn.disabled = false;
+      linesBtn.disabled = false;
+    } catch (e) {
+      showError(`Falha ao carregar arquivo: ${e.message}`);
+    }
+  }
+
+  // ── Three.js setup ───────────────────────────────────────────────────────
+  let scene, camera, renderer, controls;
+  function initScene() {
+    if (renderer) { renderer.dispose(); container.innerHTML = ''; }
+    const w = container.clientWidth || 900;
+    const h = container.clientHeight || 550;
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x11191f);
+    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 200);
+    camera.position.set(15, 10, 20);
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+    controls.zoomSpeed = 1.8;
+    controls.rotateSpeed = 0.8;
+    controls.minDistance = 2;
+    controls.maxDistance = 80;
+    controls.target.set(0, 0, 0);
+    controls.update();
+    scene.add(new THREE.AmbientLight(0x404040, 1.5));
+    const dl = new THREE.DirectionalLight(0xffffff, 2);
+    dl.position.set(10, 20, 5);
+    scene.add(dl);
+    const dl2 = new THREE.DirectionalLight(0xffffff, 1);
+    dl2.position.set(-5, -10, -5);
+    scene.add(dl2);
+    scene.add(new THREE.GridHelper(20, 20, 0x444444, 0x222222));
+    scene.add(new THREE.AxesHelper(5));
+    function anim() { requestAnimationFrame(anim); controls.update(); renderer.render(scene, camera); }
+    anim();
+  }
+  initScene();
+  window.addEventListener('resize', () => {
+    if (!renderer) return;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+
+  zoomInBtn.addEventListener('click', () => {
+    if (!controls) return;
+    camera.position.lerp(controls.target, 0.3);
+    controls.update();
+  });
+  zoomOutBtn.addEventListener('click', () => {
+    if (!controls) return;
+    const dir = camera.position.clone().sub(controls.target);
+    camera.position.addScaledVector(dir, 0.3);
+    controls.update();
+  });
+
+  // ── Atom helpers ─────────────────────────────────────────────────────────
+  function atomColor(q) {
+    if (q > 0.05) return 0xff4136;
+    if (q < -0.05) return 0x0074d9;
+    return 0xaaaaaa;
+  }
+  function atomRadius(sym) {
+    const r = { H: 0.3, C: 0.7, N: 0.65, O: 0.6, F: 0.5, Cl: 1.0, S: 0.9, Na: 1.1, K: 1.4, Li: 0.9 };
+    return r[sym] || 0.7;
+  }
+
+  let atomData = null;
+
+  // ── Render button ────────────────────────────────────────────────────────
+  renderBtn.addEventListener('click', async () => {
+    try {
+      hideError();
+      if (!fileContent) throw new Error('Arquivo não carregado. Aguarde ou recarregue a página.');
+
+      const json = parse_siesta_out_full(fileContent);
+      atomData = JSON.parse(json);
+      if (!atomData.length) throw new Error('Nenhum átomo encontrado no arquivo.');
+
+      const k = parseFloat(kSlider.value);
+      const gs = parseInt(gridSlider.value);
+
+      // Clear old atoms/arrows/lines
+      while (scene.children.length > 6) { scene.remove(scene.children[6]); }
+
+      // Add atom spheres
+      for (const a of atomData) {
+        const geo = new THREE.SphereGeometry(atomRadius(a.sym), 32, 16);
+        const mat = new THREE.MeshStandardMaterial({ color: atomColor(a.q), roughness: 0.4, metalness: 0.1 });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(a.x, a.y, a.z);
+        scene.add(mesh);
+      }
+
+      // Compute field vectors
+      const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, q: a.q })));
+      const fieldData = compute_field_3d(chargesJson, gs, gs, gs, k);
+
+      // Draw arrows
+      const arrowLen = 0.8;
+      for (let i = 0; i < fieldData.length; i += 6) {
+        const x = fieldData[i], y = fieldData[i + 1], z = fieldData[i + 2];
+        const ex = fieldData[i + 3], ey = fieldData[i + 4], ez = fieldData[i + 5];
+        const mag = Math.sqrt(ex * ex + ey * ey + ez * ez);
+        if (mag < 0.001) continue;
+        const dir = new THREE.Vector3(ex, ey, ez).normalize();
+        const origin = new THREE.Vector3(x, y, z);
+        const color = mag > 1 ? 0xff0000 : mag > 0.3 ? 0xff8800 : 0x4488ff;
+        const arrow = new THREE.ArrowHelper(dir, origin, arrowLen, color, 0.2, 0.15);
+        scene.add(arrow);
+      }
+
+      infoBox.classList.remove('hidden');
+      infoText.textContent = `${atomData.length} átomos · grade ${gs}³ · ${fieldData.length / 6} vetores`;
+    } catch (e) { showError(e?.message ?? String(e)); }
+  });
+
+  // ── Field lines button ───────────────────────────────────────────────────
+  linesBtn.addEventListener('click', () => {
+    try {
+      hideError();
+      if (!atomData) throw new Error('Renderize os átomos primeiro.');
+
+      const k = parseFloat(kSlider.value);
+      const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, q: a.q })));
+      const lineData = trace_field_lines(chargesJson, 0.25, 300, k);
+
+      // Parse lines (separated by NaN sentinels)
+      const lines = [];
+      let cur = [];
+      for (let i = 0; i < lineData.length; i += 3) {
+        const x = lineData[i], y = lineData[i + 1], z = lineData[i + 2];
+        if (isNaN(x)) { if (cur.length > 1) lines.push(cur); cur = []; continue; }
+        cur.push(new THREE.Vector3(x, y, z));
+      }
+      if (cur.length > 1) lines.push(cur);
+
+      // Remove old lines
+      const toRemove = [];
+      scene.children.forEach(c => { if (c.userData && c.userData.fieldLine) toRemove.push(c); });
+      toRemove.forEach(c => scene.remove(c));
+
+      for (const pts of lines) {
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({ color: 0x00ff88, linewidth: 1, transparent: true, opacity: 0.7 });
+        const line = new THREE.Line(geo, mat);
+        line.userData = { fieldLine: true };
+        scene.add(line);
+      }
+      infoText.textContent += ` · ${lines.length} linhas de campo`;
+    } catch (e) { showError(e?.message ?? String(e)); }
+  });
+
+  // ── Startup ──────────────────────────────────────────────────────────────
+  renderBtn.disabled = true;
+  linesBtn.disabled = true;
+  loadContent();
+</script>
+{% endblock %}

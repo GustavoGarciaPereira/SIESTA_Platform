@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'converter',
     'user',
-    'dashboard'
+    'dashboard',
+    'visualizer',
 ]
 
 MIDDLEWARE = [

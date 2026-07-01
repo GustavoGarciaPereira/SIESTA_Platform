@@ -26,6 +26,7 @@ urlpatterns = [
     path('converter/', include('converter.urls')),  # Inclua as URLs do aplicativo converter
     path('', include('user.urls')),  # Inclua as URLs do aplicativo converter
     path('dashboard/', include('dashboard.urls')),  # Inclua as URLs do dashboard
+    path('visualizer/', include('visualizer.urls')),
 ]
 
 if settings.DEBUG:

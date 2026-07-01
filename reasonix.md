@@ -1,6 +1,6 @@
 # 🧪 SIESTA Platform — Guia do Desenvolvedor
 
-> Última atualização: 2025-07-15 (pós-limpeza estrutural — commit `09902af`)
+> Última atualização: 2025-07-15 (pós-integração visualizer 3D — Rust/WASM + Three.js)
 
 ---
 
@@ -17,7 +17,8 @@
 | Linguagem | Python 3.10+ |
 | Framework | Django 4.2 |
 | Frontend | Bootstrap 5.3 + Bootstrap Icons |
-| Visualização 3D | 3Dmol.js 2.0 (CDN) |
+| Visualização 3D (input) | 3Dmol.js 2.0 (CDN) |
+| Visualização 3D (resultados) | Three.js 0.160 + Rust/WASM (siesta-field-wasm) |
 | Banco (dev) | SQLite3 |
 | Banco (prod) | PostgreSQL 13 |
 | Servidor WSGI | Gunicorn |
@@ -67,6 +68,19 @@
 ├── static/                     # Estáticos fonte (CSS + JS customizados)
 │   ├── css/base.css            # Design system completo (variáveis, navbar, cards, tabelas)
 │   └── js/upload.js            # Lógica do upload: 3Dmol, preview AJAX, save config
+├── visualizer/                 # App de visualização 3D de resultados (.out)
+│   ├── models.py               # OutFile (arquivos .out enviados)
+│   ├── views.py                # upload_out, visualize_out, out_content, out_atoms_json
+│   ├── forms.py                # OutFileForm (validação .out/.txt, max 10 MB)
+│   ├── admin.py                # OutFileAdmin
+│   ├── urls.py                 # /visualizer/* — upload, visualize, content API
+│   ├── tests.py                # 19 testes (models, views, parsers)
+│   ├── rust/                   # Código Rust → WASM
+│   │   ├── Cargo.toml          # siesta-field-wasm (wasm-bindgen, serde, serde_json)
+│   │   ├── src/lib.rs          # parse_siesta_out_full, compute_field_3d, trace_field_lines
+│   │   └── build.sh            # wasm-pack build → static/visualizer/wasm/
+│   ├── static/visualizer/wasm/ # Artefatos WASM (pkg gerado pelo build)
+│   └── templates/visualizer/   # upload.html, visualize.html (Three.js + importmap)
 ├── pseudos/                    # Pseudopotenciais .psf (5 elementos LDA)
 ├── docs/archive/               # Documentação histórica arquivada
 ├── requirements.txt            # Dependências (limpas — sem numpy, typing_extensions)
@@ -111,10 +125,50 @@
 | `ConversionHistory` | `converter_conversionhistory` | Histórico de conversões: FDF gerado, parâmetros (JSON), status |
 | `SavedConfiguration` | `converter_savedconfiguration` | Conjuntos de parâmetros reutilizáveis (unique por user+name) |
 | `UserProfile` | `user_userprofile` | Extensão 1-1 do User: instituição, área de pesquisa, foto |
+| `OutFile` | `visualizer_outfile` | Arquivos .out de simulação SIESTA para visualização 3D |
+
+### Fluxo de Visualização 3D (.out)
+
+```
+1. GET  /visualizer/upload/
+   └─ upload_out() → render upload.html com OutFileForm
+
+2. POST /visualizer/upload/
+   ├─ Valida extensão (.out/.txt) e tamanho (≤10 MB)
+   ├─ Extrai system_name e atom_count do conteúdo
+   ├─ Salva OutFile (user, file, system_name, atom_count)
+   └─ Redireciona para /visualizer/{id}/
+
+3. GET  /visualizer/{id}/
+   └─ visualize_out() → render visualize.html com api_url
+
+4. Frontend (Three.js + WASM):
+   ├─ fetch(/visualizer/{id}/content/) → conteúdo .out como texto
+   ├─ parse_siesta_out_full(content) → JSON [{x,y,z,q,sym}, ...]
+   ├─ Renderiza esferas (átomos) com Three.js
+   ├─ compute_field_3d(charges, nx, ny, nz, k) → [x,y,z,Ex,Ey,Ez, ...]
+   ├─ Renderiza ArrowHelper para vetores de campo
+   └─ trace_field_lines(charges, step, max_steps, k) → linhas de campo
+```
 
 ---
 
 ## 🧠 Decisões Técnicas
+
+### Por que Rust + WASM para o visualizador de resultados
+
+O parser de `.out` e o cálculo de campo elétrico 3D são **CPU-bound** — para 136 átomos com grade 8³, são ~512 pontos de grid × 136 cargas = ~70k operações de campo. Executar isso em Python puro no backend seria lento e bloquearia o worker. A abordagem **Rust → WASM → frontend** oferece:
+
+- **Performance**: Rust é compilado para WebAssembly, executa no browser com velocidade nativa
+- **Offloading**: O servidor Django apenas serve o arquivo `.out` — zero CPU gasta com cálculo
+- **Interatividade**: Sliders de `k` (intensidade) e grade respondem instantaneamente sem round-trip ao servidor
+- **Build reproduzível**: `wasm-pack build --release` gera artefatos determinísticos
+
+### Por que Three.js com importmap (sem bundler)
+
+- **Zero dependências npm**: Three.js carregado via CDN + importmap (ES modules nativos)
+- **Sem webpack/vite**: Menos complexidade de build, sem `node_modules`
+- **Manutenção simples**: Atualizar versão do Three.js = mudar URL no importmap
 
 ### Por que Celery + Redis (planejado — Onda 1A)
 
@@ -203,7 +257,7 @@ from .periodic_table import SYMBOL_TO_ATOMIC_NUMBER as PT
 - **Arquivos**: `converter/tests.py`, `user/test_views.py`, `dashboard/test_views.py`
 - **Cobertura mínima esperada**: models (criação), forms (válido + inválido), views (GET + POST + auth)
 - **Dados de teste**: `setUp()` — nunca usar fixtures
-- **Comando**: `python manage.py test converter user dashboard` — deve passar 88 testes
+- **Comando**: `python manage.py test converter user dashboard visualizer` — deve passar 107 testes
 
 ### Validação
 

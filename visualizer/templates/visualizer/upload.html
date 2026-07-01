@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Upload .out — SIESTA Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-card { border-top: 3px solid var(--color-accent); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card upload-card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="bi bi-upload me-2"></i>Upload de Arquivo .out</h4>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">
+            Envie um arquivo de saída do SIESTA (<code>.out</code>) para visualizar
+            a geometria atômica, cargas de Mulliken e o campo elétrico 3D.
+          </p>
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+              {{ form.file.label_tag }}
+              {{ form.file }}
+              {% if form.file.errors %}
+                <div class="invalid-feedback d-block">{{ form.file.errors }}</div>
+              {% endif %}
+              <div class="form-text">{{ form.file.help_text }}</div>
+            </div>
+
+            <div class="mb-3">
+              {{ form.system_name.label_tag }}
+              {{ form.system_name }}
+              {% if form.system_name.errors %}
+                <div class="invalid-feedback d-block">{{ form.system_name.errors }}</div>
+              {% endif %}
+              <div class="form-text">Deixe em branco para usar o nome detectado no arquivo.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-cube me-2"></i>Visualizar em 3D
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

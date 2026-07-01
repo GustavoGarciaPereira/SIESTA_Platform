@@ -56,6 +56,11 @@
                             <a class="nav-link" href="{% url 'my_configurations' %}">Minhas Configurações</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'visualizer:upload_out' %}">
+                                <i class="bi bi-badge-3d"></i> Visualizar .out
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link"  href="{% url 'profile' %}">Olá, {{ user.username }}</a>
                         </li>
                         <li class="nav-item">

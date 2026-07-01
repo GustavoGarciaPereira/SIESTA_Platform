@@ -49,3 +49,7 @@ CLAUDE.md
 .ai/.env
 .ai/*
 integrate-openclaude.sh
+
+# Rust build artifacts
+visualizer/rust/target/
+visualizer/rust/pkg/
