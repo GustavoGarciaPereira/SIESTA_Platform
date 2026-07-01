@@ -13,6 +13,7 @@
     border: 1px solid #ced4da;
     background: #11191f;
   }
+  .hidden { display: none !important; }
   .controls-row {
     display: flex;
     flex-wrap: wrap;
@@ -82,11 +83,22 @@
   }
 </script>
 <script type="module">
-  import init, { parse_siesta_out_full, compute_field_3d, trace_field_lines } from '{% static "visualizer/wasm/siesta_field_wasm.js" %}';
-  import * as THREE from 'three';
-  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  // ── DOM refs (early — needed for error reporting) ────────────────────────
+  const errorBox = document.getElementById('error-box');
+  const errorMsg = document.getElementById('error-msg');
 
-  await init();
+  function showError(m) {
+    if (errorMsg) errorMsg.textContent = m;
+    if (errorBox) errorBox.classList.remove('hidden');
+  }
+
+  try {
+    const wasmModule = await import('{% static "visualizer/wasm/siesta_field_wasm.js" %}');
+    const { default: init, parse_siesta_out_full, compute_field_3d, trace_field_lines } = wasmModule;
+    const THREE = await import('three');
+    const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+
+    await init();
 
   // ── DOM refs ──────────────────────────────────────────────────────────────
   const apiUrl = "{{ api_url }}";
@@ -101,17 +113,11 @@
   const container = document.getElementById('canvas3d');
   const infoBox = document.getElementById('info-box');
   const infoText = document.getElementById('info-text');
-  const errorBox = document.getElementById('error-box');
-  const errorMsg = document.getElementById('error-msg');
 
   kSlider.addEventListener('input', () => kValue.textContent = kSlider.value);
   gridSlider.addEventListener('input', () => gridValue.textContent = gridSlider.value);
 
-  function showError(m) {
-    errorMsg.textContent = m;
-    errorBox.classList.remove('hidden');
-  }
-  function hideError() { errorBox.classList.add('hidden'); }
+  function hideError() { if (errorBox) errorBox.classList.add('hidden'); }
 
   // ── Fetch .out content ───────────────────────────────────────────────────
   let fileContent = null;
@@ -285,5 +291,10 @@
   renderBtn.disabled = true;
   linesBtn.disabled = true;
   loadContent();
+
+  } catch (e) {
+    showError(`Falha ao carregar o módulo WASM/Three.js: ${e.message}. Verifique se o build foi executado (visualizer/rust/build.sh).`);
+    console.error(e);
+  }
 </script>
 {% endblock %}

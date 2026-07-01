@@ -340,6 +340,11 @@ body {
   }
 }
 
+/* Utilidade: esconder elementos (compatível com Bootstrap 5) */
+.hidden {
+  display: none !important;
+}
+
 /* Estilos para checkboxes (mantidos do original) */
 input[type="checkbox"] {
   transform: scale(1.8);
