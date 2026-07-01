@@ -1,12 +1,8 @@
 # Built-in Python imports
 import hashlib
-import io
 import json
 import logging
-import os
-import zipfile
 # Django imports
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -25,21 +21,20 @@ logger = logging.getLogger(__name__)
 # Local imports
 from .forms import SIESTAParametersForm
 from .models import ConversionHistory, SavedConfiguration, UploadedFile
-from .utils import convert_xyz_to_fdf, create_zip_archive, PT
+from .utils import convert_xyz_to_fdf, create_zip_archive, read_xyz, bounding_box
+from .periodic_table import SYMBOL_TO_ATOMIC_NUMBER as PT
+
+
 class ConvertView(View):
     """View para conversão de arquivos XYZ para formato FDF do SIESTA.
-    
+
     Esta view permite upload de arquivos XYZ, visualização 3D da molécula,
     configuração de parâmetros de simulação SIESTA e geração de arquivos FDF.
-    
+
     Attributes:
         template_name (str): Nome do template a ser renderizado
-        PT (dict): Tabela periódica mínima para elementos comuns em biomoléculas
     """
     template_name = 'converter/upload.html'
-
-    # Tabela periódica mínima (principais elementos para biomoléculas)
-    PT = {'H':1, 'C':6, 'N':7, 'O':8, 'F':9, 'P':15, 'S':16, 'Cl':17, 'Br':35, 'I':53}
 
     def get(self, request):
         """Processa requisição GET para exibir formulário de conversão.
@@ -84,8 +79,37 @@ class ConvertView(View):
         if not system_name:
             system_name = xyz_file.name.rsplit('.', 1)[0]
 
+        # Calcular dimensões da molécula e ajustar célula com padding
+        xyz_file.seek(0)
+        atoms, _ = read_xyz(xyz_file)
+        if atoms:
+            x_min, x_max, y_min, y_max, z_min, z_max = bounding_box(atoms)
+            mol_dx = x_max - x_min
+            mol_dy = y_max - y_min
+            mol_dz = z_max - z_min
+            pad = params.get('padding', 1.0)
+            rec_x = mol_dx + 2 * pad
+            rec_y = mol_dy + 2 * pad
+            rec_z = mol_dz + 2 * pad
+
+            if params['cell_size_x'] < rec_x:
+                messages.info(request,
+                    f"Dimensão X da célula ajustada de {params['cell_size_x']:.1f} "
+                    f"para {rec_x:.1f} Å (molécula: {mol_dx:.1f} Å + padding: {pad:.1f} Å).")
+                params['cell_size_x'] = rec_x
+            if params['cell_size_y'] < rec_y:
+                messages.info(request,
+                    f"Dimensão Y da célula ajustada de {params['cell_size_y']:.1f} "
+                    f"para {rec_y:.1f} Å (molécula: {mol_dy:.1f} Å + padding: {pad:.1f} Å).")
+                params['cell_size_y'] = rec_y
+            if params['cell_size_z'] < rec_z:
+                messages.info(request,
+                    f"Dimensão Z da célula ajustada de {params['cell_size_z']:.1f} "
+                    f"para {rec_z:.1f} Å (molécula: {mol_dz:.1f} Å + padding: {pad:.1f} Å).")
+                params['cell_size_z'] = rec_z
+
         # Converte o arquivo
-        fdf_content, unique_species, atomic_numbers_detected = convert_xyz_to_fdf(xyz_file, system_name, params, self.PT)
+        fdf_content, unique_species, atomic_numbers_detected = convert_xyz_to_fdf(xyz_file, system_name, params, PT)
 
         if atomic_numbers_detected:
             messages.warning(
@@ -208,15 +232,17 @@ def delete_history(request, conv_id):
     return redirect('converter_history')
 
 
-@login_required
-def download_pseudos(request, conv_id):
-    """View para baixar pseudopotenciais de uma conversão específica."""
-    conv = get_object_or_404(ConversionHistory, id=conv_id, user=request.user)
-    
-    # Extrair elementos do conteúdo FDF
-    # Procura por linhas que contenham ChemicalSpeciesLabel
+def _extract_species_from_fdf(fdf_content):
+    """Extrai os símbolos dos elementos do bloco ChemicalSpeciesLabel no FDF.
+
+    Args:
+        fdf_content (str): Conteúdo completo do arquivo FDF
+
+    Returns:
+        list: Lista de símbolos de elementos (ex: ['H', 'O', 'C'])
+    """
     elements = []
-    lines = conv.fdf_content.split('\n')
+    lines = fdf_content.split('\n')
     in_block = False
     for line in lines:
         if '%block ChemicalSpeciesLabel' in line:
@@ -227,34 +253,20 @@ def download_pseudos(request, conv_id):
         if in_block and line.strip():
             parts = line.strip().split()
             if len(parts) >= 3:
-                # Formato: "idx atomic_number symbol.lda"
+                # Formato: "idx atomic_number symbol.XC" (ex: "1 6 C.lda")
                 symbol_part = parts[2]
-                # Remove o sufixo .lda
                 if '.' in symbol_part:
                     symbol = symbol_part.split('.')[0]
                     elements.append(symbol)
-    
-    # Gerar o zip
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        # Adicionar o arquivo FDF
-        fdf_filename = f"{slugify(conv.system_name)}.fdf"
-        zip_file.writestr(fdf_filename, conv.fdf_content)
-        
-        # Adicionar pseudopotenciais
-        pseudos_dir = settings.PSEUDOPOTENTIALS_DIR if hasattr(settings, 'PSEUDOPOTENTIALS_DIR') else None
-        if pseudos_dir:
-            for el in elements:
-                pseudo_filename = f"{el}.lda.psf"
-                pseudo_path = os.path.join(pseudos_dir, pseudo_filename)
-                if os.path.exists(pseudo_path):
-                    zip_file.write(pseudo_path, arcname=pseudo_filename)
-    
-    zip_buffer.seek(0)
-    response = HttpResponse(zip_buffer, content_type='application/zip')
-    response['Content-Disposition'] = f'attachment; filename="{slugify(conv.system_name)}_pseudos.zip"'
-    
-    return response
+    return elements
+
+
+@login_required
+def download_pseudos(request, conv_id):
+    """View para baixar pseudopotenciais de uma conversão específica."""
+    conv = get_object_or_404(ConversionHistory, id=conv_id, user=request.user)
+    elements = _extract_species_from_fdf(conv.fdf_content)
+    return create_zip_archive(request, conv.fdf_content, conv.system_name, elements)
 
 
 # Saved Configuration views

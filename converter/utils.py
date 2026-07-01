@@ -1,9 +1,7 @@
 # Built-in Python imports
-import hashlib
 import io
 import os
 import zipfile
-from datetime import datetime
 
 # Django imports
 from django.conf import settings
@@ -11,12 +9,8 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.text import slugify
 
-
-# Tabela periódica mínima (principais elementos para biomoléculas)
-PT = {'H': 1, 'C': 6, 'N': 7, 'O': 8, 'F': 9, 'P': 15, 'S': 16, 'Cl': 17, 'Br': 35, 'I': 53}
-
-# Lookup reverso: número atômico → símbolo (derivado de PT, sem hardcoding)
-ATOMIC_NUMBER_TO_SYMBOL = {v: k for k, v in PT.items()}
+# Local imports
+from .periodic_table import SYMBOL_TO_ATOMIC_NUMBER as PT, ATOMIC_NUMBER_TO_SYMBOL
 
 
 def read_xyz(file_obj):

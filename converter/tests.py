@@ -947,7 +947,7 @@ AtomicCoordinatesFormat Ang
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/zip')
         self.assertIn('attachment', response['Content-Disposition'])
-        self.assertIn('test-system_pseudos.zip', response['Content-Disposition'])
+        self.assertIn('test-system.zip', response['Content-Disposition'])
 
         # Verifica se o conteúdo é um ZIP válido
         import zipfile
@@ -1013,18 +1013,10 @@ AtomicCoordinatesFormat Ang
 
         response = self.client.get(reverse('download_pseudos', args=[self.conversion.id]))
 
-        # Deve retornar ZIP mesmo sem arquivos .psf
+        # Deve retornar o FDF individual (fallback quando não há diretório de pseudos)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/zip')
-
-        # Verifica se contém apenas o arquivo .fdf
-        import zipfile
-        import io
-        zip_content = io.BytesIO(response.content)
-        with zipfile.ZipFile(zip_content, 'r') as zip_f:
-            self.assertIn('test-system.fdf', zip_f.namelist())
-            # Não deve conter arquivos .psf
-            self.assertNotIn('H.lda.psf', zip_f.namelist())
+        self.assertEqual(response['Content-Type'], 'text/plain')
+        self.assertIn('.fdf', response['Content-Disposition'])
 
         # Restaura configuração
         settings.PSEUDOPOTENTIALS_DIR = self.test_pseudos_dir
