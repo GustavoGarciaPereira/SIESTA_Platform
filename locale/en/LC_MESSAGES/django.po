@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-01 21:40+0000\n"
+"POT-Creation-Date: 2026-07-01 21:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: converter/forms.py:9
 msgid "Incluir arquivos de pseudopotencial (.psf) no download"
-msgstr ""
+msgstr "Include pseudopotential files (.psf) in download"
 
 #: converter/forms.py:13
 msgid ""
@@ -274,7 +275,7 @@ msgstr "Size"
 
 #: converter/templates/converter/history.html:84
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: converter/templates/converter/history.html:85
 msgid "Downloads"
@@ -414,7 +415,7 @@ msgstr "Log in"
 
 #: converter/templates/converter/upload.html:4
 msgid "Conversor XYZ para FDF — SIESTA Platform"
-msgstr ""
+msgstr "XYZ to FDF Converter — SIESTA Platform"
 
 #: converter/templates/converter/upload.html:46
 msgid "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
@@ -544,6 +545,139 @@ msgstr "Configures all SIESTA calculation parameters"
 #: converter/templates/converter/upload.html:499
 msgid "Gera um arquivo FDF pronto para o SIESTA"
 msgstr "Generates an FDF file ready for SIESTA"
+
+#: converter/templates/home.html:4
+#, fuzzy
+#| msgid "Entre na sua conta SIESTA Platform"
+msgid "Página Inicial — SIESTA Platform"
+msgstr "Sign in to your SIESTA Platform account"
+
+#: converter/templates/home.html:33
+msgid "Atenção:"
+msgstr ""
+
+#: converter/templates/home.html:33
+msgid "Beta"
+msgstr "Beta"
+
+#: converter/templates/home.html:39
+#, fuzzy
+#| msgid "Junte-se à comunidade SIESTA Platform"
+msgid "Bem-vindo à SIESTA Platform"
+msgstr "Join the SIESTA Platform community"
+
+#: converter/templates/home.html:40
+msgid "Simulações computacionais de materiais de forma simples e eficiente."
+msgstr "Computational materials simulations made simple and efficient."
+
+#: converter/templates/home.html:63
+msgid "Nosso Fluxo de Trabalho"
+msgstr "Our Workflow"
+
+#: converter/templates/home.html:64
+msgid ""
+"Transforme suas estruturas moleculares em simulações completas em poucos "
+"passos"
+msgstr ""
+
+#: converter/templates/home.html:75
+msgid "Passo 1"
+msgstr "Step 1"
+
+#: converter/templates/home.html:76
+msgid "Upload do Arquivo"
+msgstr "File Upload"
+
+#: converter/templates/home.html:77
+msgid ""
+"Carregue seu arquivo XYZ contendo as coordenadas atômicas da estrutura "
+"molecular."
+msgstr ""
+
+#: converter/templates/home.html:88
+msgid "Passo 2"
+msgstr "Step 2"
+
+#: converter/templates/home.html:89
+#, fuzzy
+#| msgid "Salvar Configuração"
+msgid "Configuração"
+msgstr "Save Configuration"
+
+#: converter/templates/home.html:90
+msgid ""
+"Ajuste os parâmetros de simulação SIESTA conforme suas necessidades de "
+"pesquisa."
+msgstr ""
+
+#: converter/templates/home.html:101
+msgid "Passo 3"
+msgstr "Step 3"
+
+#: converter/templates/home.html:102
+msgid "Download e Execução"
+msgstr "Download and Execution"
+
+#: converter/templates/home.html:103
+msgid ""
+"Baixe o arquivo FDF gerado e execute no SIESTA para obter resultados da "
+"simulação."
+msgstr ""
+
+#: converter/templates/home.html:114
+#, fuzzy
+#| msgid "Recursos Exclusivos"
+msgid "Recursos Principais"
+msgstr "Exclusive Resources"
+
+#: converter/templates/home.html:115
+msgid "Tudo que você precisa para suas simulações computacionais"
+msgstr "Everything you need for your computational simulations"
+
+#: converter/templates/home.html:127
+#, fuzzy
+#| msgid "Visualização"
+msgid "Visualização 3D Interativa"
+msgstr "Visualization"
+
+#: converter/templates/home.html:129
+msgid ""
+"Visualize suas estruturas moleculares em 3D diretamente no navegador antes "
+"de iniciar as simulações."
+msgstr ""
+
+#: converter/templates/home.html:141
+#, fuzzy
+#| msgid "Minhas Configurações Salvas"
+msgid "Configurações Salvas"
+msgstr "My Saved Configurations"
+
+#: converter/templates/home.html:143
+msgid ""
+"Salve suas configurações favoritas para reutilização rápida em futuras "
+"simulações."
+msgstr ""
+
+#: converter/templates/home.html:155
+#, fuzzy
+#| msgid "Histórico"
+msgid "Histórico Completo"
+msgstr "History"
+
+#: converter/templates/home.html:157
+msgid ""
+"Acesse todo o histórico de suas conversões e downloads organizados por data."
+msgstr ""
+
+#: converter/templates/home.html:169
+msgid "Pseudopotenciais Inclusos"
+msgstr "Pseudopotentials Included"
+
+#: converter/templates/home.html:171
+msgid ""
+"Receba automaticamente os pseudopotenciais necessários para cada elemento em "
+"sua estrutura."
+msgstr ""
 
 #: converter/utils.py:195
 msgid ""
@@ -678,6 +812,7 @@ msgid "Arquivo muito grande. Limite: 10 MB."
 msgstr "File too large. Limit: 10 MB."
 
 #: visualizer/templates/visualizer/visualize.html:5
+#: visualizer/templates/visualizer/visualize.html:35
 msgid "SIESTA 3D"
 msgstr "SIESTA 3D"
 
@@ -689,6 +824,14 @@ msgstr "Visualization"
 msgid "Novo Upload"
 msgstr "New Upload"
 
+#: visualizer/templates/visualizer/visualize.html:46
+msgid "(intensidade)"
+msgstr "(intensity)"
+
+#: visualizer/templates/visualizer/visualize.html:51
+msgid "Grade 3D"
+msgstr "3D Grid"
+
 #: visualizer/templates/visualizer/visualize.html:56
 msgid "Renderizar 3D"
 msgstr "Render 3D"
@@ -696,3 +839,53 @@ msgstr "Render 3D"
 #: visualizer/templates/visualizer/visualize.html:59
 msgid "Traçar Linhas"
 msgstr "Trace Lines"
+
+#: visualizer/templates/visualizer/visualize.html:61
+msgid "Zoom +"
+msgstr "Zoom +"
+
+#: visualizer/templates/visualizer/visualize.html:62
+msgid "Zoom −"
+msgstr "Zoom −"
+
+#: visualizer/templates/visualizer/visualize.html:72
+msgid "Erro"
+msgstr "Error"
+
+#: visualizer/templates/visualizer/visualize.html:81
+msgid "Falha ao carregar arquivo"
+msgstr "Failed to load file"
+
+#: visualizer/templates/visualizer/visualize.html:82
+msgid "Arquivo não carregado. Aguarde ou recarregue a página."
+msgstr "File not loaded. Please wait or reload the page."
+
+#: visualizer/templates/visualizer/visualize.html:83
+msgid "Nenhum átomo encontrado no arquivo."
+msgstr "No atoms found in the file."
+
+#: visualizer/templates/visualizer/visualize.html:84
+msgid "Renderize os átomos primeiro."
+msgstr "Render the atoms first."
+
+#: visualizer/templates/visualizer/visualize.html:85
+msgid "átomos"
+msgstr "atoms"
+
+#: visualizer/templates/visualizer/visualize.html:86
+msgid "grade"
+msgstr "grid"
+
+#: visualizer/templates/visualizer/visualize.html:87
+msgid "vetores"
+msgstr "vectors"
+
+#: visualizer/templates/visualizer/visualize.html:88
+msgid "linhas de campo"
+msgstr "field lines"
+
+#: visualizer/templates/visualizer/visualize.html:89
+msgid ""
+"Falha ao carregar o módulo WASM/Three.js. Verifique se o build foi executado "
+"(visualizer/rust/build.sh)."
+msgstr ""

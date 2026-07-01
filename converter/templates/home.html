@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Página Inicial - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Página Inicial — SIESTA Platform" %}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -29,14 +30,14 @@
             <div class="col-lg-8 text-center">
                 <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
                     <i class="bi bi-cone-striped me-2"></i>
-                    <strong>Atenção:</strong> A SIESTA Platform ainda está em fase <strong>Beta</strong>!
+                    <strong>{% trans "Atenção:" %}</strong> A SIESTA Platform ainda está em fase <strong>{% trans "Beta" %}</strong>!
                     Algumas funcionalidades podem estar em desenvolvimento ou apresentar comportamento inesperado.
                     Agradecemos sua compreensão e feedback.
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 
-                <h1 class="display-4 fw-bold mb-3">Bem-vindo à SIESTA Platform</h1>
-                <p class="lead mb-4">Simulações computacionais de materiais de forma simples e eficiente.</p>
+                <h1 class="display-4 fw-bold mb-3">{% trans "Bem-vindo à SIESTA Platform" %}</h1>
+                <p class="lead mb-4">{% trans "Simulações computacionais de materiais de forma simples e eficiente." %}</p>
                 <div class="d-flex flex-wrap justify-content-center gap-3">
                     {% if not request.user.is_authenticated %}
                         <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4">
@@ -59,8 +60,8 @@
 <div class="container py-5">
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8 text-center">
-            <h2 class="fw-bold mb-3">Nosso Fluxo de Trabalho</h2>
-            <p class="text-muted">Transforme suas estruturas moleculares em simulações completas em poucos passos</p>
+            <h2 class="fw-bold mb-3">{% trans "Nosso Fluxo de Trabalho" %}</h2>
+            <p class="text-muted">{% trans "Transforme suas estruturas moleculares em simulações completas em poucos passos" %}</p>
         </div>
     </div>
     
@@ -71,9 +72,9 @@
                     <div class="workflow-icon">
                         <i class="bi bi-upload"></i>
                     </div>
-                    <h4 class="card-title fw-bold">Passo 1</h4>
-                    <h5 class="text-accent mb-3">Upload do Arquivo</h5>
-                    <p class="card-text">Carregue seu arquivo XYZ contendo as coordenadas atômicas da estrutura molecular.</p>
+                    <h4 class="card-title fw-bold">{% trans "Passo 1" %}</h4>
+                    <h5 class="text-accent mb-3">{% trans "Upload do Arquivo" %}</h5>
+                    <p class="card-text">{% trans "Carregue seu arquivo XYZ contendo as coordenadas atômicas da estrutura molecular." %}</p>
                 </div>
             </div>
         </div>
@@ -84,9 +85,9 @@
                     <div class="workflow-icon">
                         <i class="bi bi-gear"></i>
                     </div>
-                    <h4 class="card-title fw-bold">Passo 2</h4>
-                    <h5 class="text-accent mb-3">Configuração</h5>
-                    <p class="card-text">Ajuste os parâmetros de simulação SIESTA conforme suas necessidades de pesquisa.</p>
+                    <h4 class="card-title fw-bold">{% trans "Passo 2" %}</h4>
+                    <h5 class="text-accent mb-3">{% trans "Configuração" %}</h5>
+                    <p class="card-text">{% trans "Ajuste os parâmetros de simulação SIESTA conforme suas necessidades de pesquisa." %}</p>
                 </div>
             </div>
         </div>
@@ -97,9 +98,9 @@
                     <div class="workflow-icon">
                         <i class="bi bi-download"></i>
                     </div>
-                    <h4 class="card-title fw-bold">Passo 3</h4>
-                    <h5 class="text-accent mb-3">Download e Execução</h5>
-                    <p class="card-text">Baixe o arquivo FDF gerado e execute no SIESTA para obter resultados da simulação.</p>
+                    <h4 class="card-title fw-bold">{% trans "Passo 3" %}</h4>
+                    <h5 class="text-accent mb-3">{% trans "Download e Execução" %}</h5>
+                    <p class="card-text">{% trans "Baixe o arquivo FDF gerado e execute no SIESTA para obter resultados da simulação." %}</p>
                 </div>
             </div>
         </div>
@@ -110,8 +111,8 @@
 <div class="container py-5">
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8 text-center">
-            <h2 class="fw-bold mb-3">Recursos Principais</h2>
-            <p class="text-muted">Tudo que você precisa para suas simulações computacionais</p>
+            <h2 class="fw-bold mb-3">{% trans "Recursos Principais" %}</h2>
+            <p class="text-muted">{% trans "Tudo que você precisa para suas simulações computacionais" %}</p>
         </div>
     </div>
     
@@ -123,9 +124,9 @@
                         <div class="bg-accent rounded-circle p-3 me-3">
                             <i class="bi bi-eye-fill text-white fs-4"></i>
                         </div>
-                        <h4 class="card-title mb-0">Visualização 3D Interativa</h4>
+                        <h4 class="card-title mb-0">{% trans "Visualização 3D Interativa" %}</h4>
                     </div>
-                    <p class="card-text">Visualize suas estruturas moleculares em 3D diretamente no navegador antes de iniciar as simulações.</p>
+                    <p class="card-text">{% trans "Visualize suas estruturas moleculares em 3D diretamente no navegador antes de iniciar as simulações." %}</p>
                 </div>
             </div>
         </div>
@@ -137,9 +138,9 @@
                         <div class="bg-accent rounded-circle p-3 me-3">
                             <i class="bi bi-save-fill text-white fs-4"></i>
                         </div>
-                        <h4 class="card-title mb-0">Configurações Salvas</h4>
+                        <h4 class="card-title mb-0">{% trans "Configurações Salvas" %}</h4>
                     </div>
-                    <p class="card-text">Salve suas configurações favoritas para reutilização rápida em futuras simulações.</p>
+                    <p class="card-text">{% trans "Salve suas configurações favoritas para reutilização rápida em futuras simulações." %}</p>
                 </div>
             </div>
         </div>
@@ -151,9 +152,9 @@
                         <div class="bg-accent rounded-circle p-3 me-3">
                             <i class="bi bi-clock-history text-white fs-4"></i>
                         </div>
-                        <h4 class="card-title mb-0">Histórico Completo</h4>
+                        <h4 class="card-title mb-0">{% trans "Histórico Completo" %}</h4>
                     </div>
-                    <p class="card-text">Acesse todo o histórico de suas conversões e downloads organizados por data.</p>
+                    <p class="card-text">{% trans "Acesse todo o histórico de suas conversões e downloads organizados por data." %}</p>
                 </div>
             </div>
         </div>
@@ -165,9 +166,9 @@
                         <div class="bg-accent rounded-circle p-3 me-3">
                             <i class="bi bi-shield-check text-white fs-4"></i>
                         </div>
-                        <h4 class="card-title mb-0">Pseudopotenciais Inclusos</h4>
+                        <h4 class="card-title mb-0">{% trans "Pseudopotenciais Inclusos" %}</h4>
                     </div>
-                    <p class="card-text">Receba automaticamente os pseudopotenciais necessários para cada elemento em sua estrutura.</p>
+                    <p class="card-text">{% trans "Receba automaticamente os pseudopotenciais necessários para cada elemento em sua estrutura." %}</p>
                 </div>
             </div>
         </div>
