@@ -28,6 +28,7 @@ urlpatterns = [
     path('', include('user.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('visualizer/', include('visualizer.urls')),
+    path('api/v1/', include('api.urls')),
 ]
 
 if settings.DEBUG:

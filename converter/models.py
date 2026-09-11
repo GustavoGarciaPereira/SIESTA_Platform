@@ -97,3 +97,59 @@ class SavedConfiguration(models.Model):
         """Metadados do modelo SavedConfiguration."""
         db_table = 'converter_savedconfiguration'
         unique_together = [['user', 'name']]
+
+
+class Pseudopotential(models.Model):
+    """Pseudopotencial disponível para download, gerenciável pelo admin.
+
+    Attributes:
+        symbol (str): Símbolo químico do elemento (ex: C, H, O)
+        functional (str): Funcional de troca-correlação do arquivo (ex: lda)
+        file (FileField): Arquivo .psf armazenado em media/pseudos/
+        description (str): Descrição opcional
+        is_active (bool): Se o pseudopotencial pode ser usado nos downloads
+        uploaded_at (datetime): Data/hora do cadastro
+    """
+
+    symbol = models.CharField(max_length=3)
+    functional = models.CharField(max_length=10, default='lda')
+    file = models.FileField(upload_to='pseudos/')
+    description = models.CharField(max_length=255, blank=True, default='')
+    is_active = models.BooleanField(default=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'converter_pseudopotential'
+        unique_together = [['symbol', 'functional']]
+        ordering = ['symbol', 'functional']
+
+    def __str__(self):
+        return f'{self.symbol}.{self.functional}'
+
+
+class SimulationPreset(models.Model):
+    """Preset global de parâmetros SIESTA, gerenciado pelo admin.
+
+    Attributes:
+        name (str): Nome exibido no seletor do conversor
+        description (str): Descrição opcional
+        parameters (JSONField): Valores dos campos do SIESTAParametersForm
+        is_active (bool): Se o preset aparece no conversor
+        sort_order (int): Ordem de exibição
+        created_at/updated_at (datetime): Controle de auditoria
+    """
+
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255, blank=True, default='')
+    parameters = models.JSONField()
+    is_active = models.BooleanField(default=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'converter_simulationpreset'
+        ordering = ['sort_order', 'name']
+
+    def __str__(self):
+        return self.name

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # Local imports
 from .forms import SIESTAParametersForm
-from .models import ConversionHistory, SavedConfiguration, UploadedFile
+from .models import ConversionHistory, SavedConfiguration, SimulationPreset, UploadedFile
 from .utils import convert_xyz_to_fdf, create_zip_archive, read_xyz, bounding_box
 from .periodic_table import ATOMIC_NUMBER_TO_SYMBOL, SYMBOL_TO_ATOMIC_NUMBER as PT
 
@@ -39,10 +39,16 @@ class ConvertView(View):
     template_name = 'converter/upload.html'
 
     def _context(self, form, **extra):
-        """Contexto comum, incluindo a tabela periódica para o JS (fonte única)."""
+        """Contexto comum, incluindo tabela periódica e presets para o JS."""
+        presets = list(SimulationPreset.objects.filter(is_active=True))
         context = {
             'form': form,
             'periodic_table_json': json.dumps(ATOMIC_NUMBER_TO_SYMBOL),
+            'presets': presets,
+            'presets_data': [
+                {'id': preset.id, 'parameters': preset.parameters}
+                for preset in presets
+            ],
         }
         context.update(extra)
         return context

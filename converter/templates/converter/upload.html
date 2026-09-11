@@ -76,6 +76,27 @@ document.addEventListener('DOMContentLoaded', function () {
     const collapseBtn = document.getElementById('btn-collapse-all');
     if (expandBtn) expandBtn.addEventListener('click', function () { toggleAll(true); });
     if (collapseBtn) collapseBtn.addEventListener('click', function () { toggleAll(false); });
+
+    // Presets de simulação
+    const presetSelect = document.getElementById('preset-select');
+    const presetsDataEl = document.getElementById('presets-data');
+    if (presetSelect && presetsDataEl) {
+        let presets = [];
+        try { presets = JSON.parse(presetsDataEl.textContent); } catch (e) { presets = []; }
+        const byId = {};
+        presets.forEach(function (preset) { byId[String(preset.id)] = preset.parameters; });
+        presetSelect.addEventListener('change', function () {
+            const params = byId[presetSelect.value];
+            if (!params) return;
+            const form = document.getElementById('convertForm');
+            Object.entries(params).forEach(function (entry) {
+                const el = form.elements[entry[0]];
+                if (!el) return;
+                if (el.type === 'checkbox') { el.checked = Boolean(entry[1]); }
+                else { el.value = entry[1]; }
+            });
+        });
+    }
 });
 </script>
 {% endblock %}
@@ -160,6 +181,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             </div>
         </div>
+
+        {% if presets %}
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="row align-items-center g-2">
+                    <div class="col-md-4">
+                        <label for="preset-select" class="form-label mb-0">{% trans "Preset de simulação" %}</label>
+                    </div>
+                    <div class="col-md-8">
+                        <select id="preset-select" class="form-select">
+                            <option value="">{% trans "Selecione um preset..." %}</option>
+                            {% for preset in presets %}
+                            <option value="{{ preset.id }}">{{ preset.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">{% trans "Preenche os parâmetros com valores pré-definidos; ajuste depois se precisar." %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {{ presets_data|json_script:"presets-data" }}
 
         <!-- Parâmetros avançados -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 mb-2 gap-2">

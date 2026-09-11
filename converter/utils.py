@@ -11,6 +11,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
 # Local imports
+from .models import Pseudopotential
 from .periodic_table import SYMBOL_TO_ATOMIC_NUMBER as PT, ATOMIC_NUMBER_TO_SYMBOL
 
 
@@ -232,8 +233,12 @@ def create_zip_archive(request, fdf_content, system_name, unique_species):
     Raises:
         N/A - Retorna HttpResponse em caso de erro
     """
-    # Verifica se o diretório de pseudopotenciais foi configurado
-    if not hasattr(settings, 'PSEUDOPOTENTIALS_DIR') or not os.path.isdir(settings.PSEUDOPOTENTIALS_DIR):
+    # Fonte dos pseudopotenciais: cadastro no banco (admin) e/ou diretório legado
+    pseudos_dir = getattr(settings, 'PSEUDOPOTENTIALS_DIR', None)
+    has_dir = bool(pseudos_dir and os.path.isdir(pseudos_dir))
+    has_db_entries = Pseudopotential.objects.filter(is_active=True).exists()
+
+    if not has_dir and not has_db_entries:
         messages.error(request, _("O diretório de pseudopotenciais não está configurado no servidor. "
                                    "Apenas o arquivo .fdf será baixado."))
         response = HttpResponse(fdf_content, content_type='text/plain')
@@ -250,12 +255,29 @@ def create_zip_archive(request, fdf_content, system_name, unique_species):
         # 2. Adiciona os arquivos .psf ao zip
         # NOTA: os pseudopotenciais disponíveis no servidor são LDA; por isso o
         # sufixo '.lda' é fixo aqui e no bloco ChemicalSpeciesLabel do FDF.
-        pseudos_dir = settings.PSEUDOPOTENTIALS_DIR
         for sym in unique_species:
             pseudo_filename = f"{sym}.lda.psf"
-            pseudo_path = os.path.join(pseudos_dir, pseudo_filename)
+            pseudo_path = None
 
-            if os.path.exists(pseudo_path):
+            # Preferência: registro ativo no banco (gerenciado pelo admin)
+            entry = Pseudopotential.objects.filter(
+                symbol=sym, functional='lda', is_active=True
+            ).first()
+            if entry and entry.file:
+                try:
+                    candidate = entry.file.path
+                except (NotImplementedError, ValueError):
+                    candidate = None
+                if candidate and os.path.exists(candidate):
+                    pseudo_path = candidate
+
+            # Fallback: diretório legado PSEUDOPOTENTIALS_DIR
+            if pseudo_path is None and has_dir:
+                candidate = os.path.join(pseudos_dir, pseudo_filename)
+                if os.path.exists(candidate):
+                    pseudo_path = candidate
+
+            if pseudo_path:
                 # Adiciona o arquivo ao zip sem a estrutura de diretórios do servidor
                 zip_f.write(pseudo_path, arcname=pseudo_filename)
             else:

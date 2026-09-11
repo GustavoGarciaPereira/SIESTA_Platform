@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv 
 
@@ -54,10 +55,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'converter',
     'user',
     'dashboard',
     'visualizer',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -191,6 +194,44 @@ STORAGES = {
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# API REST
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
+
+# Celery (processamento assíncrono)
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', CELERY_BROKER_URL)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+# Em DEBUG/testes as tarefas rodam de forma síncrona (sem broker)
+CELERY_TASK_ALWAYS_EAGER = (
+    os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'True' if DEBUG else 'False').lower() == 'true'
+)
+CELERY_TASK_EAGER_PROPAGATES = True
+CELERY_BEAT_SCHEDULE = {
+    'cleanup-temp-files-daily': {
+        'task': 'converter.cleanup_temp_files',
+        'schedule': 60 * 60 * 24,
+        'args': (30,),
+    },
+}
 
 # Tempo de validade do link de redefinição de senha (24h — coerente com o e-mail)
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24

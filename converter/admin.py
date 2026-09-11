@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import ConversionHistory, UploadedFile, SavedConfiguration
+from .models import (
+    ConversionHistory,
+    Pseudopotential,
+    SavedConfiguration,
+    SimulationPreset,
+    UploadedFile,
+)
 
 
 @admin.register(ConversionHistory)
@@ -27,3 +33,21 @@ class SavedConfigurationAdmin(admin.ModelAdmin):
     search_fields = ('name', 'description', 'user__username')
     readonly_fields = ('created_at', 'last_used', 'use_count')
     date_hierarchy = 'created_at'
+
+
+@admin.register(Pseudopotential)
+class PseudopotentialAdmin(admin.ModelAdmin):
+    list_display = ('id', 'symbol', 'functional', 'file', 'is_active', 'uploaded_at')
+    list_filter = ('is_active', 'functional', 'uploaded_at')
+    search_fields = ('symbol', 'description', 'file')
+    readonly_fields = ('uploaded_at',)
+    date_hierarchy = 'uploaded_at'
+
+
+@admin.register(SimulationPreset)
+class SimulationPresetAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'is_active', 'sort_order', 'updated_at')
+    list_filter = ('is_active', 'updated_at')
+    search_fields = ('name', 'description')
+    readonly_fields = ('created_at', 'updated_at')
+    list_editable = ('is_active', 'sort_order')

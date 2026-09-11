@@ -2,11 +2,9 @@
 import logging
 
 # Django imports
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -16,6 +14,7 @@ from django.views.generic import CreateView, TemplateView
 # Local imports
 from .forms import ContactForm, UserCreationForm, UserProfileForm
 from .models import UserProfile
+from .tasks import send_contact_email
 
 logger = logging.getLogger(__name__)
 
@@ -55,16 +54,11 @@ def contact_submit_view(request):
 
     data = form.cleaned_data
     try:
-        send_mail(
-            subject=f"[SIESTA Platform] {data['subject']}",
-            message=(
-                f"Nome: {data['name']}\n"
-                f"E-mail: {data['email']}\n\n"
-                f"{data['message']}"
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL or 'no-reply@siesta-platform',
-            recipient_list=[settings.CONTACT_EMAIL],
-            fail_silently=False,
+        send_contact_email.delay(
+            data['name'],
+            data['email'],
+            data['subject'],
+            data['message'],
         )
     except Exception:
         logger.exception("Falha ao enviar mensagem de contato de %s", data.get('email'))

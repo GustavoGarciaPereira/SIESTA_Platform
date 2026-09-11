@@ -1,13 +1,20 @@
 import io
 import os
 import json
+from datetime import timedelta
 
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import UploadedFile, ConversionHistory, SavedConfiguration
+from .models import (
+    ConversionHistory,
+    Pseudopotential,
+    SavedConfiguration,
+    SimulationPreset,
+    UploadedFile,
+)
 from .forms import SIESTAParametersForm
 from .utils import read_xyz, bounding_box, convert_xyz_to_fdf, create_zip_archive
 
@@ -1159,3 +1166,129 @@ class FormExtrasTests(TestCase):
 
         self.assertTrue(section_has_errors(form, 'MeshCutoff'))
         self.assertFalse(section_has_errors(form, 'download_pseudos'))
+
+
+class PseudopotentialTests(TestCase):
+    """Testes do modelo Pseudopotential e sua integração com o ZIP."""
+
+    def test_create_and_str(self):
+        pseudo = Pseudopotential.objects.create(
+            symbol='C', functional='lda', file='pseudos/C.lda.psf'
+        )
+        self.assertEqual(str(pseudo), 'C.lda')
+        self.assertTrue(pseudo.is_active)
+
+    def test_unique_symbol_functional(self):
+        from django.db import IntegrityError
+
+        Pseudopotential.objects.create(symbol='C', functional='lda', file='pseudos/C.lda.psf')
+        with self.assertRaises(IntegrityError):
+            Pseudopotential.objects.create(symbol='C', functional='lda', file='pseudos/C2.lda.psf')
+
+    def _add_message_middleware(self, request):
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        setattr(request, 'session', 'session')
+        setattr(request, '_messages', FallbackStorage(request))
+
+    def test_zip_uses_db_pseudopotential(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import RequestFactory, override_settings
+        import tempfile
+        import zipfile
+
+        with tempfile.TemporaryDirectory() as tmp_media:
+            with override_settings(MEDIA_ROOT=tmp_media, PSEUDOPOTENTIALS_DIR='/caminho/inexistente'):
+                Pseudopotential.objects.create(
+                    symbol='H', functional='lda',
+                    file=SimpleUploadedFile('H.lda.psf', b'PSEUDO-CONTENT'),
+                )
+                request = RequestFactory().get('/')
+                self._add_message_middleware(request)
+
+                response = create_zip_archive(request, 'FDF', 'sys', ['H'])
+
+        self.assertEqual(response['Content-Type'], 'application/zip')
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_f:
+            self.assertIn('H.lda.psf', zip_f.namelist())
+            self.assertEqual(zip_f.read('H.lda.psf'), b'PSEUDO-CONTENT')
+
+    def test_zip_ignores_inactive_pseudopotential(self):
+        from django.test import RequestFactory, override_settings
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        with override_settings(PSEUDOPOTENTIALS_DIR='/caminho/inexistente'):
+            Pseudopotential.objects.create(
+                symbol='H', functional='lda', is_active=False,
+                file=SimpleUploadedFile('H.lda.psf', b'PSEUDO'),
+            )
+            request = RequestFactory().get('/')
+            self._add_message_middleware(request)
+
+            response = create_zip_archive(request, 'FDF', 'sys', ['H'])
+
+        # Sem diretório e sem registros ativos, retorna apenas o .fdf
+        self.assertEqual(response['Content-Type'], 'text/plain')
+
+
+class SimulationPresetTests(TestCase):
+    """Testes do modelo SimulationPreset e do seletor no conversor."""
+
+    def test_create_and_str(self):
+        preset = SimulationPreset.objects.create(
+            name='Padrão LDA',
+            parameters={'PAO_BasisSize': 'DZP'},
+        )
+        self.assertEqual(str(preset), 'Padrão LDA')
+        self.assertTrue(preset.is_active)
+        self.assertEqual(preset.sort_order, 0)
+
+    def test_view_lists_only_active_presets(self):
+        SimulationPreset.objects.create(name='Ativo', parameters={'PAO_BasisSize': 'DZP'})
+        SimulationPreset.objects.create(name='Inativo', is_active=False, parameters={})
+
+        response = self.client.get(reverse('convert'))
+
+        self.assertContains(response, 'preset-select')
+        self.assertContains(response, 'Ativo')
+        self.assertNotContains(response, 'Inativo')
+
+
+class CleanupTempFilesTaskTests(TestCase):
+    """Testes da tarefa Celery de limpeza de arquivos temporários."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='taskuser', password='testpass123', email='task@example.com'
+        )
+
+    def _uploaded(self, name, days_old, is_temp=True):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        return UploadedFile.objects.create(
+            user=self.user,
+            file=SimpleUploadedFile(name, b'conteudo'),
+            original_name=name,
+            file_type='xyz',
+            size=8,
+            checksum='abc',
+            upload_date=timezone.now() - timedelta(days=days_old),
+            is_temp=is_temp,
+        )
+
+    def test_cleanup_removes_only_old_temp_files(self):
+        from django.test import override_settings
+        from .tasks import cleanup_temp_files
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp_media:
+            with override_settings(MEDIA_ROOT=tmp_media):
+                old = self._uploaded('old.xyz', days_old=40, is_temp=True)
+                recent = self._uploaded('recent.xyz', days_old=1, is_temp=True)
+                permanent = self._uploaded('permanent.xyz', days_old=40, is_temp=False)
+
+                removed = cleanup_temp_files(30)
+
+        self.assertEqual(removed, 1)
+        self.assertFalse(UploadedFile.objects.filter(id=old.id).exists())
+        self.assertTrue(UploadedFile.objects.filter(id=recent.id).exists())
+        self.assertTrue(UploadedFile.objects.filter(id=permanent.id).exists())
