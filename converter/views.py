@@ -103,7 +103,8 @@ class ConvertView(View):
         try:
             # Calcular dimensões da molécula e ajustar célula com padding
             xyz_file.seek(0)
-            atoms, _ = read_xyz(xyz_file)
+            # Atenção: não usar "_" aqui — ele é o gettext importado.
+            atoms, _atomic_numbers_detected = read_xyz(xyz_file)
             if atoms:
                 x_min, x_max, y_min, y_max, z_min, z_max = bounding_box(atoms)
                 mol_dx = x_max - x_min

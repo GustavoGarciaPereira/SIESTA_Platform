@@ -638,6 +638,60 @@ class ConvertViewTests(TestCase):
         self.assertIn('attachment', response['Content-Disposition'])
         self.assertIn('.fdf', response['Content-Disposition'])
 
+    def test_post_view_with_atomic_numbers(self):
+        """Regressão: XYZ com números atômicos não deve gerar 500 (shadowing do gettext)."""
+        from django.contrib import messages as django_messages
+
+        xyz_content = "2\nTest\n6  0.0  0.0  0.0\n1  1.0  0.0  0.0"
+
+        with open('test_atomic.xyz', 'w') as f:
+            f.write(xyz_content)
+
+        with open('test_atomic.xyz', 'rb') as f:
+            response = self.client.post(reverse('convert'), {
+                'xyz_file': f,
+                'system_name': 'AtomicSystem',
+                'lattice_constant': 1.0,
+                'cell_size_x': 50.0,
+                'cell_size_y': 50.0,
+                'cell_size_z': 50.0,
+                'padding': 1.0,
+                'PAO_BasisSize': 'DZP',
+                'PAO_EnergyShift': 0.05,
+                'MD_TypeOfRun': 'CG',
+                'MD_NumCGsteps': 1000,
+                'MaxSCFIterations': 100,
+                'SpinPolarized': True,
+                'MeshCutoff': 200.0,
+                'DM_UseSaveDM': True,
+                'UseSaveData': True,
+                'MD_UseSaveXV': True,
+                'MD_UseSaveCG': True,
+                'DM_MixingWeight': 0.10,
+                'DM_NumberPulay': 3,
+                'WriteCoorXmol': True,
+                'WriteMullikenPop': 1,
+                'XC_functional': 'LDA',
+                'XC_authors': 'CA',
+                'SolutionMethod': 'diagon',
+                'ElectronicTemperature': 80.0,
+                'DM_Tolerance': 1.0e-3,
+                'MD_MaxForceTol': 0.05,
+                'download_pseudos': False,
+            })
+
+        os.remove('test_atomic.xyz')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain')
+        content = response.content.decode()
+        self.assertIn('C.lda', content)
+        self.assertIn('H.lda', content)
+
+        # O aviso de conversão de números atômicos deve ter sido gerado
+        msgs = [str(m) for m in django_messages.get_messages(response.wsgi_request)]
+        self.assertTrue(any('Números atômicos' in m for m in msgs))
+
     def test_post_view_with_preview(self):
         """Testa POST com preview (não download)."""
         xyz_content = "2\nTest\nH  0.0  0.0  0.0\nO  1.0  0.0  0.0"
