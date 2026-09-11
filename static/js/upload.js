@@ -95,90 +95,54 @@ document.addEventListener('DOMContentLoaded', function() {
  * Inicializa o visualizador 3D para arquivos XYZ
  */
 function initialize3DViewer() {
-    console.log('🔍 Inicializando visualizador 3D...');
-    
-    let xyzFileElement = document.querySelector('input[name="xyz_file"]'); 
+    let xyzFileElement = document.querySelector('input[name="xyz_file"]');
     let viewerContainer = document.getElementById('molviewer');
     let glviewer = null;
 
-    console.log('📋 Elementos encontrados:');
-    console.log('  - input[name="xyz_file"]:', xyzFileElement);
-    console.log('  - div#molviewer:', viewerContainer);
-    console.log('  - $3Dmol definido?', typeof $3Dmol !== 'undefined' ? '✅ Sim' : '❌ Não');
-
     if (!xyzFileElement) {
         xyzFileElement = document.getElementById('id_xyz_file');
-        console.log('  - Tentando id_xyz_file:', xyzFileElement);
     }
 
     if (xyzFileElement && viewerContainer) {
-        console.log('✅ Elementos encontrados, configurando event listener...');
-        
         xyzFileElement.addEventListener('change', function(event) {
-            console.log('📁 Arquivo selecionado:', event.target.files[0] ? event.target.files[0].name : 'Nenhum');
-            
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const rawXyzData = e.target.result;
-                    console.log('📄 Arquivo lido, tamanho:', rawXyzData.length, 'caracteres');
-
-                    console.log('=== RAW (primeiras 5 linhas) ===');
-                    console.log(rawXyzData.split('\n').slice(0, 7).join('\n'));
-
                     // Normaliza números atômicos → símbolos químicos antes de passar ao 3Dmol
-                    const xyzData = normalizeXYZSymbols(rawXyzData);
-
-                    console.log('=== NORMALIZADO (primeiras 5 linhas) ===');
-                    console.log(xyzData.split('\n').slice(0, 7).join('\n'));
+                    const xyzData = normalizeXYZSymbols(e.target.result);
 
                     // Limpa o container antes de adicionar novo viewer
-                    viewerContainer.innerHTML = ''; 
+                    viewerContainer.innerHTML = '';
 
                     try {
                         if (typeof $3Dmol === 'undefined') {
                             throw new Error('3Dmol.js não está carregado');
                         }
-                        
+
                         glviewer = $3Dmol.createViewer(viewerContainer, { backgroundColor: 'white' });
                         glviewer.addModel(xyzData, 'xyz');
                         glviewer.setStyle({}, {stick: {radius: 0.15}, sphere: {scale: 0.25}});
                         glviewer.zoomTo();
                         glviewer.render();
-                        
-                        console.log('✅ Molécula renderizada com sucesso!');
                     } catch (error) {
-                        console.error('❌ Erro ao criar visualizador 3D:', error);
+                        console.error('Erro ao criar visualizador 3D:', error);
                         viewerContainer.innerHTML = '<div class="alert alert-danger text-center p-3">Erro ao renderizar molécula 3D: ' + error.message + '</div>';
                     }
                 };
                 reader.onerror = function() {
-                    console.error("❌ Erro ao ler o arquivo:", reader.error);
+                    console.error('Erro ao ler o arquivo XYZ:', reader.error);
                     viewerContainer.innerHTML = '<div class="alert alert-danger text-center p-3">Erro ao ler o arquivo XYZ.</div>';
                 };
                 reader.readAsText(file);
             } else {
-                console.log('📭 Nenhum arquivo selecionado');
                 viewerContainer.innerHTML = '<div class="text-center p-5 text-muted">Selecione um arquivo XYZ acima para visualizar a molécula.</div>';
                 if (glviewer) {
                     glviewer.clear();
-                    glviewer = null; 
+                    glviewer = null;
                 }
             }
         });
-        
-        console.log('✅ Event listener configurado com sucesso!');
-    } else {
-        if (!xyzFileElement) {
-            console.error("❌ Elemento input[name='xyz_file'] ou #id_xyz_file não encontrado.");
-            const allFileInputs = document.querySelectorAll('input[type="file"]');
-            console.log('📋 Todos os inputs de arquivo encontrados:', allFileInputs.length);
-            allFileInputs.forEach((input, i) => {
-                console.log(`  ${i}: name="${input.name}", id="${input.id}"`);
-            });
-        }
-        if (!viewerContainer) console.error("❌ Elemento div#molviewer não encontrado.");
     }
 }
 
@@ -278,11 +242,8 @@ function initializeSaveConfiguration() {
     }
 }
 
-// Verificar se 3Dmol.js está carregado e inicializar visualizador
-if (typeof $3Dmol !== 'undefined') {
-    // Já inicializado no DOMContentLoaded
-} else {
-    console.log('⏳ 3Dmol.js ainda não carregado, aguardando...');
+// Se o 3Dmol.js carregar depois do DOMContentLoaded, inicializa o visualizador
+if (typeof $3Dmol === 'undefined') {
     setTimeout(function() {
         if (typeof $3Dmol !== 'undefined') {
             const viewerContainer = document.getElementById('molviewer');
@@ -290,7 +251,7 @@ if (typeof $3Dmol !== 'undefined') {
                 initialize3DViewer();
             }
         } else {
-            console.error('❌ 3Dmol.js não carregado após timeout');
+            console.error('3Dmol.js não carregado após timeout');
             const viewerContainer = document.getElementById('molviewer');
             if (viewerContainer) {
                 viewerContainer.innerHTML = '<div class="alert alert-warning text-center p-3">A biblioteca 3Dmol.js não foi carregada. A visualização 3D não está disponível.</div>';

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Entrar - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Entrar" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -44,8 +44,8 @@
                     {% if form.errors %}
                     <div class="alert alert-danger alert-dismissible fade show">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <strong>Erro!</strong> Nome de usuário ou senha incorretos.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                        <strong>{% trans "Erro!" %}</strong> {% trans "Nome de usuário ou senha incorretos." %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Fechar' %}"></button>
                     </div>
                     {% endif %}
                     
@@ -53,12 +53,12 @@
                         {% if user.is_authenticated %}
                         <div class="alert alert-warning">
                             <i class="bi bi-info-circle-fill me-2"></i>
-                            Sua conta não tem acesso a esta página. Para prosseguir, faça login com uma conta que tenha acesso.
+                            {% trans "Sua conta não tem acesso a esta página. Para prosseguir, faça login com uma conta que tenha acesso." %}
                         </div>
                         {% else %}
                         <div class="alert alert-info">
                             <i class="bi bi-info-circle-fill me-2"></i>
-                            Faça login para ver esta página.
+                            {% trans "Faça login para ver esta página." %}
                         </div>
                         {% endif %}
                     {% endif %}
@@ -69,7 +69,7 @@
                         <!-- Campo de Nome de Usuário -->
                         <div class="mb-4">
                             <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">
-                                <i class="bi bi-person-fill me-2"></i>Nome de usuário
+                                <i class="bi bi-person-fill me-2"></i>{{ form.username.label }}
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted">
@@ -78,7 +78,7 @@
                                 <input type="text" name="{{ form.username.html_name }}" 
                                        id="{{ form.username.id_for_label }}" 
                                        class="form-control" 
-                                       placeholder="Digite seu nome de usuário" 
+                                       placeholder="{% trans 'Digite seu nome de usuário' %}" 
                                        required autofocus>
                             </div>
                             {% if form.username.errors %}
@@ -94,10 +94,10 @@
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label for="{{ form.password.id_for_label }}" class="form-label fw-bold">
-                                    <i class="bi bi-shield-lock me-2"></i>Senha
+                                    <i class="bi bi-shield-lock me-2"></i>{{ form.password.label }}
                                 </label>
                                 <a href="{% url 'password_reset' %}" class="text-accent small text-decoration-none">
-                                    <i class="bi bi-key-fill me-1"></i>Esqueceu a senha?
+                                    <i class="bi bi-key-fill me-1"></i>{% trans "Esqueceu a senha?" %}
                                 </a>
                             </div>
                             <div class="input-group">
@@ -107,7 +107,7 @@
                                 <input type="password" name="{{ form.password.html_name }}" 
                                        id="{{ form.password.id_for_label }}" 
                                        class="form-control" 
-                                       placeholder="Digite sua senha" 
+                                       placeholder="{% trans 'Digite sua senha' %}" 
                                        required>
                             </div>
                             {% if form.password.errors %}
@@ -128,7 +128,7 @@
                         <!-- Botão de Login -->
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                                <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Entrar" %}
                             </button>
                         </div>
                         
@@ -140,7 +140,7 @@
                 <!-- Rodapé -->
                 <div class="card-footer bg-light py-4 text-center">
                     <p class="mb-0 fw-bold">
-                        Não tem uma conta? <a href="{% url 'signup' %}" class="text-accent text-decoration-none fw-bold">{% trans "Registre-se" %}</a>
+                        {% trans "Não tem uma conta?" %} <a href="{% url 'signup' %}" class="text-accent text-decoration-none fw-bold">{% trans "Registre-se" %}</a>
                     </p>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Dashboard de URLs - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Dashboard de URLs" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -51,8 +52,8 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">Central de URLs da Plataforma</h1>
-    <p class="lead">Abaixo estão listadas todas as rotas disponíveis no projeto. Clique nos botões para acessar as páginas ou visualize os parâmetros necessários para rotas dinâmicas.</p>
+    <h1 class="mb-4">{% trans "Central de URLs da Plataforma" %}</h1>
+    <p class="lead">{% trans "Abaixo estão listadas todas as rotas disponíveis no projeto. Clique nos botões para acessar as páginas ou visualize os parâmetros necessários para rotas dinâmicas." %}</p>
 
     {% for group in url_groups %}
     <div class="card mb-4 dashboard-card">
@@ -64,10 +65,10 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>Nome</th>
-                            <th>Descrição</th>
-                            <th>URL</th>
-                            <th>Ação</th>
+                            <th>{% trans "Nome" %}</th>
+                            <th>{% trans "Descrição" %}</th>
+                            <th>{% trans "URL" %}</th>
+                            <th>{% trans "Ação" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,10 +88,10 @@
                             </td>
                             <td>
                                 {% if not url_item.params %}
-                                    <a href="{% url url_item.url_name %}" class="btn btn-sm btn-success" target="_blank">Acessar</a>
+                                    <a href="{% url url_item.url_name %}" class="btn btn-sm btn-outline-primary" target="_blank">{% trans "Acessar" %}</a>
                                 {% else %}
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#paramModal{{ forloop.parentloop.counter }}{{ forloop.counter }}">
-                                        <i class="bi bi-info-circle"></i> Requer parâmetros
+                                    <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#paramModal{{ forloop.parentloop.counter }}{{ forloop.counter }}">
+                                        <i class="bi bi-info-circle"></i> {% trans "Requer parâmetros" %}
                                     </button>
 
                                     <!-- Modal para explicar parâmetros -->
@@ -102,17 +103,17 @@
                                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Esta URL requer os seguintes parâmetros:</p>
+                                                    <p>{% trans "Esta URL requer os seguintes parâmetros:" %}</p>
                                                     <ul class="mb-3">
                                                         {% for param in url_item.params %}
                                                         <li><code class="bg-light p-1 rounded">{{ param }}</code></li>
                                                         {% endfor %}
                                                     </ul>
-                                                    <p class="mb-2">Exemplo de uso:</p>
+                                                    <p class="mb-2">{% trans "Exemplo de uso:" %}</p>
                                                     <code class="d-block bg-light p-2 rounded font-mono">{{ url_item.example_url }}</code>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Fechar" %}</button>
                                                 </div>
                                             </div>
                                         </div>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Minhas Configurações - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Minhas Configurações" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -48,10 +48,10 @@
     
     <div class="mb-3">
         <a href="{% url 'convert' %}" class="btn btn-primary">
-            <i class="bi bi-arrow-left"></i> Voltar para Conversão
+            <i class="bi bi-arrow-left"></i> {% trans "Voltar para Conversão" %}
         </a>
         <a href="{% url 'converter_history' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-clock-history"></i> Histórico
+            <i class="bi bi-clock-history"></i> {% trans "Histórico" %}
         </a>
     </div>
     
@@ -73,9 +73,6 @@
                     <tr>
                         <td>
                             <strong>{{ config.name }}</strong>
-                            {% if config.is_default %}
-                                <span class="badge bg-info">{% trans "Padrão" %}</span>
-                            {% endif %}
                         </td>
                         <td>{{ config.description|truncatechars:50 }}</td>
                         <td>{{ config.created_at|date:"d/m/Y" }}</td>
@@ -85,18 +82,19 @@
                             <div class="btn-group" role="group">
                                 <form method="post" action="{% url 'load_configuration' config.id %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        <i class="bi bi-play-circle"></i> Carregar
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-play-circle"></i> {% trans "Carregar" %}
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal{{ config.id }}">
-                                    <i class="bi bi-info-circle"></i> Detalhes
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#detailsModal{{ config.id }}">
+                                    <i class="bi bi-info-circle"></i> {% trans "Detalhes" %}
                                 </button>
                                 <form method="post" action="{% url 'delete_configuration' config.id %}" class="d-inline"
-                                      onsubmit="return confirm('Tem certeza que deseja excluir esta configuração?')">
+                                      data-confirm="{% trans 'Tem certeza que deseja excluir esta configuração?' %}"
+                                      onsubmit="return confirm(this.dataset.confirm)">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="bi bi-trash"></i> Excluir
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> {% trans "Excluir" %}
                                     </button>
                                 </form>
                             </div>
@@ -106,14 +104,14 @@
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="detailsModalLabel{{ config.id }}">Detalhes da Configuração: {{ config.name }}</h5>
+                                            <h5 class="modal-title" id="detailsModalLabel{{ config.id }}">{% trans "Detalhes da Configuração:" %} {{ config.name }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p><strong>Descrição:</strong> {{ config.description }}</p>
-                                            <p><strong>Criada em:</strong> {{ config.created_at|date:"d/m/Y H:i" }}</p>
-                                            <p><strong>Último uso:</strong> {{ config.last_used|date:"d/m/Y H:i" }}</p>
-                                            <p><strong>Número de usos:</strong> {{ config.use_count }}</p>
+                                            <p><strong>{% trans "Descrição:" %}</strong> {{ config.description }}</p>
+                                            <p><strong>{% trans "Criada em:" %}</strong> {{ config.created_at|date:"d/m/Y H:i" }}</p>
+                                            <p><strong>{% trans "Último uso:" %}</strong> {{ config.last_used|date:"d/m/Y H:i" }}</p>
+                                            <p><strong>{% trans "Número de usos:" %}</strong> {{ config.use_count }}</p>
                                             
                                             <h6>{% trans "Parâmetros:" %}</h6>
                                             <div class="card config-card">
@@ -123,7 +121,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Fechar" %}</button>
                                             <form method="post" action="{% url 'load_configuration' config.id %}" class="d-inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-primary">{% trans "Carregar esta configuração" %}</button>
@@ -139,9 +137,15 @@
             </table>
         </div>
     {% else %}
-        <div class="alert alert-info">
-            <p class="mb-0">{% trans "Você ainda não tem configurações salvas." %}</p>
-            <p class="mb-0">Vá para a <a href="{% url 'convert' %}">{% trans "página de conversão" %}</a> para criar uma configuração.</p>
+        <div class="card">
+            <div class="card-body empty-state">
+                <i class="bi bi-sliders empty-state-icon d-block"></i>
+                <h4 class="mb-2">{% trans "Você ainda não tem configurações salvas" %}</h4>
+                <p class="text-muted mb-4">{% trans "Ajuste os parâmetros no conversor e salve um conjunto para reutilizar depois." %}</p>
+                <a href="{% url 'convert' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>{% trans "Nova Conversão" %}
+                </a>
+            </div>
         </div>
     {% endif %}
 </div>

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Página não encontrada - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Página não encontrada" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -19,8 +20,8 @@
         <div class="col-md-8 col-lg-6">
             <div class="card error-card shadow-lg border-0">
                 <div class="card-header error-header text-dark text-center py-4">
-                    <h2 class="fw-bold mb-2"><i class="bi bi-search me-2"></i>Página não encontrada</h2>
-                    <p class="mb-0 opacity-75">O endereço acessado não existe</p>
+                    <h2 class="fw-bold mb-2"><i class="bi bi-search me-2"></i>{% trans "Página não encontrada" %}</h2>
+                    <p class="mb-0 opacity-75">{% trans "O endereço acessado não existe" %}</p>
                 </div>
 
                 <div class="card-body p-4 p-lg-5 text-center">
@@ -28,14 +29,14 @@
                         <span class="display-1 fw-bold text-warning">404</span>
                     </div>
                     <p class="lead mb-3">
-                        A página que você procura pode ter sido removida ou o link está incorreto.
+                        {% trans "A página que você procura pode ter sido removida ou o link está incorreto." %}
                     </p>
                     <div class="d-flex gap-3 justify-content-center flex-wrap">
                         <a href="{% url 'home' %}" class="btn btn-primary px-4 fw-bold">
-                            <i class="bi bi-house-fill me-2"></i>Página inicial
+                            <i class="bi bi-house-fill me-2"></i>{% trans "Página inicial" %}
                         </a>
                         <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">
-                            <i class="bi bi-arrow-left me-2"></i>Voltar
+                            <i class="bi bi-arrow-left me-2"></i>{% trans "Voltar" %}
                         </a>
                     </div>
                 </div>

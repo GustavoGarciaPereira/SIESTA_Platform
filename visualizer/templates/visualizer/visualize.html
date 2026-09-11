@@ -10,7 +10,7 @@
     display: block;
     border-radius: 8px;
     width: 100%;
-    height: 650px;
+    height: clamp(360px, 60vh, 650px);
     border: 1px solid #ced4da;
     background: #11191f;
   }
@@ -24,6 +24,22 @@
   }
   .controls-row label { margin-bottom: 0; font-weight: 600; font-size: 0.875rem; }
   #info-box { font-size: 0.875rem; color: var(--color-text-secondary); }
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .legend-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    display: inline-block;
+  }
 </style>
 {% endblock %}
 
@@ -59,8 +75,8 @@
         </div>
         <div>
           <label for="grid-slider">{% trans "Grade 3D" %}</label>
-          <input type="range" id="grid-slider" min="4" max="16" value="8" style="width:7rem;">
-          <output id="grid-value">8</output><sup>3</sup>
+          <input type="range" id="grid-slider" min="4" max="16" value="6" style="width:7rem;">
+          <output id="grid-value">6</output><sup>3</sup>
         </div>
         <button id="btn-render" class="btn btn-primary btn-sm">
           <i class="bi bi-play-fill"></i> {% trans "Renderizar 3D" %}
@@ -68,8 +84,25 @@
         <button id="btn-lines" class="btn btn-outline-success btn-sm">
           <i class="bi bi-lightning-charge-fill"></i> {% trans "Traçar Linhas" %}
         </button>
-        <button id="btn-zoom-in" class="btn btn-outline-secondary btn-sm" title="{% trans 'Zoom +' %}">➕</button>
-        <button id="btn-zoom-out" class="btn btn-outline-secondary btn-sm" title="{% trans 'Zoom −' %}">➖</button>
+        <button id="btn-reset" class="btn btn-outline-secondary btn-sm" title="{% trans 'Resetar câmera' %}" aria-label="{% trans 'Resetar câmera' %}">
+          <i class="bi bi-aspect-ratio"></i>
+        </button>
+        <button id="btn-zoom-in" class="btn btn-outline-secondary btn-sm" title="{% trans 'Zoom +' %}" aria-label="{% trans 'Zoom +' %}">
+          <i class="bi bi-zoom-in"></i>
+        </button>
+        <button id="btn-zoom-out" class="btn btn-outline-secondary btn-sm" title="{% trans 'Zoom −' %}" aria-label="{% trans 'Zoom −' %}">
+          <i class="bi bi-zoom-out"></i>
+        </button>
+        <button id="btn-export" class="btn btn-outline-secondary btn-sm" title="{% trans 'Exportar imagem PNG' %}" aria-label="{% trans 'Exportar imagem PNG' %}">
+          <i class="bi bi-image"></i>
+        </button>
+      </div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-dot" style="background:#ff4136"></span>{% trans "Carga positiva" %}</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#0074d9"></span>{% trans "Carga negativa" %}</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#aaaaaa"></span>{% trans "Neutro" %}</span>
+        <span class="legend-item"><i class="bi bi-arrow-right" style="color:#ff8800"></i>{% trans "Campo elétrico" %}</span>
+        <span class="legend-item"><span style="display:inline-block;width:1.5rem;height:2px;background:#00ff88"></span>{% trans "Linhas de campo" %}</span>
       </div>
       <div id="canvas3d"></div>
       <div id="info-box" class="mt-2 hidden">
@@ -96,6 +129,7 @@
     grid:           "{% trans 'grade' %}",
     vectors:        "{% trans 'vetores' %}",
     fieldLines:     "{% trans 'linhas de campo' %}",
+    computing:      "{% trans 'Calculando...' %}",
     wasmLoadError:  "{% trans 'Falha ao carregar o módulo WASM/Three.js. Verifique se o build foi executado (visualizer/rust/build.sh).' %}",
   };
 </script>
@@ -137,6 +171,8 @@
   const linesBtn = document.getElementById('btn-lines');
   const zoomInBtn = document.getElementById('btn-zoom-in');
   const zoomOutBtn = document.getElementById('btn-zoom-out');
+  const resetBtn = document.getElementById('btn-reset');
+  const exportBtn = document.getElementById('btn-export');
   const container = document.getElementById('canvas3d');
   const infoBox = document.getElementById('info-box');
   const infoText = document.getElementById('info-text');
@@ -171,7 +207,7 @@
     scene.add(dynamicGroup);
     camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 200);
     camera.position.set(15, 10, 20);
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
@@ -216,6 +252,32 @@
     camera.position.addScaledVector(dir, 0.3);
     controls.update();
   });
+  resetBtn.addEventListener('click', () => {
+    if (!camera || !controls) return;
+    camera.position.set(15, 10, 20);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  });
+  exportBtn.addEventListener('click', () => {
+    if (!renderer) return;
+    renderer.render(scene, camera);
+    const link = document.createElement('a');
+    link.download = 'siesta-3d.png';
+    link.href = renderer.domElement.toDataURL('image/png');
+    link.click();
+  });
+
+  function setBusy(busy) {
+    renderBtn.disabled = busy;
+    linesBtn.disabled = busy;
+    if (busy) {
+      renderBtn.dataset.label = renderBtn.innerHTML;
+      renderBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>'
+        + TR.computing;
+    } else if (renderBtn.dataset.label) {
+      renderBtn.innerHTML = renderBtn.dataset.label;
+    }
+  }
 
   function atomColor(q) {
     if (q > 0.05) return 0xff4136;
@@ -234,6 +296,7 @@
     try {
       hideError();
       if (!fileContent) throw new Error(TR.fileNotLoaded);
+      setBusy(true);
       const json = parse_siesta_out_full(fileContent);
       atomData = JSON.parse(json);
       if (!atomData.length) throw new Error(TR.noAtomsFound);
@@ -265,12 +328,14 @@
       infoBase = `${atomData.length} ${TR.atoms} · ${TR.grid} ${gs}³ · ${fieldData.length/6} ${TR.vectors}`;
       infoText.textContent = infoBase;
     } catch (e) { showError(e?.message ?? String(e)); }
+    finally { setBusy(false); }
   });
 
   linesBtn.addEventListener('click', () => {
     try {
       hideError();
       if (!atomData) throw new Error(TR.renderFirst);
+      setBusy(true);
       const k = parseFloat(kSlider.value);
       const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, z: a.z, q: a.q })));
       const lineData = trace_field_lines(chargesJson, 0.25, 300, k);
@@ -295,6 +360,7 @@
       infoBox.classList.remove('hidden');
       infoText.textContent = `${infoBase} · ${lines.length} ${TR.fieldLines}`;
     } catch (e) { showError(e?.message ?? String(e)); }
+    finally { setBusy(false); }
   });
 
   renderBtn.disabled = true;

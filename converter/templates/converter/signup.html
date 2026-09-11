@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Criar Conta - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Criar Conta" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -71,7 +71,7 @@
                         <!-- Campo de Nome de Usuário -->
                         <div class="mb-4">
                             <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">
-                                <i class="bi bi-person-badge me-2"></i>Nome de usuário
+                                <i class="bi bi-person-badge me-2"></i>{{ form.username.label }}
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted">
@@ -92,7 +92,7 @@
                         <!-- Campo de Email -->
                         <div class="mb-4">
                             <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">
-                                <i class="bi bi-envelope me-2"></i>Email
+                                <i class="bi bi-envelope me-2"></i>{{ form.email.label }}
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted">
@@ -113,7 +113,7 @@
                         <!-- Campo de Senha -->
                         <div class="mb-4">
                             <label for="{{ form.password1.id_for_label }}" class="form-label fw-bold">
-                                <i class="bi bi-shield-lock me-2"></i>Senha
+                                <i class="bi bi-shield-lock me-2"></i>{{ form.password1.label }}
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted">
@@ -131,16 +131,16 @@
                             <div class="password-requirements">
                                 <ul class="ps-0 mb-0" id="password-requirements-list">
                                     <li id="req-similar" class="req-neutral">
-                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha não pode ser muito similar ao nome de usuário ou e-mail.
+                                        <span class="req-icon" aria-hidden="true">⚪</span>{% trans "Sua senha não pode ser muito similar ao nome de usuário ou e-mail." %}
                                     </li>
                                     <li id="req-length" class="req-neutral">
-                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha deve conter pelo menos 8 caracteres.
+                                        <span class="req-icon" aria-hidden="true">⚪</span>{% trans "Sua senha deve conter pelo menos 8 caracteres." %}
                                     </li>
                                     <li id="req-common" class="req-neutral">
-                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha não pode ser uma senha comumente utilizada.
+                                        <span class="req-icon" aria-hidden="true">⚪</span>{% trans "Sua senha não pode ser uma senha comumente utilizada." %}
                                     </li>
                                     <li id="req-numeric" class="req-neutral">
-                                        <span class="req-icon" aria-hidden="true">⚪</span>Sua senha não pode ser inteiramente numérica.
+                                        <span class="req-icon" aria-hidden="true">⚪</span>{% trans "Sua senha não pode ser inteiramente numérica." %}
                                     </li>
                                 </ul>
                             </div>
@@ -149,7 +149,7 @@
                         <!-- Campo de Confirmação de Senha -->
                         <div class="mb-4">
                             <label for="{{ form.password2.id_for_label }}" class="form-label fw-bold">
-                                <i class="bi bi-shield-check me-2"></i>Confirmar senha
+                                <i class="bi bi-shield-check me-2"></i>{% trans "Confirmar senha" %}
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted">
@@ -170,7 +170,7 @@
                         <!-- Botão de Cadastro -->
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">
-                                <i class="bi bi-person-plus-fill me-2"></i>Criar minha conta
+                                <i class="bi bi-person-plus-fill me-2"></i>{% trans "Criar minha conta" %}
                             </button>
                         </div>
                     </form>
@@ -179,17 +179,15 @@
                 <!-- Rodapé -->
                 <div class="card-footer bg-light py-4 text-center">
                     <p class="mb-0 fw-bold">
-                        Já tem uma conta? <a href="{% url 'login' %}" class="text-accent text-decoration-none fw-bold">{% trans "Faça login" %}</a>
+                        {% trans "Já tem uma conta?" %}
+                        <a href="{% url 'login' %}" class="text-accent text-decoration-none fw-bold">{% trans "Faça login" %}</a>
                     </p>
                 </div>
             </div>
             
-            <!-- Termos e Políticas -->
             <div class="text-center mt-4">
                 <p class="text-muted small">
-                    Ao criar uma conta, você concorda com nossos 
-                    <a href="#" class="text-decoration-none text-accent">{% trans "Termos de Serviço" %}</a> e 
-                    <a href="#" class="text-decoration-none text-accent">{% trans "Política de Privacidade" %}</a>.
+                    {% trans "Ao criar uma conta, você concorda com os termos de uso da plataforma." %}
                 </p>
             </div>
         </div>

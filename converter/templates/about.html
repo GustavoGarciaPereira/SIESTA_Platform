@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Nossa Equipe - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Nossa Equipe" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -55,8 +56,8 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <h1 class="display-4 fw-bold mb-3">Sobre a SIESTA Platform</h1>
-                <p class="lead mb-4">Conheça nossa equipe e nossa missão de democratizar as simulações computacionais de materiais.</p>
+                <h1 class="display-4 fw-bold mb-3">{% trans "Sobre a SIESTA Platform" %}</h1>
+                <p class="lead mb-4">{% trans "Conheça nossa equipe e nossa missão de democratizar as simulações computacionais de materiais." %}</p>
             </div>
         </div>
     </div>
@@ -66,8 +67,8 @@
 <div class="container py-5">
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8 text-center">
-            <h2 class="fw-bold mb-3">Conheça Nossa Equipe</h2>
-            <p class="text-muted">Profissionais dedicados à inovação em simulações computacionais</p>
+            <h2 class="fw-bold mb-3">{% trans "Conheça Nossa Equipe" %}</h2>
+            <p class="text-muted">{% trans "Profissionais dedicados à inovação em simulações computacionais" %}</p>
         </div>
     </div>
 
@@ -78,7 +79,10 @@
                 <div class="card team-card">
                     <div class="card-body d-flex align-items-start">
                         <div class="flex-shrink-0 me-4">
-                            <img src="{{ member.image_url }}" alt="Foto de {{ member.name }}" class="team-member-img">
+                            <img src="{% static member.image_url %}"
+                                 alt="{% blocktrans with name=member.name %}Foto de {{ name }}{% endblocktrans %}"
+                                 class="team-member-img"
+                                 loading="lazy">
                         </div>
                         <div class="flex-grow-1">
                             <h5 class="fw-bold mb-1">{{ member.name }}</h5>
@@ -86,17 +90,20 @@
                             <p class="text-muted mb-3">{{ member.bio }}</p>
                             <div class="team-member-links">
                                 {% if member.email %}
-                                <a href="mailto:{{ member.email }}" title="Enviar email para {{ member.name }}">
+                                <a href="mailto:{{ member.email }}"
+                                   title="{% blocktrans with name=member.name %}Enviar email para {{ name }}{% endblocktrans %}">
                                     <i class="bi bi-envelope-fill"></i>
                                 </a>
                                 {% endif %}
                                 {% if member.lattes_url %}
-                                <a href="{{ member.lattes_url }}" target="_blank" rel="noopener noreferrer" title="Currículo Lattes de {{ member.name }}">
+                                <a href="{{ member.lattes_url }}" target="_blank" rel="noopener noreferrer"
+                                   title="{% blocktrans with name=member.name %}Currículo Lattes de {{ name }}{% endblocktrans %}">
                                     <i class="bi bi-journal-text"></i>
                                 </a>
                                 {% endif %}
                                 {% if member.url_linkedin %}
-                                <a href="{{ member.url_linkedin }}" target="_blank" rel="noopener noreferrer" title="LinkedIn de {{ member.name }}">
+                                <a href="{{ member.url_linkedin }}" target="_blank" rel="noopener noreferrer"
+                                   title="{% blocktrans with name=member.name %}LinkedIn de {{ name }}{% endblocktrans %}">
                                     <i class="bi bi-linkedin"></i>
                                 </a>
                                 {% endif %}
@@ -109,7 +116,7 @@
         {% else %}
             <div class="col-12">
                 <div class="alert alert-info text-center">
-                    <p class="mb-0">Informações da equipe não disponíveis no momento.</p>
+                    <p class="mb-0">{% trans "Informações da equipe não disponíveis no momento." %}</p>
                 </div>
             </div>
         {% endif %}
@@ -120,8 +127,8 @@
 <div class="container py-5">
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8 text-center">
-            <h2 class="fw-bold mb-3">Nossa Missão e Visão</h2>
-            <p class="text-muted">O que nos motiva e para onde estamos indo</p>
+            <h2 class="fw-bold mb-3">{% trans "Nossa Missão e Visão" %}</h2>
+            <p class="text-muted">{% trans "O que nos motiva e para onde estamos indo" %}</p>
         </div>
     </div>
     
@@ -133,12 +140,10 @@
                         <div class="bg-accent rounded-circle p-3 me-3">
                             <i class="bi bi-bullseye text-white fs-4"></i>
                         </div>
-                        <h4 class="card-title mb-0">Nossa Missão</h4>
+                        <h4 class="card-title mb-0">{% trans "Nossa Missão" %}</h4>
                     </div>
                     <p class="card-text">
-                        Facilitar e democratizar o acesso a simulações computacionais de materiais utilizando o SIESTA,
-                        fornecendo uma plataforma intuitiva, poderosa e integrada com ferramentas de análise modernas
-                        para acelerar a descoberta científica e a inovação tecnológica.
+                        {% blocktrans %}Facilitar e democratizar o acesso a simulações computacionais de materiais utilizando o SIESTA, fornecendo uma plataforma intuitiva, poderosa e integrada com ferramentas de análise modernas para acelerar a descoberta científica e a inovação tecnológica.{% endblocktrans %}
                     </p>
                 </div>
             </div>
@@ -151,12 +156,10 @@
                         <div class="bg-accent rounded-circle p-3 me-3">
                             <i class="bi bi-eye text-white fs-4"></i>
                         </div>
-                        <h4 class="card-title mb-0">Nossa Visão</h4>
+                        <h4 class="card-title mb-0">{% trans "Nossa Visão" %}</h4>
                     </div>
                     <p class="card-text">
-                        Ser a plataforma de referência para pesquisadores e estudantes na área de ciência dos materiais,
-                        promovendo a colaboração, o aprendizado e o avanço do conhecimento através de simulações
-                        computacionais acessíveis e eficientes.
+                        {% blocktrans %}Ser a plataforma de referência para pesquisadores e estudantes na área de ciência dos materiais, promovendo a colaboração, o aprendizado e o avanço do conhecimento através de simulações computacionais acessíveis e eficientes.{% endblocktrans %}
                     </p>
                 </div>
             </div>
@@ -168,8 +171,8 @@
 <div class="container py-5">
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8 text-center">
-            <h2 class="fw-bold mb-3">O Que Fazemos?</h2>
-            <p class="text-muted">Um ambiente completo para o ciclo de vida de simulações com o SIESTA</p>
+            <h2 class="fw-bold mb-3">{% trans "O Que Fazemos?" %}</h2>
+            <p class="text-muted">{% trans "Um ambiente completo para o ciclo de vida de simulações com o SIESTA" %}</p>
         </div>
     </div>
     
@@ -180,8 +183,8 @@
                     <div class="bg-accent rounded-circle p-3 d-inline-flex mb-3">
                         <i class="bi bi-file-earmark-arrow-up text-white fs-4"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Conversão de Arquivos</h5>
-                    <p class="card-text">Transforme arquivos XYZ para o formato FDF do SIESTA com customização detalhada.</p>
+                    <h5 class="card-title fw-bold">{% trans "Conversão de Arquivos" %}</h5>
+                    <p class="card-text">{% trans "Transforme arquivos XYZ para o formato FDF do SIESTA com customização detalhada." %}</p>
                 </div>
             </div>
         </div>
@@ -192,8 +195,8 @@
                     <div class="bg-accent rounded-circle p-3 d-inline-flex mb-3">
                         <i class="bi bi-eye-fill text-white fs-4"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Visualização 3D</h5>
-                    <p class="card-text">Visualize estruturas moleculares em 3D diretamente no navegador.</p>
+                    <h5 class="card-title fw-bold">{% trans "Visualização 3D" %}</h5>
+                    <p class="card-text">{% trans "Visualize estruturas moleculares em 3D diretamente no navegador." %}</p>
                 </div>
             </div>
         </div>
@@ -204,8 +207,8 @@
                     <div class="bg-accent rounded-circle p-3 d-inline-flex mb-3">
                         <i class="bi bi-cpu text-white fs-4"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Execução de Simulações</h5>
-                    <p class="card-text">Gerencie e execute simulações SIESTA de forma integrada (em desenvolvimento).</p>
+                    <h5 class="card-title fw-bold">{% trans "Execução de Simulações" %}</h5>
+                    <p class="card-text">{% trans "Gerencie e execute simulações SIESTA de forma integrada (em desenvolvimento)." %}</p>
                 </div>
             </div>
         </div>
@@ -216,8 +219,8 @@
                     <div class="bg-accent rounded-circle p-3 d-inline-flex mb-3">
                         <i class="bi bi-graph-up text-white fs-4"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Análise Inteligente</h5>
-                    <p class="card-text">Interpretação de resultados com ferramentas baseadas em IA (em desenvolvimento).</p>
+                    <h5 class="card-title fw-bold">{% trans "Análise Inteligente" %}</h5>
+                    <p class="card-text">{% trans "Interpretação de resultados com ferramentas baseadas em IA (em desenvolvimento)." %}</p>
                 </div>
             </div>
         </div>
@@ -230,17 +233,16 @@
         <div class="col-lg-8 text-center">
             <div class="card border-0 bg-light">
                 <div class="card-body p-5">
-                    <h2 class="fw-bold mb-3">Junte-se a Nós</h2>
+                    <h2 class="fw-bold mb-3">{% trans "Junte-se a Nós" %}</h2>
                     <p class="lead mb-4">
-                        Seja você um pesquisador experiente, um estudante curioso ou um entusiasta da ciência,
-                        a SIESTA Platform está aqui para apoiar sua jornada.
+                        {% blocktrans %}Seja você um pesquisador experiente, um estudante curioso ou um entusiasta da ciência, a SIESTA Platform está aqui para apoiar sua jornada.{% endblocktrans %}
                     </p>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
                         <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-4">
-                            <i class="bi bi-person-plus me-2"></i>Criar Conta
+                            <i class="bi bi-person-plus me-2"></i>{% trans "Criar Conta" %}
                         </a>
                         <a href="{% url 'contact' %}" class="btn btn-outline-primary btn-lg px-4">
-                            <i class="bi bi-envelope me-2"></i>Entre em Contato
+                            <i class="bi bi-envelope me-2"></i>{% trans "Entre em Contato" %}
                         </a>
                     </div>
                 </div>

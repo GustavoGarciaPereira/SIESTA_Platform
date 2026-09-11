@@ -5,7 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% trans 'Plataforma para converter arquivos XYZ em FDF do SIESTA, visualizar resultados em 3D e gerenciar simulações de materiais.' %}">
+    <meta property="og:title" content="SIESTA Platform">
+    <meta property="og:description" content="{% trans 'Conversão XYZ para FDF, visualização 3D de resultados e gestão de simulações com o SIESTA.' %}">
+    <meta property="og:type" content="website">
     <title>{% block title %}SIESTA Platform{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/favicon.svg' %}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,24 +77,40 @@
                         </ul>
                     </li>
                     {% if user.is_authenticated %}
-                        {% if user.is_staff %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'my_configurations' %}">{% trans "Minhas Configurações" %}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'visualizer:upload_out' %}">
-                                <i class="bi bi-badge-3d"></i> {% trans "Visualizar .out" %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>{% trans "Olá" %}, {{ user.username }}
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile' %}">{% trans "Olá" %}, {{ user.username }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">{% trans "Logout" %}</a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if user.is_staff %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'dashboard' %}">
+                                        <i class="bi bi-speedometer2 me-2"></i>{% trans "Dashboard" %}
+                                    </a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'profile' %}">
+                                        <i class="bi bi-person me-2"></i>{% trans "Meu Perfil" %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'my_configurations' %}">
+                                        <i class="bi bi-gear me-2"></i>{% trans "Minhas Configurações" %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'visualizer:upload_out' %}">
+                                        <i class="bi bi-badge-3d me-2"></i>{% trans "Visualizar .out" %}
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -124,9 +146,7 @@
             <p class="mb-1">
                 <a href="{% url 'home' %}">{% trans "Início" %}</a> |
                 <a href="{% url 'about' %}">{% trans "Sobre Nós" %}</a> |
-                <a href="{% url 'contact' %}">{% trans "Contato" %}</a> |
-                <a href="#">{% trans "Termos de Serviço" %}</a> |
-                <a href="#">{% trans "Política de Privacidade" %}</a>
+                <a href="{% url 'contact' %}">{% trans "Contato" %}</a>
             </p>
             <p class="mb-0">&copy; {% now "Y" %} SIESTA Platform. {% trans "Todos os direitos reservados." %}</p>
         </div>

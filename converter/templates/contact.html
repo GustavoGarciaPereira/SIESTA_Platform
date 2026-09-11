@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Contato - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Contato" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -59,8 +60,8 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <h1 class="display-5 fw-bold mb-3">Entre em Contato</h1>
-                <p class="lead mb-0">Estamos aqui para ajudar. Entre em contato conosco através dos canais abaixo.</p>
+                <h1 class="display-5 fw-bold mb-3">{% trans "Entre em Contato" %}</h1>
+                <p class="lead mb-0">{% trans "Estamos aqui para ajudar. Entre em contato conosco através dos canais abaixo." %}</p>
             </div>
         </div>
     </div>
@@ -86,21 +87,21 @@
         <div class="col-md-4">
             <div class="contact-card">
                 <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                <div class="contact-label">Endereço</div>
+                <div class="contact-label">{% trans "Endereço" %}</div>
                 <div class="contact-value">R. dos Andradas, 1614 - Centro<br>Santa Maria - RS, 97010-030</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="contact-card">
                 <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
-                <div class="contact-label">Email</div>
+                <div class="contact-label">{% trans "Email" %}</div>
                 <div class="contact-value"><a href="mailto:gusgurtavo@gmail.com" class="text-decoration-none text-dark">gusgurtavo@gmail.com</a></div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="contact-card">
                 <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
-                <div class="contact-label">Telefone</div>
+                <div class="contact-label">{% trans "Telefone" %}</div>
                 <div class="contact-value">+55 (55) 996635903</div>
             </div>
         </div>
@@ -111,7 +112,7 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
-                    <h3 class="h4 mb-4 text-center text-accent">Envie uma mensagem</h3>
+                    <h3 class="h4 mb-4 text-center text-accent">{% trans "Envie uma mensagem" %}</h3>
                     <form method="post" action="{% url 'contact_submit' %}">
                         {% csrf_token %}
                         <div class="row g-3">
@@ -134,7 +135,7 @@
                         </div>
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-send me-2"></i>Enviar Mensagem
+                                <i class="bi bi-send me-2"></i>{% trans "Enviar Mensagem" %}
                             </button>
                         </div>
                     </form>
@@ -148,7 +149,7 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center py-4">
-                    <h3 class="h4 mb-4 text-accent">Siga-nos nas Redes Sociais</h3>
+                    <h3 class="h4 mb-4 text-accent">{% trans "Siga-nos nas Redes Sociais" %}</h3>
                     <div class="d-flex justify-content-center">
                         <div class="text-center mx-3">
                             <a href="https://www.linkedin.com/in/gustavo-garcia-pereira-078240143/" class="social-icon" target="_blank" rel="noopener noreferrer">

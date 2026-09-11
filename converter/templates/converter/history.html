@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Histórico de Conversões - SIESTA Platform{% endblock %}
+{% block title %}{% trans "Histórico de Conversões" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -54,10 +54,10 @@
 
     <div class="mb-3">
         <a href="{% url 'convert' %}" class="btn btn-primary">
-            <i class="bi bi-arrow-left"></i> Voltar para Conversão
+            <i class="bi bi-arrow-left"></i> {% trans "Voltar para Conversão" %}
         </a>
-        <a href="{% url 'my_configurations' %}" class="btn btn-secondary">
-            <i class="bi bi-gear-fill"></i> Minhas Configurações
+        <a href="{% url 'my_configurations' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-gear-fill"></i> {% trans "Minhas Configurações" %}
         </a>
     </div>
 
@@ -96,17 +96,18 @@
                         <td>{{ conv.download_count }}</td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'download_fdf' conv.id %}" class="btn btn-sm btn-primary" title="Baixar FDF">
+                                <a href="{% url 'download_fdf' conv.id %}" class="btn btn-sm btn-primary" title="{% trans 'Baixar FDF' %}">
                                     <i class="bi bi-download"></i> FDF
                                 </a>
-                                <button type="button" class="btn btn-sm btn-info" title="Ver parâmetros"
+                                <button type="button" class="btn btn-sm btn-outline-secondary" title="{% trans 'Ver parâmetros' %}"
                                         data-bs-toggle="modal" data-bs-target="#paramsModal{{ conv.id }}">
                                     <i class="bi bi-sliders"></i>
                                 </button>
                                 <form method="post" action="{% url 'delete_history' conv.id %}" class="d-inline"
-                                      onsubmit="return confirm('Tem certeza que deseja excluir esta entrada do histórico?')">
+                                      data-confirm="{% trans 'Tem certeza que deseja excluir esta entrada do histórico?' %}"
+                                      onsubmit="return confirm(this.dataset.confirm)">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="{% trans 'Excluir' %}">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -119,14 +120,14 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="paramsModalLabel{{ conv.id }}">
-                                                Parâmetros: {{ conv.system_name }}
+                                                {% trans "Parâmetros:" %} {{ conv.system_name }}
                                             </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p><strong>Arquivo:</strong> {{ conv.original_filename }}</p>
-                                            <p><strong>Data:</strong> {{ conv.conversion_date|date:"d/m/Y H:i" }}</p>
-                                            <h6>Parâmetros SIESTA:</h6>
+                                            <p><strong>{% trans "Arquivo:" %}</strong> {{ conv.original_filename }}</p>
+                                            <p><strong>{% trans "Data:" %}</strong> {{ conv.conversion_date|date:"d/m/Y H:i" }}</p>
+                                            <h6>{% trans "Parâmetros SIESTA:" %}</h6>
                                             <div class="card">
                                                 <div class="card-body p-2">
                                                     <pre class="mb-0 parameters-pre">{{ conv.parameters|pprint }}</pre>
@@ -136,7 +137,7 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Fechar" %}</button>
                                             <a href="{% url 'download_fdf' conv.id %}" class="btn btn-primary">
-                                                <i class="bi bi-download"></i> Baixar FDF
+                                                <i class="bi bi-download"></i> {% trans "Baixar FDF" %}
                                             </a>
                                         </div>
                                     </div>
@@ -187,9 +188,15 @@
         </nav>
         {% endif %}
     {% else %}
-        <div class="alert alert-info">
-            <p class="mb-0">{% trans "Você ainda não realizou nenhuma conversão." %}</p>
-            <p class="mb-0">Vá para a <a href="{% url 'convert' %}">{% trans "página de conversão" %}</a> para começar.</p>
+        <div class="card">
+            <div class="card-body empty-state">
+                <i class="bi bi-clock-history empty-state-icon d-block"></i>
+                <h4 class="mb-2">{% trans "Você ainda não realizou nenhuma conversão" %}</h4>
+                <p class="text-muted mb-4">{% trans "Converta um arquivo XYZ para começar a construir seu histórico." %}</p>
+                <a href="{% url 'convert' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>{% trans "Nova Conversão" %}
+                </a>
+            </div>
         </div>
     {% endif %}
 </div>

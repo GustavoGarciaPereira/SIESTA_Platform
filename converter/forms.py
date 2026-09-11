@@ -61,6 +61,7 @@ class SIESTAParametersForm(forms.Form):
     xyz_file = forms.FileField(
         label=_("Arquivo XYZ"),
         help_text=_("Envie um arquivo .xyz de até 5 MB."),
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': '.xyz'}),
     )
     system_name = forms.CharField(
         label=_("Nome do Sistema"),

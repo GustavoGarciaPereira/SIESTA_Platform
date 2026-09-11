@@ -110,27 +110,27 @@ class AboutView(TemplateView):
         context['team_members'] = [
             {
                 'name': 'André Flores',
-                'role': 'Aluno/Doutorado',
-                'bio': 'Graduado em Ciência da Computação (UFN), Mestre em Microeletrônica (UFRGS) e aluno de Doutorado em Nanociências (UFN).',
-                'image_url': 'https://lasimon.vercel.app/assets/img/team/andre_flores.jpg',  # Substitua pela URL da imagem real
+                'role': _('Aluno/Doutorado'),
+                'bio': _('Graduado em Ciência da Computação (UFN), Mestre em Microeletrônica (UFRGS) e aluno de Doutorado em Nanociências (UFN).'),
+                'image_url': 'img/team/andre_flores.jpg',
                 'email': 'andre.santos@ufn.edu.br',  # Opcional
                 'lattes_url': 'http://lattes.cnpq.br/4249324194215985',  # Opcional
                 'url_linkedin': "https://www.linkedin.com/in/andr%C3%A9-f-dos-santos-b11478b7/"
             },
             {
                 'name': 'Gustavo Garcia Pereira',
-                'role': 'Aluno/Programador',
-                'bio': 'Graduado em Ciência da Computação (UFN). Desenvolvedor principal da plataforma',
-                'image_url': 'https://avatars.githubusercontent.com/u/19331198?v=4',  # Substitua pela URL da imagem real
+                'role': _('Aluno/Programador'),
+                'bio': _('Graduado em Ciência da Computação (UFN). Desenvolvedor principal da plataforma'),
+                'image_url': 'img/team/gustavo_garcia.jpg',
                 'email': 'gusgurtavo@gmail.com',  # Opcional
                 'lattes_url': '',  # Opcional
                 'url_linkedin': "https://www.linkedin.com/in/gustavo-garcia-pereira-078240143/"
             },
             {
                 'name': 'Mirkos Martins',
-                'role': 'Professor (UFN)',
-                'bio': 'Professor de Ciência da Computação, Engenharia Biomédica, Inteligência Artificial para Engenharias, Modelagem e Simulação e Complexidade de Algoritmos.',
-                'image_url': 'https://avatars.githubusercontent.com/u/5223402?v=4',  # Substitua pela URL da imagem real
+                'role': _('Professor (UFN)'),
+                'bio': _('Professor de Ciência da Computação, Engenharia Biomédica, Inteligência Artificial para Engenharias, Modelagem e Simulação e Complexidade de Algoritmos.'),
+                'image_url': 'img/team/mirkos_martins.jpg',
                 'email': 'mirkos@gmail.com',  # Opcional
                 'lattes_url': 'http://lattes.cnpq.br/5382133106359249',  # Opcional
                 'url_linkedin': "https://www.linkedin.com/in/mirkos-martins-77a6ab8/"

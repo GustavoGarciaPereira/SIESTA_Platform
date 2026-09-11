@@ -3,6 +3,8 @@
   --color-primary: #1a3a5c;
   --color-secondary: #2e6da4;
   --color-accent: #17a2b8;
+  /* Variante escura do accent para texto (contraste AA sobre branco) */
+  --color-accent-dark: #0f7c8c;
   --color-bg: #f4f6f9;
   --color-surface: #ffffff;
   --color-text-primary: #212529;
@@ -127,6 +129,21 @@ body {
   border-color: var(--color-accent);
 }
 
+.btn-accent {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+.btn-accent:hover,
+.btn-accent:focus {
+  background-color: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+}
+
 /* Alertas */
 .alert {
   border-radius: 6px;
@@ -160,7 +177,7 @@ body {
 
 .alert-info {
   background-color: rgba(23, 162, 184, 0.1);
-  color: var(--color-accent);
+  color: var(--color-accent-dark);
   border-left: 4px solid var(--color-accent);
 }
 
@@ -219,7 +236,7 @@ body {
 
 /* Utilitários */
 .text-accent {
-  color: var(--color-accent) !important;
+  color: var(--color-accent-dark) !important;
 }
 
 .bg-accent {
@@ -345,12 +362,72 @@ body {
   display: none !important;
 }
 
-/* Estilos para checkboxes (mantidos do original) */
-input[type="checkbox"] {
-  transform: scale(1.8);
-  margin-right: 9px;
-  margin-left: 8px;
-  vertical-align: middle;
+/* Checkboxes com espaçamento consistente */
+input[type="checkbox"].form-check-input {
+  transform: none;
+}
+
+/* Inputs de arquivo estilizados */
+input[type="file"].form-control {
+  padding: 0.375rem 0.75rem;
+}
+
+input[type="file"].form-control::file-selector-button {
+  background: var(--color-bg);
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin: -0.375rem -0.75rem;
+  margin-inline-end: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+input[type="file"].form-control:hover::file-selector-button {
+  background: #e9ecef;
+}
+
+/* Acessibilidade: foco visível padronizado */
+a:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-check-input:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* Estado vazio (empty state) */
+.empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.empty-state .empty-state-icon {
+  color: var(--color-accent);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Barra de ações fixa do formulário de conversão */
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1020;
+  background: var(--color-surface);
+  border-top: 1px solid #e9ecef;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+  padding: 0.75rem 1rem;
+  margin: 1.5rem -1rem 0;
+  border-radius: 8px 8px 0 0;
+}
+
+@media (max-width: 576px) {
+  .sticky-actions {
+    padding: 0.5rem 0.75rem;
+  }
+  .sticky-actions .form-text {
+    display: none;
+  }
 }
 
 /* Estilos para pre (blocos de código) */
