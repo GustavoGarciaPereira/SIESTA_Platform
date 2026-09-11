@@ -1,26 +1,43 @@
 #!/bin/sh
 set -e
 
-echo "==> Waiting for database..."
-python manage.py wait_for_db 2>/dev/null || python - <<'EOF'
-import os, time, django
+echo "==> Checking database configuration..."
+python - <<'EOF'
+import os
+import sys
+
+import django
+from django.core.exceptions import ImproperlyConfigured
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "heparin_converter.settings")
-django.setup()
-from django.db import connections
-from django.db.utils import OperationalError
-retries = 10
-for i in range(retries):
-    try:
-        connections["default"].ensure_connection()
-        print("Database ready.")
-        break
-    except OperationalError:
-        print(f"Database unavailable, retrying ({i+1}/{retries})...")
-        time.sleep(2)
-else:
-    print("Could not connect to database. Aborting.")
+
+try:
+    django.setup()
+    from django.conf import settings
+
+    engine = settings.DATABASES.get("default", {}).get("ENGINE", "")
+except ImproperlyConfigured as exc:
+    print(f"ERRO: configuração do Django inválida: {exc}", file=sys.stderr)
     raise SystemExit(1)
+
+if not engine or engine == "django.db.backends.dummy":
+    print("ERRO: nenhuma configuração de banco de dados encontrada (DEBUG=False).", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("Defina UMA das opções abaixo no ambiente do serviço:", file=sys.stderr)
+    print("  1. DB_ENGINE + DB_NAME/DB_USER/DB_PASSWORD/DB_HOST/DB_PORT", file=sys.stderr)
+    print("  2. DATABASE_URL (postgres://user:senha@host:5432/banco)", file=sys.stderr)
+    print("  3. PGHOST/PGDATABASE/PGUSER/PGPASSWORD (Postgres vinculado no Render)", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("No Render, essas variáveis precisam estar em 'Environment Variables'.", file=sys.stderr)
+    print("Um Secret File '.env' fica em /etc/secrets/.env — confirme que ele", file=sys.stderr)
+    print("existe e contém as chaves acima (o Django o carrega automaticamente).", file=sys.stderr)
+    raise SystemExit(1)
+
+print(f"Database configured: {engine}")
 EOF
+
+echo "==> Waiting for database..."
+python manage.py wait_for_db
 
 echo "==> Applying migrations..."
 python manage.py migrate --fake-initial

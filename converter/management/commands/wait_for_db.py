@@ -2,6 +2,7 @@
 
 import time
 
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
 from django.db import connections
 from django.db.utils import OperationalError
@@ -34,6 +35,12 @@ class Command(BaseCommand):
                     f'Banco indisponível, tentativa {attempt}/{retries}...'
                 )
                 time.sleep(delay)
+            except ImproperlyConfigured as exc:
+                raise SystemExit(
+                    f'Configuração de banco inválida: {exc}\n'
+                    'Defina DB_ENGINE/DB_* , DATABASE_URL ou PGHOST/PGDATABASE/... '
+                    'no ambiente do serviço.'
+                )
             else:
                 self.stdout.write(self.style.SUCCESS('Banco de dados pronto.'))
                 return

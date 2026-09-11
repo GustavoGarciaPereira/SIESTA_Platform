@@ -12,11 +12,26 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv 
+from urllib.parse import parse_qs, unquote, urlparse
 
-load_dotenv() # Carrega variáveis do .env
+from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Carrega variáveis de ambiente.
+# 1) No Render, Secret Files são montados em /etc/secrets/ e o find_dotenv() do
+#    python-dotenv não olha para lá: ele sobe a árvore a partir deste arquivo,
+#    procurando apenas BASE_DIR/.env. Sem esta chamada explícita, um .env
+#    enviado como Secret File é silenciosamente ignorado.
+# 2) Em seguida, o .env do projeto (desenvolvimento local).
+# Nenhuma das chamadas sobrescreve variáveis já presentes no ambiente do
+# processo — logo, o painel do Render sempre tem precedência.
+_RENDER_SECRET_ENV = Path('/etc/secrets/.env')
+if _RENDER_SECRET_ENV.is_file():
+    load_dotenv(_RENDER_SECRET_ENV)
+load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -104,17 +119,67 @@ PSEUDOPOTENTIALS_DIR = os.path.join(BASE_DIR, 'pseudos')
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+def _postgres_from_url(url):
+    """Monta a config de DATABASES a partir de uma DATABASE_URL.
+
+    Formato usado por Render Postgres, Supabase, Heroku, etc.
+    (ex: postgres://user:senha@host:5432/banco?sslmode=require).
+    Usa apenas a biblioteca padrão para não adicionar dj-database-url.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ('postgres', 'postgresql', 'pgsql'):
+        raise ImproperlyConfigured(
+            f"DATABASE_URL com esquema não suportado: '{parsed.scheme}'. "
+            "Use postgres:// ou postgresql://."
+        )
+
+    try:
+        port = parsed.port or 5432
+    except ValueError:
+        raise ImproperlyConfigured("DATABASE_URL contém uma porta inválida.")
+
+    query = parse_qs(parsed.query)
+    sslmode = (query.get('sslmode') or [os.environ.get('DB_SSLMODE', 'require')])[0]
+
+    return {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': unquote(parsed.path.lstrip('/')),
+        'USER': unquote(parsed.username or ''),
+        'PASSWORD': unquote(parsed.password or ''),
+        'HOST': parsed.hostname or '',
+        'PORT': str(port),
+        'OPTIONS': {'sslmode': sslmode},
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': os.environ.get('DB_ENGINE'),
+
+
+def _postgres_from_pg_env():
+    """Config de banco a partir das variáveis PGHOST/PGDATABASE/... do Render."""
+    return {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('PGDATABASE'),
+        'USER': os.environ.get('PGUSER'),
+        'PASSWORD': os.environ.get('PGPASSWORD'),
+        'HOST': os.environ.get('PGHOST'),
+        'PORT': os.environ.get('PGPORT', '5432'),
+        'OPTIONS': {'sslmode': os.environ.get('DB_SSLMODE', 'require')},
+    }
+
+
+def _production_database():
+    """Resolve a config de banco de produção (DEBUG=False).
+
+    Ordem de precedência:
+      1. DB_ENGINE + DB_NAME/DB_USER/DB_PASSWORD/DB_HOST/DB_PORT (explícito)
+      2. DATABASE_URL (Render Postgres, Supabase, Heroku...)
+      3. PGHOST/PGDATABASE/PGUSER/PGPASSWORD (Postgres vinculado no Render)
+
+    Retorna {} quando nada está definido. Nesse caso o Django usa o backend
+    'dummy' e qualquer conexão falha — por isso o entrypoint.sh valida a
+    configuração antes de tentar conectar e aborta com uma mensagem explícita.
+    """
+    if os.environ.get('DB_ENGINE'):
+        return {
+            'ENGINE': os.environ['DB_ENGINE'],
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASSWORD'),
@@ -127,7 +192,25 @@ else:
                 # para bancos de dados hospedados que fornecem SSL automaticamente.
             }
         }
+
+    if os.environ.get('DATABASE_URL'):
+        return _postgres_from_url(os.environ['DATABASE_URL'])
+
+    if os.environ.get('PGHOST'):
+        return _postgres_from_pg_env()
+
+    return {}
+
+
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
+else:
+    DATABASES = {'default': _production_database()}
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
