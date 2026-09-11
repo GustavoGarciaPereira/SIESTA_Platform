@@ -396,6 +396,31 @@ a:focus-visible,
   outline-offset: 2px;
 }
 
+/* Círculos de ícone: sempre quadrados e centralizados (evita elipse) */
+.icon-circle {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.icon-circle--success {
+  background-color: var(--color-success);
+}
+
+.icon-circle--lg {
+  width: 4.5rem;
+  height: 4.5rem;
+  font-size: 2rem;
+}
+
 /* Estado vazio (empty state) */
 .empty-state {
   padding: 3rem 1.5rem;
