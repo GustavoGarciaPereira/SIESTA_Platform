@@ -6,7 +6,7 @@
 [![Django](https://img.shields.io/badge/Django-4.2-green.svg)](https://www.djangoproject.com/)
 [![Rust](https://img.shields.io/badge/Rust-WASM-orange.svg)](https://www.rust-lang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![Tests](https://img.shields.io/badge/tests-107%2F5%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-111%2F7%20passing-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -148,10 +148,10 @@ python manage.py collectstatic --noinput
 ## 🧪 Testes
 
 ```bash
-# Todos os testes Django (107)
+# Todos os testes Django (111)
 python manage.py test converter user dashboard visualizer
 
-# Testes Rust (5)
+# Testes Rust (7)
 cargo test --manifest-path visualizer/rust/Cargo.toml
 
 # App específico
@@ -167,6 +167,9 @@ python manage.py test converter.tests.ReadXyzTests
 |----------|--------|-----------|
 | `DEBUG` | `False` | `True` = SQLite + console email |
 | `SECRET_KEY` | — | Chave secreta Django (obrigatória) |
+| `ALLOWED_HOSTS` | — | Hosts permitidos em produção (separados por vírgula) |
+| `CSRF_TRUSTED_ORIGINS` | — | Origens confiáveis em produção (separadas por vírgula) |
+| `CONTACT_EMAIL` | `gusgurtavo@gmail.com` | Destino das mensagens do formulário de contato |
 | `DB_ENGINE` | — | Engine PostgreSQL (produção) |
 | `DB_NAME` | — | Nome do banco (produção) |
 | `DB_USER` | — | Usuário do banco (produção) |

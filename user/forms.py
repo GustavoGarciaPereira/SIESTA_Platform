@@ -41,16 +41,43 @@ class UserCreationForm(BaseUserCreationForm):
         else:
             return username
 
-    # Verificar email único
+    # Verificar email único (comparação sem diferenciar maiúsculas/minúsculas)
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if email and self._meta.model.objects.filter(email=email).exists():
+        if email and self._meta.model.objects.filter(email__iexact=email).exists():
             raise ValidationError(_("Este email já está em uso."))
         return email
 
     # Atualiza o Meta para incluir o campo email
     class Meta(BaseUserCreationForm.Meta):
         fields = ["username", "email", "password1", "password2"]
+
+
+class ContactForm(forms.Form):
+    """Formulário da página de contato."""
+
+    name = forms.CharField(
+        label=_("Nome"),
+        max_length=120,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Seu nome')}),
+    )
+    email = forms.EmailField(
+        label=_("Email"),
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': _('seu.email@exemplo.com')}),
+    )
+    subject = forms.CharField(
+        label=_("Assunto"),
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Assunto da mensagem')}),
+    )
+    message = forms.CharField(
+        label=_("Mensagem"),
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 5,
+            'placeholder': _('Escreva sua mensagem'),
+        }),
+    )
 
 
 class UserProfileForm(forms.ModelForm):

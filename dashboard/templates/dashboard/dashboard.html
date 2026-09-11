@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}Dashboard de URLs - SIESTA Platform{% endblock %}
 
@@ -79,13 +78,7 @@
                             <td>
                                 <code class="font-mono">
                                     {% if url_item.params %}
-                                        {% url url_item.url_name as the_url %}
-                                        {% if the_url %}
-                                            {{ the_url }}
-                                        {% else %}
-                                            {% url url_item.url_name 1 as example_url %}  {# exemplo com ID=1 #}
-                                            {{ example_url|default:'' }} (exemplo com ID=1)
-                                        {% endif %}
+                                        {{ url_item.example_url }}
                                     {% else %}
                                         {% url url_item.url_name as the_url %}
                                         {{ the_url }}
@@ -116,7 +109,7 @@
                                                         {% endfor %}
                                                     </ul>
                                                     <p class="mb-2">Exemplo de uso:</p>
-                                                    <code class="d-block bg-light p-2 rounded font-mono">{% url url_item.url_name 1 as example_url %}{{ example_url }}</code>
+                                                    <code class="d-block bg-light p-2 rounded font-mono">{{ url_item.example_url }}</code>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>

@@ -166,6 +166,30 @@ class VisualizeViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    def test_delete_out_owner(self):
+        response = self.client.post(
+            reverse("visualizer:delete_out", args=[self.out_file.id])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(OutFile.objects.filter(id=self.out_file.id).exists())
+
+    def test_delete_out_other_user(self):
+        other_out = OutFile.objects.create(
+            user=self.other_user, system_name="Other", atom_count=1
+        )
+        response = self.client.post(
+            reverse("visualizer:delete_out", args=[other_out.id])
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(OutFile.objects.filter(id=other_out.id).exists())
+
+    def test_delete_out_requires_post(self):
+        response = self.client.get(
+            reverse("visualizer:delete_out", args=[self.out_file.id])
+        )
+        self.assertEqual(response.status_code, 405)
+        self.assertTrue(OutFile.objects.filter(id=self.out_file.id).exists())
+
     def test_api_content_view_owner(self):
         # Create an OutFile with actual file content
         f = _make_out_file()

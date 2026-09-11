@@ -484,7 +484,7 @@ class ViewTests(TestCase):
             use_count=0
         )
         
-        response = self.client.get(reverse('load_configuration', args=[config.id]))
+        response = self.client.post(reverse('load_configuration', args=[config.id]))
         self.assertEqual(response.status_code, 302)  # Redireciona para convert
         self.assertEqual(response.url, reverse('convert'))
         
@@ -507,7 +507,7 @@ class ViewTests(TestCase):
         
         self.assertEqual(SavedConfiguration.objects.count(), 1)
         
-        response = self.client.get(reverse('delete_configuration', args=[config.id]))
+        response = self.client.post(reverse('delete_configuration', args=[config.id]))
         self.assertEqual(response.status_code, 302)  # Redireciona para my_configurations
         self.assertEqual(response.url, reverse('my_configurations'))
         
@@ -830,15 +830,21 @@ class DeleteHistoryTests(TestCase):
         """Testa exclusão válida do histórico."""
         self.assertEqual(ConversionHistory.objects.count(), 1)
 
-        response = self.client.get(reverse('delete_history', args=[self.conversion.id]))
+        response = self.client.post(reverse('delete_history', args=[self.conversion.id]))
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('converter_history'))
         self.assertEqual(ConversionHistory.objects.count(), 0)
 
+    def test_delete_history_requires_post(self):
+        """Exclusão via GET deve ser rejeitada (405)."""
+        response = self.client.get(reverse('delete_history', args=[self.conversion.id]))
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(ConversionHistory.objects.count(), 1)
+
     def test_delete_history_invalid_id(self):
         """Testa exclusão com ID inválido."""
-        response = self.client.get(reverse('delete_history', args=[999]))
+        response = self.client.post(reverse('delete_history', args=[999]))
         self.assertEqual(response.status_code, 404)
 
     def test_delete_history_other_user(self):
@@ -863,7 +869,7 @@ class DeleteHistoryTests(TestCase):
             download_count=0
         )
 
-        response = self.client.get(reverse('delete_history', args=[other_conversion.id]))
+        response = self.client.post(reverse('delete_history', args=[other_conversion.id]))
         self.assertEqual(response.status_code, 404)
         self.assertEqual(ConversionHistory.objects.count(), 2)  # Nenhuma exclusão
 

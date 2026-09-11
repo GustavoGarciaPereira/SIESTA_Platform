@@ -34,9 +34,19 @@
       <i class="bi bi-cube me-2"></i>
       {% trans "SIESTA 3D" %} — {{ out_file.system_name|default:out_file.file.name|slugify }}
     </h4>
-    <a href="{% url 'visualizer:upload_out' %}" class="btn btn-outline-primary btn-sm">
-      <i class="bi bi-upload me-1"></i>{% trans "Novo Upload" %}
-    </a>
+    <div class="d-flex gap-2">
+      <form method="post" action="{% url 'visualizer:delete_out' out_file.id %}"
+            data-confirm="{% trans 'Tem certeza que deseja excluir este arquivo?' %}"
+            onsubmit="return confirm(this.dataset.confirm)">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-trash me-1"></i>{% trans "Excluir" %}
+        </button>
+      </form>
+      <a href="{% url 'visualizer:upload_out' %}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-upload me-1"></i>{% trans "Novo Upload" %}
+      </a>
+    </div>
   </div>
 
   <div class="card shadow-sm mb-3">
@@ -149,13 +159,16 @@
     }
   }
 
-  let scene, camera, renderer, controls;
+  let scene, camera, renderer, controls, dynamicGroup;
   function initScene() {
     if (renderer) { renderer.dispose(); container.innerHTML = ''; }
     const w = container.clientWidth || 900;
     const h = container.clientHeight || 550;
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x11191f);
+    // Grupo dedicado aos objetos dinâmicos (átomos, vetores e linhas de campo)
+    dynamicGroup = new THREE.Group();
+    scene.add(dynamicGroup);
     camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 200);
     camera.position.set(15, 10, 20);
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -215,6 +228,7 @@
   }
 
   let atomData = null;
+  let infoBase = '';
 
   renderBtn.addEventListener('click', async () => {
     try {
@@ -225,15 +239,16 @@
       if (!atomData.length) throw new Error(TR.noAtomsFound);
       const k = parseFloat(kSlider.value);
       const gs = parseInt(gridSlider.value);
-      while (scene.children.length > 6) { scene.remove(scene.children[6]); }
+      // Remove apenas os objetos dinâmicos, preservando luzes/grid/eixos
+      dynamicGroup.clear();
       for (const a of atomData) {
         const geo = new THREE.SphereGeometry(atomRadius(a.sym), 32, 16);
         const mat = new THREE.MeshStandardMaterial({ color: atomColor(a.q), roughness: 0.4, metalness: 0.1 });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.set(a.x, a.y, a.z);
-        scene.add(mesh);
+        dynamicGroup.add(mesh);
       }
-      const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, q: a.q })));
+      const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, z: a.z, q: a.q })));
       const fieldData = compute_field_3d(chargesJson, gs, gs, gs, k);
       const arrowLen = 0.8;
       for (let i = 0; i < fieldData.length; i += 6) {
@@ -244,10 +259,11 @@
         const dir = new THREE.Vector3(ex, ey, ez).normalize();
         const origin = new THREE.Vector3(x, y, z);
         const color = mag > 1 ? 0xff0000 : mag > 0.3 ? 0xff8800 : 0x4488ff;
-        scene.add(new THREE.ArrowHelper(dir, origin, arrowLen, color, 0.2, 0.15));
+        dynamicGroup.add(new THREE.ArrowHelper(dir, origin, arrowLen, color, 0.2, 0.15));
       }
       infoBox.classList.remove('hidden');
-      infoText.textContent = `${atomData.length} ${TR.atoms} · ${TR.grid} ${gs}³ · ${fieldData.length/6} ${TR.vectors}`;
+      infoBase = `${atomData.length} ${TR.atoms} · ${TR.grid} ${gs}³ · ${fieldData.length/6} ${TR.vectors}`;
+      infoText.textContent = infoBase;
     } catch (e) { showError(e?.message ?? String(e)); }
   });
 
@@ -256,7 +272,7 @@
       hideError();
       if (!atomData) throw new Error(TR.renderFirst);
       const k = parseFloat(kSlider.value);
-      const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, q: a.q })));
+      const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, z: a.z, q: a.q })));
       const lineData = trace_field_lines(chargesJson, 0.25, 300, k);
       const lines = [];
       let cur = [];
@@ -267,16 +283,17 @@
       }
       if (cur.length > 1) lines.push(cur);
       const toRemove = [];
-      scene.children.forEach(c => { if (c.userData && c.userData.fieldLine) toRemove.push(c); });
-      toRemove.forEach(c => scene.remove(c));
+      dynamicGroup.children.forEach(c => { if (c.userData && c.userData.fieldLine) toRemove.push(c); });
+      toRemove.forEach(c => dynamicGroup.remove(c));
       for (const pts of lines) {
         const geo = new THREE.BufferGeometry().setFromPoints(pts);
         const mat = new THREE.LineBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.7 });
         const line = new THREE.Line(geo, mat);
         line.userData = { fieldLine: true };
-        scene.add(line);
+        dynamicGroup.add(line);
       }
-      infoText.textContent += ` · ${lines.length} ${TR.fieldLines}`;
+      infoBox.classList.remove('hidden');
+      infoText.textContent = `${infoBase} · ${lines.length} ${TR.fieldLines}`;
     } catch (e) { showError(e?.message ?? String(e)); }
   });
 

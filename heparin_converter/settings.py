@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
-import dj_database_url
 from dotenv import load_dotenv 
 
 load_dotenv() # Carrega variáveis do .env
@@ -21,6 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -29,13 +29,22 @@ if DEBUG and not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('ALLOWED_HOSTS', '').split(',')
+    if host.strip()
+]
 if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-else:
-    # Em produção, adicione o domínio do seu serviço no Render.
-    # É uma boa prática também pegar isso de uma variável de ambiente se você tiver múltiplos domínios.
+    ALLOWED_HOSTS += ['localhost', '127.0.0.1', '[::1]']
+elif not ALLOWED_HOSTS:
+    # Em produção, configure ALLOWED_HOSTS no ambiente. Fallback para o Render.
     ALLOWED_HOSTS = ['.onrender.com']
 
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin.strip()
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -143,8 +152,6 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
 LANGUAGES = [
@@ -169,12 +176,23 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Adicione esta linha para o WhiteNoise
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# WhiteNoise para servir estáticos comprimidos (Brotli/Gzip)
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Tempo de validade do link de redefinição de senha (24h — coerente com o e-mail)
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24
 
 # Email backend: print to console in dev, use SMTP in production
 if DEBUG:
@@ -187,3 +205,17 @@ else:
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
     DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+
+# E-mail que recebe as mensagens do formulário de contato
+CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', 'gusgurtavo@gmail.com')
+
+# Hardening de produção
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', 60 * 60 * 24 * 365))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True

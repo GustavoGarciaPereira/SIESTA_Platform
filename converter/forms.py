@@ -1,7 +1,17 @@
 # converter/forms.py
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+
+
+MAX_XYZ_SIZE = 5 * 1024 * 1024  # 5 MB
+
+XC_FUNCTIONAL_AUTHORS = {
+    'LDA': {'CA', 'PZ', 'PW92'},
+    'GGA': {'PBE', 'revPBE', 'RPBE'},
+    'PBE': {'PBE'},
+}
 
 
 class SIESTAParametersForm(forms.Form):
@@ -48,7 +58,10 @@ class SIESTAParametersForm(forms.Form):
         ),
     )
 
-    xyz_file = forms.FileField(label=_("Arquivo XYZ"))
+    xyz_file = forms.FileField(
+        label=_("Arquivo XYZ"),
+        help_text=_("Envie um arquivo .xyz de até 5 MB."),
+    )
     system_name = forms.CharField(
         label=_("Nome do Sistema"),
         required=False,
@@ -159,3 +172,33 @@ class SIESTAParametersForm(forms.Form):
         min_value=0.0,
         help_text=_("Valor em meV"),
     )
+
+    def clean_xyz_file(self):
+        """Valida extensão e tamanho do arquivo XYZ enviado."""
+        xyz_file = self.cleaned_data.get('xyz_file')
+        if xyz_file is None:
+            return xyz_file
+        if not xyz_file.name.lower().endswith('.xyz'):
+            raise ValidationError(_("Apenas arquivos com extensão .xyz são permitidos."))
+        if xyz_file.size > MAX_XYZ_SIZE:
+            raise ValidationError(_("Arquivo muito grande. O limite é 5 MB."))
+        return xyz_file
+
+    def clean(self):
+        """Valida a coerência entre XC.functional e XC.authors."""
+        cleaned = super().clean()
+        functional = cleaned.get('XC_functional')
+        authors = cleaned.get('XC_authors')
+        allowed = XC_FUNCTIONAL_AUTHORS.get(functional, set())
+        if authors and allowed and authors not in allowed:
+            self.add_error(
+                'XC_authors',
+                _("A combinação XC.functional=%(functional)s com XC.authors=%(authors)s "
+                  "é inválida. Valores aceitos: %(allowed)s.")
+                % {
+                    'functional': functional,
+                    'authors': authors,
+                    'allowed': ', '.join(sorted(allowed)),
+                },
+            )
+        return cleaned

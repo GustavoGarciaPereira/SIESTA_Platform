@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Erro interno - SIESTA Platform{% endblock %}
+{% block title %}Página não encontrada - SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
     .error-card {
-        border-top: 3px solid #dc3545;
+        border-top: 3px solid #ffc107;
     }
     .error-header {
-        background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+        background: linear-gradient(135deg, #ffc107 0%, #d39e00 100%);
     }
 </style>
 {% endblock %}
@@ -18,21 +18,17 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card error-card shadow-lg border-0">
-                <div class="card-header error-header text-white text-center py-4">
-                    <h2 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Erro interno do servidor</h2>
-                    <p class="mb-0 opacity-75">Algo deu errado no servidor</p>
+                <div class="card-header error-header text-dark text-center py-4">
+                    <h2 class="fw-bold mb-2"><i class="bi bi-search me-2"></i>Página não encontrada</h2>
+                    <p class="mb-0 opacity-75">O endereço acessado não existe</p>
                 </div>
 
                 <div class="card-body p-4 p-lg-5 text-center">
                     <div class="mb-4">
-                        <span class="display-1 fw-bold text-danger">500</span>
+                        <span class="display-1 fw-bold text-warning">404</span>
                     </div>
                     <p class="lead mb-3">
-                        Ocorreu um erro inesperado ao processar sua solicitação.
-                    </p>
-                    <p class="text-muted mb-4">
-                        Nossa equipe foi notificada e está trabalhando para resolver o problema.
-                        Tente novamente em alguns instantes.
+                        A página que você procura pode ter sido removida ou o link está incorreto.
                     </p>
                     <div class="d-flex gap-3 justify-content-center flex-wrap">
                         <a href="{% url 'home' %}" class="btn btn-primary px-4 fw-bold">

@@ -56,19 +56,19 @@ class DashboardViewsTests(TestCase):
 
         response = self.client.get(reverse('dashboard'))
 
-        # Deve redirecionar para admin login (403 ou redirecionamento)
+        # Deve redirecionar para o login da plataforma (403 ou redirecionamento)
         self.assertIn(response.status_code, [302, 403])
 
         if response.status_code == 302:
-            self.assertIn('/admin/login/', response.url)
+            self.assertIn('/login/', response.url)
 
     def test_dashboard_view_unauthenticated(self):
         """Testa acesso ao dashboard sem autenticação."""
         response = self.client.get(reverse('dashboard'))
 
-        # Deve redirecionar para admin login
+        # Deve redirecionar para o login da plataforma
         self.assertEqual(response.status_code, 302)
-        self.assertIn('/admin/login/', response.url)
+        self.assertIn('/login/', response.url)
 
     def test_dashboard_content_structure(self):
         """Testa a estrutura do conteúdo do dashboard."""
@@ -92,6 +92,8 @@ class DashboardViewsTests(TestCase):
                 # params pode ser None ou lista
                 if url_info.get('params') is not None:
                     self.assertIsInstance(url_info['params'], list)
+                    # Entradas com parâmetros devem ter exemplo resolvido
+                    self.assertTrue(url_info['example_url'])
 
     def test_dashboard_specific_groups(self):
         """Testa grupos específicos do dashboard."""
@@ -147,34 +149,10 @@ class DashboardModelTests(TestCase):
 
     def test_no_models_in_dashboard(self):
         """Verifica que o dashboard não tem modelos próprios."""
-        # O dashboard é apenas uma view, não tem modelos
-        # Este teste verifica essa expectativa
-        import os
-        import importlib.util
+        from django.apps import apps
 
-        dashboard_dir = '/workspace/dashboard'
-        models_path = os.path.join(dashboard_dir, 'models.py')
-
-        # Verifica se o arquivo models.py existe
-        if os.path.exists(models_path):
-            # Se existir, verifica se tem classes de modelo
-            spec = importlib.util.spec_from_file_location("dashboard.models", models_path)
-            module = importlib.util.module_from_spec(spec)
-
-            try:
-                spec.loader.exec_module(module)
-
-                # Procura por classes que herdam de models.Model
-                from django.db import models
-                model_classes = [
-                    cls for cls in module.__dict__.values()
-                    if isinstance(cls, type) and issubclass(cls, models.Model) and cls != models.Model
-                ]
-
-                # Dashboard não deve ter modelos próprios
-                self.assertEqual(len(model_classes), 0,
-                               "Dashboard não deve ter modelos próprios")
-
-            except Exception as e:
-                # Se houver erro ao importar, não é problema para este teste
-                pass
+        config = apps.get_app_config('dashboard')
+        self.assertIsNone(
+            config.models_module,
+            "Dashboard não deve ter modelos próprios",
+        )

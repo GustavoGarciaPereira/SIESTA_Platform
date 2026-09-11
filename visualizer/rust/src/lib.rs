@@ -19,7 +19,7 @@ pub fn parse_siesta_out_full(content: &str) -> String {
     // ── 1. Extract atomic coordinates ─────────────────────────────────────
     let mut in_coords = false;
     for line in content.lines() {
-        if line.contains("siesta: Atomic coordinates (Ang):") {
+        if line.contains("Atomic coordinates (Ang)") {
             in_coords = true;
             continue;
         }
@@ -47,7 +47,7 @@ pub fn parse_siesta_out_full(content: &str) -> String {
     let mut mulliken: Vec<f64> = Vec::new();
     let mut in_mull = false;
     for line in content.lines() {
-        if line.contains("siesta: Mulliken populations:") {
+        if line.contains("Mulliken populations") {
             in_mull = true;
             continue;
         }
@@ -116,6 +116,8 @@ pub fn compute_field_3d(
     struct ChargeInput {
         x: f64,
         y: f64,
+        #[serde(default)]
+        z: f64,
         q: f64,
     }
 
@@ -123,7 +125,7 @@ pub fn compute_field_3d(
         serde_json::from_str(charges_json).unwrap_or_default();
     let c3d: Vec<Charge3D> = charges
         .iter()
-        .map(|c| Charge3D { x: c.x, y: c.y, z: 0.0, q: c.q })
+        .map(|c| Charge3D { x: c.x, y: c.y, z: c.z, q: c.q })
         .collect();
 
     if c3d.is_empty() {
@@ -146,17 +148,22 @@ pub fn compute_field_3d(
     let z0 = min_z - pad;
     let z1 = max_z + pad;
 
-    let nxn = nx.max(1);
-    let nyn = ny.max(1);
-    let nzn = nz.max(1);
+    let nx = nx.max(1);
+    let ny = ny.max(1);
+    let nz = nz.max(1);
+
+    // Evita divisão por zero quando alguma dimensão tem um único ponto.
+    let inv_x = if nx > 1 { 1.0 / (nx - 1) as f64 } else { 0.0 };
+    let inv_y = if ny > 1 { 1.0 / (ny - 1) as f64 } else { 0.0 };
+    let inv_z = if nz > 1 { 1.0 / (nz - 1) as f64 } else { 0.0 };
 
     let mut out = Vec::with_capacity(nx * ny * nz * 6);
     for iz in 0..nz {
-        let z = z0 + (iz as f64 / (nzn - 1) as f64) * (z1 - z0);
+        let z = z0 + (iz as f64 * inv_z) * (z1 - z0);
         for iy in 0..ny {
-            let y = y0 + (iy as f64 / (nyn - 1) as f64) * (y1 - y0);
+            let y = y0 + (iy as f64 * inv_y) * (y1 - y0);
             for ix in 0..nx {
-                let x = x0 + (ix as f64 / (nxn - 1) as f64) * (x1 - x0);
+                let x = x0 + (ix as f64 * inv_x) * (x1 - x0);
                 let (ex, ey, ez) = field_at((x, y, z), &c3d, k);
                 out.extend_from_slice(&[x, y, z, ex, ey, ez]);
             }
@@ -179,6 +186,8 @@ pub fn trace_field_lines(
     struct ChargeInput {
         x: f64,
         y: f64,
+        #[serde(default)]
+        z: f64,
         q: f64,
     }
 
@@ -186,7 +195,7 @@ pub fn trace_field_lines(
         serde_json::from_str(charges_json).unwrap_or_default();
     let c3d: Vec<Charge3D> = charges
         .iter()
-        .map(|c| Charge3D { x: c.x, y: c.y, z: 0.0, q: c.q })
+        .map(|c| Charge3D { x: c.x, y: c.y, z: c.z, q: c.q })
         .collect();
 
     let mut out: Vec<f64> = Vec::new();
@@ -326,6 +335,25 @@ Species: C  #2  Q =  0.2512
         // Field should be non-zero
         let has_nonzero = data.iter().any(|&v| v.abs() > 0.001);
         assert!(has_nonzero);
+    }
+
+    #[test]
+    fn test_compute_field_3d_with_z() {
+        let charges = r#"[{"x":0.0,"y":0.0,"z":0.0,"q":1.0},{"x":0.0,"y":0.0,"z":4.0,"q":-1.0}]"#;
+        let data = compute_field_3d(charges, 4, 4, 4, 50.0);
+        assert_eq!(data.len(), 384);
+        // A grade em z deve cobrir [-2, 6] (bounding box + padding)
+        let zs: Vec<f64> = (0..data.len()).step_by(6).map(|i| data[i + 2]).collect();
+        assert!(zs.iter().cloned().fold(f64::INFINITY, f64::min) < 0.0);
+        assert!(zs.iter().cloned().fold(f64::NEG_INFINITY, f64::max) > 4.0);
+    }
+
+    #[test]
+    fn test_compute_field_3d_single_point_no_nan() {
+        let charges = r#"[{"x":0.0,"y":0.0,"z":0.0,"q":1.0}]"#;
+        let data = compute_field_3d(charges, 1, 1, 1, 50.0);
+        assert_eq!(data.len(), 6);
+        assert!(data.iter().all(|v| v.is_finite()));
     }
 
     #[test]

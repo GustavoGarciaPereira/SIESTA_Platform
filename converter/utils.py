@@ -31,28 +31,59 @@ def read_xyz(file_obj):
     Raises:
         ValueError: Se o formato do arquivo for inválido ou número atômico desconhecido
     """
-    # Decodifica cada linha para texto
-    lines = [line.decode('utf-8').strip() for line in file_obj]
+    # Decodifica cada linha para texto (utf-8-sig remove BOM, se presente)
+    lines = [line.decode('utf-8-sig').strip() for line in file_obj]
 
-    n = int(lines[0])  # Número de átomos
+    if not lines:
+        raise ValueError("O arquivo XYZ está vazio.")
+
+    try:
+        n = int(lines[0])  # Número de átomos
+    except (TypeError, ValueError):
+        raise ValueError(
+            "A primeira linha do arquivo XYZ deve conter o número de átomos."
+        )
+
+    if n < 1:
+        raise ValueError("O arquivo XYZ deve conter pelo menos um átomo.")
+
     atoms = []
     atomic_numbers_detected = False
 
     for i in range(2, 2 + n):
-        if i < len(lines) and lines[i].strip():
-            parts = lines[i].split()
-            if len(parts) >= 4:
-                symbol_or_number = parts[0]
-                if symbol_or_number.isdigit():
-                    atomic_number = int(symbol_or_number)
-                    if atomic_number not in ATOMIC_NUMBER_TO_SYMBOL:
-                        raise ValueError(f"Número atômico desconhecido: {atomic_number}")
-                    symbol = ATOMIC_NUMBER_TO_SYMBOL[atomic_number]
-                    atomic_numbers_detected = True
-                else:
-                    symbol = symbol_or_number
-                x, y, z = map(float, parts[1:4])
-                atoms.append((symbol, x, y, z))
+        if i >= len(lines):
+            break
+        if not lines[i]:
+            continue
+        parts = lines[i].split()
+        if len(parts) < 4:
+            raise ValueError(
+                f"Linha {i + 1} do arquivo XYZ é inválida: '{lines[i]}'. "
+                "Esperado: símbolo x y z."
+            )
+        symbol_or_number = parts[0]
+        if symbol_or_number.isdigit():
+            atomic_number = int(symbol_or_number)
+            if atomic_number not in ATOMIC_NUMBER_TO_SYMBOL:
+                raise ValueError(f"Número atômico desconhecido: {atomic_number}")
+            symbol = ATOMIC_NUMBER_TO_SYMBOL[atomic_number]
+            atomic_numbers_detected = True
+        else:
+            symbol = symbol_or_number
+        try:
+            x, y, z = map(float, parts[1:4])
+        except ValueError:
+            raise ValueError(
+                f"Coordenadas inválidas na linha {i + 1} do arquivo XYZ: "
+                f"'{lines[i]}'."
+            )
+        atoms.append((symbol, x, y, z))
+
+    if len(atoms) != n:
+        raise ValueError(
+            f"O arquivo XYZ declara {n} átomo(s), mas foram encontrados "
+            f"{len(atoms)}."
+        )
 
     return atoms, atomic_numbers_detected
 
@@ -65,7 +96,12 @@ def bounding_box(atoms):
         
     Returns:
         tuple: (x_min, x_max, y_min, y_max, z_min, z_max)
+
+    Raises:
+        ValueError: Se a lista de átomos estiver vazia
     """
+    if not atoms:
+        raise ValueError("Não é possível calcular a caixa delimitadora de uma lista vazia.")
     xs, ys, zs = zip(*[(a[1], a[2], a[3]) for a in atoms])
     return min(xs), max(xs), min(ys), max(ys), min(zs), max(zs)
 
@@ -81,10 +117,11 @@ def convert_xyz_to_fdf(xyz_file, system_name, params, pt_table=None):
             Se None, usa a tabela padrão PT.
         
     Returns:
-        tuple: (fdf_content (str), unique_species (list)) - Conteúdo FDF e lista de espécies únicas
-        
+        tuple: (fdf_content (str), unique_species (list), atomic_numbers_detected (bool))
+
     Raises:
-        ValueError: Se o arquivo XYZ for inválido ou vazio
+        ValueError: Se o arquivo XYZ for inválido, vazio ou contiver elementos
+            desconhecidos na tabela periódica
     """
     if pt_table is None:
         pt_table = PT
@@ -111,7 +148,12 @@ def convert_xyz_to_fdf(xyz_file, system_name, params, pt_table=None):
     dici = {}
     output.write("%block ChemicalSpeciesLabel\n")
     for idx, sym in enumerate(unique_species, start=1):
-        atomic_num = pt_table.get(sym, 0)
+        if sym not in pt_table:
+            raise ValueError(
+                f"Elemento desconhecido no arquivo XYZ: '{sym}'. "
+                "Use símbolos químicos válidos (ex: H, C, N, O)."
+            )
+        atomic_num = pt_table[sym]
         dici[sym] = idx
         # NOTA: O '.lda' está fixo aqui. Se você usar outros funcionais (GGA, etc)
         # que exigem arquivos .psf diferentes (ex: C.pbe.psf), esta linha precisará
@@ -137,7 +179,7 @@ def convert_xyz_to_fdf(xyz_file, system_name, params, pt_table=None):
 
     for sym, x, y, z in atoms:
         species_idx = dici.get(sym)
-        if species_idx:
+        if species_idx is not None:
             output.write(f"   {x:<10.6f}    {y:<10.6f}    {z:<10.6f}    {species_idx}\n")
 
     output.write("%endblock AtomicCoordinatesAndAtomicSpecies\n\n")
@@ -199,27 +241,40 @@ def create_zip_archive(request, fdf_content, system_name, unique_species):
         return response
 
     zip_buffer = io.BytesIO()
+    missing_pseudos = []
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_f:
         # 1. Adiciona o arquivo .fdf ao zip
         fdf_filename = f"{slugify(system_name)}.fdf"
         zip_f.writestr(fdf_filename, fdf_content)
 
         # 2. Adiciona os arquivos .psf ao zip
+        # NOTA: os pseudopotenciais disponíveis no servidor são LDA; por isso o
+        # sufixo '.lda' é fixo aqui e no bloco ChemicalSpeciesLabel do FDF.
         pseudos_dir = settings.PSEUDOPOTENTIALS_DIR
         for sym in unique_species:
-            # Assumindo que o funcional é 'lda' por enquanto, como no seu código original.
-            # Para maior flexibilidade, isso poderia vir do formulário.
-            pseudo_filename = f"{sym}.lda.psf" 
+            pseudo_filename = f"{sym}.lda.psf"
             pseudo_path = os.path.join(pseudos_dir, pseudo_filename)
 
             if os.path.exists(pseudo_path):
                 # Adiciona o arquivo ao zip sem a estrutura de diretórios do servidor
                 zip_f.write(pseudo_path, arcname=pseudo_filename)
             else:
+                missing_pseudos.append(pseudo_filename)
                 # Informa ao usuário que um arquivo .psf não foi encontrado
                 messages.warning(request, _("Aviso: O arquivo de pseudopotencial '%(name)s' "
                                              "não foi encontrado no servidor e não foi incluído no .zip.")
                                  % {'name': pseudo_filename})
+
+        # Como o download é binário, as mensagens não aparecem na tela:
+        # grava um aviso dentro do próprio .zip quando faltar algum pseudopotencial.
+        if missing_pseudos:
+            zip_f.writestr(
+                'AVISO_pseudopotenciais_faltantes.txt',
+                "Os seguintes pseudopotenciais não foram encontrados no servidor "
+                "e não foram incluídos no .zip:\n\n"
+                + "\n".join(missing_pseudos)
+                + "\n",
+            )
 
     # Prepara a resposta HTTP para o arquivo ZIP
     zip_buffer.seek(0)

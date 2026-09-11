@@ -52,17 +52,6 @@
 <div class="container mt-4">
     <h2>{% trans "Meu Histórico de Conversões" %}</h2>
 
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <div class="mb-3">
         <a href="{% url 'convert' %}" class="btn btn-primary">
             <i class="bi bi-arrow-left"></i> Voltar para Conversão
@@ -114,11 +103,13 @@
                                         data-bs-toggle="modal" data-bs-target="#paramsModal{{ conv.id }}">
                                     <i class="bi bi-sliders"></i>
                                 </button>
-                                <a href="{% url 'delete_history' conv.id %}"
-                                   class="btn btn-sm btn-danger" title="Excluir"
-                                   onclick="return confirm('Tem certeza que deseja excluir esta entrada do histórico?')">
-                                    <i class="bi bi-trash"></i>
-                                </a>
+                                <form method="post" action="{% url 'delete_history' conv.id %}" class="d-inline"
+                                      onsubmit="return confirm('Tem certeza que deseja excluir esta entrada do histórico?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </div>
 
                             <!-- Modal de parâmetros -->

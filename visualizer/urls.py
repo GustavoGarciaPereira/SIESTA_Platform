@@ -11,4 +11,5 @@ urlpatterns = [
     path("<int:out_id>/", views.visualize_out, name="visualize"),
     path("<int:out_id>/content/", views.out_content, name="out_content"),
     path("<int:out_id>/atoms/", views.out_atoms_json, name="out_atoms"),
+    path("<int:out_id>/delete/", views.delete_out, name="delete_out"),
 ]

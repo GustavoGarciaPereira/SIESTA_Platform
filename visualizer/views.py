@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import logging
 
 from django.contrib import messages
@@ -10,8 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from .forms import OutFileForm
 from .models import OutFile
@@ -63,8 +62,8 @@ def out_content(request, out_id):
     out_file = get_object_or_404(OutFile, id=out_id, user=request.user)
 
     try:
-        with out_file.file.open("r") as f:
-            content = f.read()
+        with out_file.file.open("rb") as f:
+            content = f.read().decode("utf-8", errors="replace")
         return HttpResponse(content, content_type="text/plain; charset=utf-8")
     except Exception as e:
         logger.error("Failed to read OutFile %s: %s", out_id, e)
@@ -72,16 +71,27 @@ def out_content(request, out_id):
 
 
 @login_required
-def out_atoms_json(request, out_id):
-    """API: retorna os átomos parseados como JSON (usando o parser WASM no backend).
+@require_POST
+def delete_out(request, out_id):
+    """Exclui um arquivo .out do usuário."""
+    out_file = get_object_or_404(OutFile, id=out_id, user=request.user)
+    out_file.delete()
+    messages.success(request, _("Arquivo .out excluído com sucesso."))
+    return redirect("visualizer:upload_out")
 
-    Fallback: se o WASM não estiver disponível, faz parse básico em Python.
+
+@login_required
+def out_atoms_json(request, out_id):
+    """API: retorna os átomos parseados como JSON (parser Python do backend).
+
+    O parser WASM roda apenas no navegador; este endpoint é um fallback/API
+    independente para consumo externo.
     """
     out_file = get_object_or_404(OutFile, id=out_id, user=request.user)
 
     try:
-        with out_file.file.open("r") as f:
-            content = f.read()
+        with out_file.file.open("rb") as f:
+            content = f.read().decode("utf-8", errors="replace")
 
         atoms = _parse_atoms_python(content)
         return JsonResponse({"atoms": atoms, "count": len(atoms)})

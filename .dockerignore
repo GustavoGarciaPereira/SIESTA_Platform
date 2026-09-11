@@ -1,0 +1,44 @@
+# Git / IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Banco e dados locais
+*.sqlite3
+*.sql
+media/
+backup*.sql
+create_converter_tables.sql
+fix_profile_table.sql
+
+# Build de estáticos (gerado no build)
+staticfiles/
+
+# Rust
+visualizer/rust/target/
+visualizer/rust/pkg/
+
+# Documentação e artefatos locais
+docs/
+*.md
+ddddd.mmd
+.clinerules
+.reasonix/
+.claude/
+.pytest_cache/

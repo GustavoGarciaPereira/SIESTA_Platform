@@ -67,15 +67,9 @@ class UserViewsTests(TestCase):
         self.assertTrue(any('sucesso' in str(message) for message in messages_list))
 
     def test_contact_submit_view_get(self):
-        """Testa acesso GET ao endpoint de envio de contato."""
+        """Acesso GET ao endpoint de envio de contato deve ser rejeitado (405)."""
         response = self.client.get(reverse('contact_submit'))
-
-        # Deve redirecionar com mensagem de erro
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('contact'))
-
-        messages_list = list(messages.get_messages(response.wsgi_request))
-        self.assertTrue(any('inválido' in str(message).lower() for message in messages_list))
+        self.assertEqual(response.status_code, 405)
 
     def test_signup_view_get(self):
         """Testa acesso GET à página de cadastro."""
@@ -142,13 +136,12 @@ class UserProfileTests(TestCase):
         )
 
     def test_create_user_profile(self):
-        """Testa criação de UserProfile."""
-        profile = UserProfile.objects.create(
-            user=self.user,
-            institution='Test University',
-            research_area='Computational Chemistry',
-            email_verified=True
-        )
+        """Testa criação de UserProfile (automática via signal)."""
+        profile = self.user.profile
+        profile.institution = 'Test University'
+        profile.research_area = 'Computational Chemistry'
+        profile.email_verified = True
+        profile.save()
 
         self.assertEqual(UserProfile.objects.count(), 1)
         self.assertEqual(profile.user.username, 'testuser')
@@ -158,10 +151,9 @@ class UserProfileTests(TestCase):
 
     def test_user_profile_auto_fields(self):
         """Testa campos automáticos do UserProfile."""
-        profile = UserProfile.objects.create(
-            user=self.user,
-            institution='Test'
-        )
+        profile = self.user.profile
+        profile.institution = 'Test'
+        profile.save()
 
         # created_at deve ser definido
         self.assertIsNotNone(profile.created_at)
@@ -174,17 +166,16 @@ class UserProfileTests(TestCase):
 
     def test_user_profile_str(self):
         """Testa a representação em string do UserProfile."""
-        profile = UserProfile.objects.create(
-            user=self.user,
-            institution='Test University'
-        )
+        profile = self.user.profile
+        profile.institution = 'Test University'
+        profile.save()
 
         expected_str = f"Profile of {self.user.username}"
         self.assertEqual(str(profile), expected_str)
 
     def test_user_profile_one_to_one(self):
         """Testa relação OneToOne entre User e UserProfile."""
-        profile = UserProfile.objects.create(user=self.user)
+        profile = self.user.profile
 
         # Deve ser acessível de ambas as direções
         self.assertEqual(self.user.profile, profile)
@@ -468,8 +459,8 @@ class UserFormsTests(TestCase):
         from .forms import UserProfileForm
         from .models import UserProfile
 
-        # Cria um perfil para testar
-        profile = UserProfile.objects.create(user=self.user)
+        # O perfil é criado automaticamente pelo signal
+        profile = self.user.profile
 
         form_data = {
             'institution': 'Test University',
@@ -489,7 +480,7 @@ class UserFormsTests(TestCase):
         from .forms import UserProfileForm
         from .models import UserProfile
 
-        profile = UserProfile.objects.create(user=self.user)
+        profile = self.user.profile
 
         form_data = {
             'institution': '',
@@ -504,7 +495,7 @@ class UserFormsTests(TestCase):
         from .forms import UserProfileForm
         from .models import UserProfile
 
-        profile = UserProfile.objects.create(user=self.user)
+        profile = self.user.profile
 
         # Em um teste real, precisaríamos de um mock de arquivo
         # Por enquanto, testamos sem arquivo

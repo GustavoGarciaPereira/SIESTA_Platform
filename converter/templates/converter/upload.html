@@ -38,6 +38,8 @@
 {% block extra_js %}
 {% load static %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
+{# Tabela periódica injetada pelo servidor (fonte única: converter/periodic_table.py) #}
+<script>window.ATOMIC_NUMBER_TO_SYMBOL = {{ periodic_table_json|safe }};</script>
 <script src="{% static 'js/upload.js' %}"></script>
 {% endblock %}
 
@@ -392,7 +394,7 @@
                 {% if form.download_pseudos.errors %}
                 <div class="invalid-feedback d-block">{{ form.download_pseudos.errors }}</div>
                 {% endif %}
-                <div class="form-text">{{ form.lattice_constant.help_text }}</div>
+                <div class="form-text">{{ form.download_pseudos.help_text }}</div>
             </div>
             
             {% if user.is_authenticated %}
@@ -411,7 +413,7 @@
                 <i class="bi bi-eye-fill"></i> Pré-visualizar FDF
             </button>
             <button type="submit" class="btn btn-lg btn-primary">
-                <i class="bi bi-download"></i> Converter e Baixar FDF
+                <i class="bi bi-download"></i> {% trans "Converter e Baixar" %}
             </button>
         </div>
     </form>
@@ -494,7 +496,7 @@
             <li>{% trans "Renderiza a molécula em 3D interativamente no navegador" %}</li>
             <li>{% trans "Identifica elementos e cria bloco de espécies químicas" %}</li>
             <li>{% trans "Constrói uma caixa cúbica adequada baseada nas dimensões da molécula" %}</li>
-            <li>{% trans "Centraliza a molécula na caixa" %}</li>
+            <li>{% trans "Ajusta as dimensões da caixa para conter a molécula (bounding box + padding)" %}</li>
             <li>{% trans "Configura todos os parâmetros de cálculo SIESTA" %}</li>
             <li>{% trans "Gera um arquivo FDF pronto para o SIESTA" %}</li>
         </ul>

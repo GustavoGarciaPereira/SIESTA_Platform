@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
+{% load i18n %}
 
-{% block title %}Upload .out — SIESTA Platform{% endblock %}
+{% block title %}{% trans "Upload .out" %} — SIESTA Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -15,12 +15,11 @@
     <div class="col-md-8 col-lg-6">
       <div class="card upload-card shadow-sm">
         <div class="card-header bg-primary text-white">
-          <h4 class="mb-0"><i class="bi bi-upload me-2"></i>Upload de Arquivo .out</h4>
+          <h4 class="mb-0"><i class="bi bi-upload me-2"></i>{% trans "Upload de Arquivo .out" %}</h4>
         </div>
         <div class="card-body">
           <p class="text-muted">
-            Envie um arquivo de saída do SIESTA (<code>.out</code>) para visualizar
-            a geometria atômica, cargas de Mulliken e o campo elétrico 3D.
+            {% blocktrans %}Envie um arquivo de saída do SIESTA (<code>.out</code>) para visualizar a geometria atômica, cargas de Mulliken e o campo elétrico 3D.{% endblocktrans %}
           </p>
           <form method="post" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
@@ -40,11 +39,11 @@
               {% if form.system_name.errors %}
                 <div class="invalid-feedback d-block">{{ form.system_name.errors }}</div>
               {% endif %}
-              <div class="form-text">Deixe em branco para usar o nome detectado no arquivo.</div>
+              <div class="form-text">{% trans "Deixe em branco para usar o nome detectado no arquivo." %}</div>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">
-              <i class="bi bi-cube me-2"></i>Visualizar em 3D
+              <i class="bi bi-cube me-2"></i>{% trans "Visualizar em 3D" %}
             </button>
           </form>
         </div>
