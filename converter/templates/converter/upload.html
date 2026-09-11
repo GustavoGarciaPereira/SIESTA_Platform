@@ -60,7 +60,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
+<script src="{% static 'vendor/3dmol/3Dmol-min.js' %}"></script>
 {# Tabela periódica injetada pelo servidor (fonte única: converter/periodic_table.py) #}
 <script>window.ATOMIC_NUMBER_TO_SYMBOL = {{ periodic_table_json|safe }};</script>
 <script src="{% static 'js/upload.js' %}"></script>

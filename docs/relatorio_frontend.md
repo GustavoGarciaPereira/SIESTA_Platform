@@ -194,9 +194,10 @@ Entregável: metatags/OG, decisão sobre vendorização de CDN, contraste e foco
 | FR-11 | Concluído | Botões do dashboard em outline discreto |
 | FR-12 | Concluído | Títulos padronizados em `<página> — SIESTA Platform` |
 | FR-13 | Concluído | `meta description` e Open Graph adicionados ao `base.html` |
-| FR-14 | Não feito | Vendorização/SRI de CDNs ficou fora do escopo desta rodada |
+| FR-14 | Concluído | Bootstrap (CSS/JS), Bootstrap Icons, 3Dmol e Three.js/OrbitControls vendorizados em `static/vendor/`; restam apenas as Google Fonts (com fallback local) |
 | FR-15 | Concluído | Fotos da equipe baixadas para `static/img/team/` e servidas localmente |
-| FR-16 | Parcial | `--color-accent-dark` para contraste AA e `:focus-visible` padronizado; auditoria completa de a11y pendente |
-| FR-17 | Parcial | Ações principais consolidados; revisão global de variantes ainda pendente |
+| FR-16 | Parcial | `--color-accent-dark` para contraste AA, `:focus-visible`, skip-link, `aria-label` em botões de ícone, `scope="col"` nas tabelas e `aria-current` na navbar; auditoria completa de a11y pendente |
+| FR-17 | Parcial | Ações principais consolidadas (dashboard, histórico, configs, hero); revisão global de variantes ainda pendente |
+| Extra | Concluído | Tooltip no hover dos átomos no visualizador (símbolo, coordenadas e carga) |
 
 Validação: **117 testes Django** e **7 testes Rust** verdes, `manage.py check` limpo, `collectstatic` executado, `msgfmt --check-format` OK nos dois idiomas.

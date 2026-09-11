@@ -8,11 +8,25 @@
 <style>
   #canvas3d {
     display: block;
+    position: relative;
     border-radius: 8px;
     width: 100%;
     height: clamp(360px, 60vh, 650px);
     border: 1px solid #ced4da;
     background: #11191f;
+  }
+  .atom-tooltip {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    background: rgba(17, 25, 31, 0.92);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    transform: translate(10px, 10px);
   }
   .hidden { display: none !important; }
   .controls-row {
@@ -104,7 +118,9 @@
         <span class="legend-item"><i class="bi bi-arrow-right" style="color:#ff8800"></i>{% trans "Campo elétrico" %}</span>
         <span class="legend-item"><span style="display:inline-block;width:1.5rem;height:2px;background:#00ff88"></span>{% trans "Linhas de campo" %}</span>
       </div>
-      <div id="canvas3d"></div>
+      <div id="canvas3d">
+        <div id="atom-tooltip" class="atom-tooltip hidden"></div>
+      </div>
       <div id="info-box" class="mt-2 hidden">
         <span id="info-text"></span>
       </div>
@@ -137,8 +153,8 @@
 <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      "three": "{% static 'vendor/three/three.module.js' %}",
+      "three-orbitcontrols": "{% static 'vendor/three/addons/controls/OrbitControls.js' %}"
     }
   }
 </script>
@@ -158,7 +174,7 @@
     const wasmModule = await import('{% static "visualizer/wasm/siesta_field_wasm.js" %}');
     const { default: init, parse_siesta_out_full, compute_field_3d, trace_field_lines } = wasmModule;
     const THREE = await import('three');
-    const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+    const { OrbitControls } = await import('three-orbitcontrols');
 
     await init();
 
@@ -267,6 +283,32 @@
     link.click();
   });
 
+  // Tooltip com dados do átomo sob o cursor
+  const tooltip = document.getElementById('atom-tooltip');
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  renderer.domElement.addEventListener('pointermove', (event) => {
+    if (!atomData || !tooltip) return;
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const meshes = dynamicGroup.children.filter((c) => c.isMesh);
+    const hit = raycaster.intersectObjects(meshes, false)[0];
+    if (hit) {
+      const d = hit.object.userData;
+      tooltip.textContent = `${d.sym} · x=${d.x.toFixed(2)} y=${d.y.toFixed(2)} z=${d.z.toFixed(2)} · q=${d.q.toFixed(3)}`;
+      tooltip.style.left = (event.clientX - rect.left) + 'px';
+      tooltip.style.top = (event.clientY - rect.top) + 'px';
+      tooltip.classList.remove('hidden');
+    } else {
+      tooltip.classList.add('hidden');
+    }
+  });
+  renderer.domElement.addEventListener('pointerleave', () => {
+    if (tooltip) tooltip.classList.add('hidden');
+  });
+
   function setBusy(busy) {
     renderBtn.disabled = busy;
     linesBtn.disabled = busy;
@@ -309,6 +351,7 @@
         const mat = new THREE.MeshStandardMaterial({ color: atomColor(a.q), roughness: 0.4, metalness: 0.1 });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.set(a.x, a.y, a.z);
+        mesh.userData = { sym: a.sym, x: a.x, y: a.y, z: a.z, q: a.q };
         dynamicGroup.add(mesh);
       }
       const chargesJson = JSON.stringify(atomData.map(a => ({ x: a.x, y: a.y, z: a.z, q: a.q })));
