@@ -186,7 +186,7 @@ Entregável: metatags/OG, decisão sobre vendorização de CDN, contraste e foco
 | FR-03 | Concluído | Navbar com dropdown "Olá, usuário" (Perfil, Configurações, Visualizador, Dashboard, Logout) |
 | FR-04 | Concluído | Links mortos de Termos/Privacidade removidos (rodapé e cadastro) |
 | FR-05 | Concluído | `static/img/favicon.svg` + `<link rel="icon">`; sem 404 |
-| FR-06 | Parcial | Cabeçalhos de seção unificados (navy), barra de ação sticky, toolbar de ações secundárias. Accordion/tabs não implementado |
+| FR-06 | Concluído | Parâmetros agrupados em accordion (6 seções) com Expandir/Recolher tudo, seções com erro abertas automaticamente e barra de ação sticky |
 | FR-07 | Concluído | Legenda de cores, reset de câmera, exportar PNG, estado "Calculando...", grade padrão 6³ |
 | FR-08 | Concluído | Empty states com ícone, texto e CTA em histórico e configurações |
 | FR-09 | Concluído | `console.log` de debug removidos de `static/js/upload.js` |

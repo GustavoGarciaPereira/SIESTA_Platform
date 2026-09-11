@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
+{% load form_extras %}
 
 {% block title %}{% trans "Conversor XYZ para FDF — SIESTA Platform" %}{% endblock %}
 
@@ -9,12 +11,38 @@
         border-top: 3px solid var(--color-accent);
     }
 
-    .parameter-card .card-header h4 {
-        font-size: 1.05rem;
-    }
-
     .converter-toolbar .btn {
         white-space: nowrap;
+    }
+
+    .accordion-item {
+        border: none;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 0.75rem;
+    }
+
+    .accordion-button {
+        font-weight: 600;
+        color: var(--color-primary);
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        filter: brightness(0) invert(1);
+    }
+
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(46, 109, 164, 0.25);
+    }
+
+    .accordion-body {
+        background-color: var(--color-surface);
     }
 
     #molviewer {
@@ -22,7 +50,7 @@
         border-radius: 6px;
         background-color: #f8f9fa;
     }
-    
+
     .fdf-preview {
         font-family: var(--font-mono);
         font-size: 0.875rem;
@@ -32,14 +60,34 @@
 {% endblock %}
 
 {% block extra_js %}
-{% load static %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
 {# Tabela periódica injetada pelo servidor (fonte única: converter/periodic_table.py) #}
 <script>window.ATOMIC_NUMBER_TO_SYMBOL = {{ periodic_table_json|safe }};</script>
 <script src="{% static 'js/upload.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function toggleAll(show) {
+        document.querySelectorAll('#paramsAccordion .accordion-collapse').forEach(function (el) {
+            const instance = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+            if (show) { instance.show(); } else { instance.hide(); }
+        });
+    }
+    const expandBtn = document.getElementById('btn-expand-all');
+    const collapseBtn = document.getElementById('btn-collapse-all');
+    if (expandBtn) expandBtn.addEventListener('click', function () { toggleAll(true); });
+    if (collapseBtn) collapseBtn.addEventListener('click', function () { toggleAll(false); });
+});
+</script>
 {% endblock %}
 
 {% block content %}
+{% section_has_errors form 'PAO_BasisSize' 'PAO_EnergyShift' 'MeshCutoff' as base_has_errors %}
+{% section_has_errors form 'MD_TypeOfRun' 'MD_NumCGsteps' 'MD_MaxForceTol' 'MD_UseSaveXV' 'MD_UseSaveCG' as md_has_errors %}
+{% section_has_errors form 'MaxSCFIterations' 'DM_MixingWeight' 'DM_NumberPulay' 'DM_Tolerance' 'DM_UseSaveDM' 'UseSaveData' as scf_has_errors %}
+{% section_has_errors form 'XC_functional' 'XC_authors' 'SolutionMethod' 'ElectronicTemperature' 'SpinPolarized' as xc_has_errors %}
+{% section_has_errors form 'WriteCoorXmol' 'WriteMullikenPop' as output_has_errors %}
+{% section_has_errors form 'lattice_constant' 'cell_size_x' 'cell_size_y' 'cell_size_z' as cell_has_errors %}
+
 <div class="container">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <h3 class="mb-0">{% trans "Conversor de Arquivos XYZ para FDF (SIESTA)" %}</h3>
@@ -60,7 +108,8 @@
 
     <form method="post" enctype="multipart/form-data" id="convertForm">
         {% csrf_token %}
-        
+
+        <!-- Arquivo e dados básicos -->
         <div class="card mb-3 parameter-card">
             <div class="card-header">
                 <h4 class="mb-0">{% trans "Arquivo e Configurações Básicas" %}</h4>
@@ -74,7 +123,7 @@
                     {% endif %}
                     <div class="form-text">{% trans "Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione um arquivo para visualização 3D abaixo." %}</div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -100,302 +149,369 @@
             </div>
         </div>
 
-        <!-- Container para o Visualizador 3Dmol.js -->
+        <!-- Visualização 3D -->
         <div class="card mb-3 parameter-card">
             <div class="card-header">
                 <h4 class="mb-0">{% trans "Visualização 3D da Molécula (do arquivo XYZ selecionado)" %}</h4>
             </div>
             <div class="card-body">
-                <div id="molviewer" style="width: 100%; height: 450px; position: relative; border: 1px solid #ced4da; border-radius: .25rem;">
+                <div id="molviewer" style="width: 100%; height: 420px; position: relative; border: 1px solid #ced4da; border-radius: .25rem;">
                     <div class="text-center p-5 text-muted">{% trans "Selecione um arquivo XYZ acima para visualizar a molécula." %}</div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-3 parameter-card">
-            <div class="card-header">
-                <h4 class="mb-0">{% trans "Parâmetros de Base e Malha" %}</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.PAO_BasisSize.label_tag }}
-                            {{ form.PAO_BasisSize }}
-                            {% if form.PAO_BasisSize.errors %}
-                            <div class="invalid-feedback d-block">{{ form.PAO_BasisSize.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.PAO_EnergyShift.label_tag }}
-                            {{ form.PAO_EnergyShift }}
-                            {% if form.PAO_EnergyShift.errors %}
-                            <div class="invalid-feedback d-block">{{ form.PAO_EnergyShift.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.MeshCutoff.label_tag }}
-                            {{ form.MeshCutoff }}
-                            {% if form.MeshCutoff.errors %}
-                            <div class="invalid-feedback d-block">{{ form.MeshCutoff.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+        <!-- Parâmetros avançados -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 mb-2 gap-2">
+            <h5 class="mb-0">{% trans "Parâmetros da simulação" %}</h5>
+            <div class="d-flex gap-2">
+                <button type="button" id="btn-expand-all" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrows-expand"></i> {% trans "Expandir tudo" %}
+                </button>
+                <button type="button" id="btn-collapse-all" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrows-collapse"></i> {% trans "Recolher tudo" %}
+                </button>
             </div>
         </div>
-        
-        <div class="card mb-3 parameter-card">
-            <div class="card-header">
-                <h4 class="mb-0">{% trans "Parâmetros de Dinâmica Molecular" %}</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.MD_TypeOfRun.label_tag }}
-                            {{ form.MD_TypeOfRun }}
-                            {% if form.MD_TypeOfRun.errors %}
-                            <div class="invalid-feedback d-block">{{ form.MD_TypeOfRun.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.MD_NumCGsteps.label_tag }}
-                            {{ form.MD_NumCGsteps }}
-                            {% if form.MD_NumCGsteps.errors %}
-                            <div class="invalid-feedback d-block">{{ form.MD_NumCGsteps.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.MD_MaxForceTol.label_tag }}
-                            {{ form.MD_MaxForceTol }}
-                            {% if form.MD_MaxForceTol.errors %}
-                            <div class="invalid-feedback d-block">{{ form.MD_MaxForceTol.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3 mt-4">
-                            <div class="form-check">
-                                {{ form.MD_UseSaveXV }}
-                                {{ form.MD_UseSaveXV.label_tag }}
+
+        <div class="accordion" id="paramsAccordion">
+            <!-- Base e Malha -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingBase">
+                    <button class="accordion-button {% if not base_has_errors %}collapsed{% endif %}" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseBase"
+                            aria-expanded="{% if base_has_errors %}true{% else %}false{% endif %}" aria-controls="collapseBase">
+                        {% trans "Parâmetros de Base e Malha" %}
+                        {% if base_has_errors %}<span class="badge bg-danger ms-2">!</span>{% endif %}
+                    </button>
+                </h2>
+                <div id="collapseBase" class="accordion-collapse collapse {% if base_has_errors %}show{% endif %}"
+                     aria-labelledby="headingBase">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.PAO_BasisSize.label_tag }}
+                                    {{ form.PAO_BasisSize }}
+                                    {% if form.PAO_BasisSize.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.PAO_BasisSize.errors }}</div>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="form-check">
-                                {{ form.MD_UseSaveCG }}
-                                {{ form.MD_UseSaveCG.label_tag }}
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.PAO_EnergyShift.label_tag }}
+                                    {{ form.PAO_EnergyShift }}
+                                    {% if form.PAO_EnergyShift.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.PAO_EnergyShift.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.MeshCutoff.label_tag }}
+                                    {{ form.MeshCutoff }}
+                                    {% if form.MeshCutoff.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.MeshCutoff.errors }}</div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="card mb-3 parameter-card">
-            <div class="card-header">
-                <h4 class="mb-0">{% trans "Parâmetros SCF e DM" %}</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.MaxSCFIterations.label_tag }}
-                            {{ form.MaxSCFIterations }}
-                            {% if form.MaxSCFIterations.errors %}
-                            <div class="invalid-feedback d-block">{{ form.MaxSCFIterations.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.DM_MixingWeight.label_tag }}
-                            {{ form.DM_MixingWeight }}
-                            {% if form.DM_MixingWeight.errors %}
-                            <div class="invalid-feedback d-block">{{ form.DM_MixingWeight.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.DM_NumberPulay.label_tag }}
-                            {{ form.DM_NumberPulay }}
-                            {% if form.DM_NumberPulay.errors %}
-                            <div class="invalid-feedback d-block">{{ form.DM_NumberPulay.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.DM_Tolerance.label_tag }}
-                            {{ form.DM_Tolerance }}
-                            {% if form.DM_Tolerance.errors %}
-                            <div class="invalid-feedback d-block">{{ form.DM_Tolerance.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-check mb-3">
-                            {{ form.DM_UseSaveDM }}
-                            {{ form.DM_UseSaveDM.label_tag }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-check mb-3">
-                            {{ form.UseSaveData }}
-                            {{ form.UseSaveData.label_tag }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card mb-3 parameter-card">
-            <div class="card-header">
-                <h4 class="mb-0">{% trans "Funcional XC e Parâmetros de Solução" %}</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.XC_functional.label_tag }}
-                            {{ form.XC_functional }}
-                            {% if form.XC_functional.errors %}
-                            <div class="invalid-feedback d-block">{{ form.XC_functional.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.XC_authors.label_tag }}
-                            {{ form.XC_authors }}
-                            {% if form.XC_authors.errors %}
-                            <div class="invalid-feedback d-block">{{ form.XC_authors.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.SolutionMethod.label_tag }}
-                            {{ form.SolutionMethod }}
-                            {% if form.SolutionMethod.errors %}
-                            <div class="invalid-feedback d-block">{{ form.SolutionMethod.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ form.ElectronicTemperature.label_tag }}
-                            {{ form.ElectronicTemperature }}
-                            {% if form.ElectronicTemperature.errors %}
-                            <div class="invalid-feedback d-block">{{ form.ElectronicTemperature.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-check mb-3">
-                            {{ form.SpinPolarized }}
-                            {{ form.SpinPolarized.label_tag }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card mb-3 parameter-card">
-            <div class="card-header">
-                <h4 class="mb-0">{% trans "Saídas e Análises" %}</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-check mb-3">
-                            {{ form.WriteCoorXmol }}
-                            {{ form.WriteCoorXmol.label_tag }}
-                            <div class="form-text">{% trans "Exporta coordenadas em formato Xmol" %}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            {{ form.WriteMullikenPop.label_tag }}
-                            {{ form.WriteMullikenPop }}
-                            {% if form.WriteMullikenPop.errors %}
-                            <div class="invalid-feedback d-block">{{ form.WriteMullikenPop.errors }}</div>
-                            {% endif %}
-                            <div class="form-text">{% trans "Análise populacional de Mulliken" %}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-               
-        <div class="card mb-3 parameter-card">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">{% trans "Constante de Rede e Vetores" %}</h4>
+            <!-- Dinâmica Molecular -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingMD">
+                    <button class="accordion-button {% if not md_has_errors %}collapsed{% endif %}" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseMD"
+                            aria-expanded="{% if md_has_errors %}true{% else %}false{% endif %}" aria-controls="collapseMD">
+                        {% trans "Parâmetros de Dinâmica Molecular" %}
+                        {% if md_has_errors %}<span class="badge bg-danger ms-2">!</span>{% endif %}
+                    </button>
+                </h2>
+                <div id="collapseMD" class="accordion-collapse collapse {% if md_has_errors %}show{% endif %}"
+                     aria-labelledby="headingMD">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.MD_TypeOfRun.label_tag }}
+                                    {{ form.MD_TypeOfRun }}
+                                    {% if form.MD_TypeOfRun.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.MD_TypeOfRun.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.MD_NumCGsteps.label_tag }}
+                                    {{ form.MD_NumCGsteps }}
+                                    {% if form.MD_NumCGsteps.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.MD_NumCGsteps.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.MD_MaxForceTol.label_tag }}
+                                    {{ form.MD_MaxForceTol }}
+                                    {% if form.MD_MaxForceTol.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.MD_MaxForceTol.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3 mt-4">
+                                    <div class="form-check">
+                                        {{ form.MD_UseSaveXV }}
+                                        {{ form.MD_UseSaveXV.label_tag }}
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.MD_UseSaveCG }}
+                                        {{ form.MD_UseSaveCG.label_tag }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    {{ form.lattice_constant.label_tag }}
-                    {{ form.lattice_constant }}
-                    {% if form.lattice_constant.errors %}
-                    <div class="invalid-feedback d-block">{{ form.lattice_constant.errors }}</div>
-                    {% endif %}
-                    <div class="form-text">{{ form.lattice_constant.help_text }}</div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.cell_size_x.label_tag }}
-                            {{ form.cell_size_x }}
-                            {% if form.cell_size_x.errors %}
-                            <div class="invalid-feedback d-block">{{ form.cell_size_x.errors }}</div>
-                            {% endif %}
-                            <div class="form-text">{{ form.cell_size_x.help_text }}</div>
+            <!-- SCF e DM -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSCF">
+                    <button class="accordion-button {% if not scf_has_errors %}collapsed{% endif %}" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseSCF"
+                            aria-expanded="{% if scf_has_errors %}true{% else %}false{% endif %}" aria-controls="collapseSCF">
+                        {% trans "Parâmetros SCF e DM" %}
+                        {% if scf_has_errors %}<span class="badge bg-danger ms-2">!</span>{% endif %}
+                    </button>
+                </h2>
+                <div id="collapseSCF" class="accordion-collapse collapse {% if scf_has_errors %}show{% endif %}"
+                     aria-labelledby="headingSCF">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.MaxSCFIterations.label_tag }}
+                                    {{ form.MaxSCFIterations }}
+                                    {% if form.MaxSCFIterations.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.MaxSCFIterations.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.DM_MixingWeight.label_tag }}
+                                    {{ form.DM_MixingWeight }}
+                                    {% if form.DM_MixingWeight.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.DM_MixingWeight.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.DM_NumberPulay.label_tag }}
+                                    {{ form.DM_NumberPulay }}
+                                    {% if form.DM_NumberPulay.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.DM_NumberPulay.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.DM_Tolerance.label_tag }}
+                                    {{ form.DM_Tolerance }}
+                                    {% if form.DM_Tolerance.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.DM_Tolerance.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.cell_size_y.label_tag }}
-                            {{ form.cell_size_y }}
-                            {% if form.cell_size_y.errors %}
-                            <div class="invalid-feedback d-block">{{ form.cell_size_y.errors }}</div>
-                            {% endif %}
-                            <div class="form-text">{{ form.cell_size_y.help_text }}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            {{ form.cell_size_z.label_tag }}
-                            {{ form.cell_size_z }}
-                            {% if form.cell_size_z.errors %}
-                            <div class="invalid-feedback d-block">{{ form.cell_size_z.errors }}</div>
-                            {% endif %}
-                            <div class="form-text">{{ form.cell_size_z.help_text }}</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.DM_UseSaveDM }}
+                                    {{ form.DM_UseSaveDM.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.UseSaveData }}
+                                    {{ form.UseSaveData.label_tag }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="form-text">
-                    <strong>{% trans "Nota:" %}</strong> {% trans "Os vetores da rede serão gerados como uma matriz diagonal:" %}
-                    <br>A = [cell_size_x, 0, 0]
-                    <br>B = [0, cell_size_y, 0]
-                    <br>C = [0, 0, cell_size_z]
-                    <br>{% trans "Estes valores são adimensionais e serão multiplicados pela 'LatticeConstant' no arquivo de entrada do SIESTA." %}
+            </div>
+
+            <!-- XC e Solução -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingXC">
+                    <button class="accordion-button {% if not xc_has_errors %}collapsed{% endif %}" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseXC"
+                            aria-expanded="{% if xc_has_errors %}true{% else %}false{% endif %}" aria-controls="collapseXC">
+                        {% trans "Funcional XC e Parâmetros de Solução" %}
+                        {% if xc_has_errors %}<span class="badge bg-danger ms-2">!</span>{% endif %}
+                    </button>
+                </h2>
+                <div id="collapseXC" class="accordion-collapse collapse {% if xc_has_errors %}show{% endif %}"
+                     aria-labelledby="headingXC">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.XC_functional.label_tag }}
+                                    {{ form.XC_functional }}
+                                    {% if form.XC_functional.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.XC_functional.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.XC_authors.label_tag }}
+                                    {{ form.XC_authors }}
+                                    {% if form.XC_authors.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.XC_authors.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.SolutionMethod.label_tag }}
+                                    {{ form.SolutionMethod }}
+                                    {% if form.SolutionMethod.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.SolutionMethod.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form.ElectronicTemperature.label_tag }}
+                                    {{ form.ElectronicTemperature }}
+                                    {% if form.ElectronicTemperature.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.ElectronicTemperature.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.SpinPolarized }}
+                                    {{ form.SpinPolarized.label_tag }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saídas -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOutput">
+                    <button class="accordion-button {% if not output_has_errors %}collapsed{% endif %}" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseOutput"
+                            aria-expanded="{% if output_has_errors %}true{% else %}false{% endif %}" aria-controls="collapseOutput">
+                        {% trans "Saídas e Análises" %}
+                        {% if output_has_errors %}<span class="badge bg-danger ms-2">!</span>{% endif %}
+                    </button>
+                </h2>
+                <div id="collapseOutput" class="accordion-collapse collapse {% if output_has_errors %}show{% endif %}"
+                     aria-labelledby="headingOutput">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.WriteCoorXmol }}
+                                    {{ form.WriteCoorXmol.label_tag }}
+                                    <div class="form-text">{% trans "Exporta coordenadas em formato Xmol" %}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.WriteMullikenPop.label_tag }}
+                                    {{ form.WriteMullikenPop }}
+                                    {% if form.WriteMullikenPop.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.WriteMullikenPop.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">{% trans "Análise populacional de Mulliken" %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Constante de Rede e Vetores -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCell">
+                    <button class="accordion-button {% if not cell_has_errors %}collapsed{% endif %}" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseCell"
+                            aria-expanded="{% if cell_has_errors %}true{% else %}false{% endif %}" aria-controls="collapseCell">
+                        {% trans "Constante de Rede e Vetores" %}
+                        {% if cell_has_errors %}<span class="badge bg-danger ms-2">!</span>{% endif %}
+                    </button>
+                </h2>
+                <div id="collapseCell" class="accordion-collapse collapse {% if cell_has_errors %}show{% endif %}"
+                     aria-labelledby="headingCell">
+                    <div class="accordion-body">
+                        <div class="mb-3">
+                            {{ form.lattice_constant.label_tag }}
+                            {{ form.lattice_constant }}
+                            {% if form.lattice_constant.errors %}
+                            <div class="invalid-feedback d-block">{{ form.lattice_constant.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">{{ form.lattice_constant.help_text }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.cell_size_x.label_tag }}
+                                    {{ form.cell_size_x }}
+                                    {% if form.cell_size_x.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.cell_size_x.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">{{ form.cell_size_x.help_text }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.cell_size_y.label_tag }}
+                                    {{ form.cell_size_y }}
+                                    {% if form.cell_size_y.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.cell_size_y.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">{{ form.cell_size_y.help_text }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.cell_size_z.label_tag }}
+                                    {{ form.cell_size_z }}
+                                    {% if form.cell_size_z.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.cell_size_z.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">{{ form.cell_size_z.help_text }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <strong>{% trans "Nota:" %}</strong> {% trans "Os vetores da rede serão gerados como uma matriz diagonal:" %}
+                            <br>A = [cell_size_x, 0, 0]
+                            <br>B = [0, cell_size_y, 0]
+                            <br>C = [0, 0, cell_size_z]
+                            <br>{% trans "Estes valores são adimensionais e serão multiplicados pela 'LatticeConstant' no arquivo de entrada do SIESTA." %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
 
         <!-- Barra de ações fixa -->
         <div class="sticky-actions">
@@ -421,7 +537,7 @@
             </div>
         </div>
     </form>
-    
+
     <!-- Modal de Pré-visualização FDF -->
     <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -442,10 +558,10 @@
             </div>
         </div>
     </div>
-    
+
     {% if preview_content %}
         <div class="card mb-4">
-            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">{% trans "Pré-visualização FDF:" %} {{ preview_filename }}</h5>
                 <button type="submit" form="convertForm" class="btn btn-light">
                     <i class="bi bi-download"></i> {% trans "Download" %}
@@ -456,7 +572,7 @@
             </div>
         </div>
     {% endif %}
-    
+
     <!-- Modal para Salvar Configuração -->
     <div class="modal fade" id="saveConfigModal" tabindex="-1" aria-labelledby="saveConfigModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -491,7 +607,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="mt-4">
         <h4>{% trans "O que faz este conversor?" %}</h4>
         <p>{% trans "Este conversor transforma arquivos XYZ em arquivos de entrada FDF para o SIESTA, permitindo ajuste completo de todos os parâmetros de simulação e visualização 3D da molécula carregada." %}</p>

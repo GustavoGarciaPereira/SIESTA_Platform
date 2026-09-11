@@ -587,6 +587,19 @@ class ConvertViewTests(TestCase):
         self.assertTemplateUsed(response, 'converter/upload.html')
         self.assertContains(response, 'form')
 
+    def test_get_view_has_accordion(self):
+        """A página do conversor deve agrupar parâmetros em accordion."""
+        response = self.client.get(reverse('convert'))
+        self.assertContains(response, 'paramsAccordion')
+        self.assertContains(response, 'btn-expand-all')
+        self.assertContains(response, 'collapseCell')
+
+    def test_post_invalid_opens_error_section(self):
+        """Seção com erro deve vir expandida (aria-expanded=true)."""
+        response = self.client.post(reverse('convert'), {'MeshCutoff': '-50.0'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'aria-expanded="true"')
+
     def test_post_view_with_valid_data(self):
         """Testa POST com dados válidos para conversão."""
         # Cria um arquivo XYZ simulado
@@ -1133,3 +1146,16 @@ AtomicCoordinatesFormat Ang
         with zipfile.ZipFile(zip_content, 'r') as zip_f:
             self.assertEqual(len(zip_f.namelist()), 1)
             self.assertIn('no-species.fdf', zip_f.namelist())
+
+
+class FormExtrasTests(TestCase):
+    """Testes para as template tags de formulário."""
+
+    def test_section_has_errors(self):
+        from .templatetags.form_extras import section_has_errors
+
+        form = SIESTAParametersForm(data={'MeshCutoff': -50.0})
+        form.is_valid()
+
+        self.assertTrue(section_has_errors(form, 'MeshCutoff'))
+        self.assertFalse(section_has_errors(form, 'download_pseudos'))
