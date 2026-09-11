@@ -53,3 +53,6 @@ integrate-openclaude.sh
 # Rust build artifacts
 visualizer/rust/target/
 visualizer/rust/pkg/
+
+# Playwright MCP
+.playwright-mcp/
