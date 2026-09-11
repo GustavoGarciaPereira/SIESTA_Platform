@@ -93,7 +93,7 @@ Templates globais (`base.html`, `home.html`, `about.html`, `contact.html`, auth)
 - **Mutações exigem POST:** `delete_history`, `delete_configuration`, `load_configuration`, `delete_out`, `contact_submit`, `save_configuration` usam `@require_POST`.
 - **Autenticação:** `LOGIN_URL = 'login'`; views usam `@login_required`. Login tem opção "Lembrar meus dados" (14 dias) via `CustomLoginView`.
 - **Filtrar por dono:** sempre `get_object_or_404(Model, id=..., user=request.user)`.
-- **i18n:** `LANGUAGE_CODE='pt-br'`, idiomas `pt-br`/`en`, catálogos em `locale/`; use `{% trans %}`/`gettext`. Após adicionar strings:
+- **i18n:** `LANGUAGE_CODE='pt-br'`, idiomas `pt-br`/`en`, catálogos em `locale/`; use `{% trans %}`/`gettext`. O `DefaultLanguageMiddleware` mantém pt-BR até o usuário escolher outro idioma no seletor (cookie). Após adicionar strings:
   ```bash
   python manage.py makemessages -l pt_BR -l en --no-obsolete --ignore=venv
   python manage.py compilemessages

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 02:35+0000\n"
+"POT-Creation-Date: 2026-09-11 03:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,206 +85,459 @@ msgstr "Arquivo XYZ"
 msgid "Envie um arquivo .xyz de até 5 MB."
 msgstr ""
 
-#: converter/forms.py:66
+#: converter/forms.py:67
 msgid "Nome do Sistema"
 msgstr "Nome do Sistema"
 
-#: converter/forms.py:68
+#: converter/forms.py:69
 msgid "Deixe em branco para usar o nome do arquivo"
 msgstr "Deixe em branco para usar o nome do arquivo"
 
-#: converter/forms.py:71
+#: converter/forms.py:72
 msgid "Espaçamento de borda (Å)"
 msgstr "Espaçamento de borda (Å)"
 
-#: converter/forms.py:77
+#: converter/forms.py:78
 msgid "PAO.BasisSize"
 msgstr "PAO.BasisSize"
 
-#: converter/forms.py:82
+#: converter/forms.py:83
 msgid "PAO.EnergyShift (eV)"
 msgstr "PAO.EnergyShift (eV)"
 
-#: converter/forms.py:85
+#: converter/forms.py:86
 msgid "Valor em eV"
 msgstr "Valor em eV"
 
-#: converter/forms.py:89
+#: converter/forms.py:90
 msgid "MD.TypeOfRun"
 msgstr "MD.TypeOfRun"
 
-#: converter/forms.py:100
+#: converter/forms.py:101
 msgid "MD.NumCGsteps"
 msgstr "MD.NumCGsteps"
 
-#: converter/forms.py:103
+#: converter/forms.py:104
 msgid "MD.MaxForceTol (eV/Ang)"
 msgstr "MD.MaxForceTol (eV/Ang)"
 
-#: converter/forms.py:107
+#: converter/forms.py:108
 msgid "MaxSCFIterations"
 msgstr "MaxSCFIterations"
 
-#: converter/forms.py:110
+#: converter/forms.py:111
 msgid "SpinPolarized"
 msgstr "SpinPolarized"
 
-#: converter/forms.py:113
+#: converter/forms.py:114
 msgid "MeshCutoff (Ry)"
 msgstr "MeshCutoff (Ry)"
 
-#: converter/forms.py:117
+#: converter/forms.py:118
 msgid "DM.UseSaveDM"
 msgstr "DM.UseSaveDM"
 
-#: converter/forms.py:120
+#: converter/forms.py:121
 msgid "UseSaveData"
 msgstr "UseSaveData"
 
-#: converter/forms.py:123
+#: converter/forms.py:124
 msgid "MD.UseSaveXV"
 msgstr "MD.UseSaveXV"
 
-#: converter/forms.py:126
+#: converter/forms.py:127
 msgid "MD.UseSaveCG"
 msgstr "MD.UseSaveCG"
 
-#: converter/forms.py:129
+#: converter/forms.py:130
 msgid "DM.MixingWeight"
 msgstr "DM.MixingWeight"
 
-#: converter/forms.py:132
+#: converter/forms.py:133
 msgid "DM.NumberPulay"
 msgstr "DM.NumberPulay"
 
-#: converter/forms.py:135
+#: converter/forms.py:136
 msgid "DM.Tolerance"
 msgstr "DM.Tolerance"
 
-#: converter/forms.py:137
+#: converter/forms.py:138
 msgid "Valor em formato científico (ex: 1.0E-3)"
 msgstr "Valor em formato científico (ex: 1.0E-3)"
 
-#: converter/forms.py:141
+#: converter/forms.py:142
 msgid "WriteCoorXmol"
 msgstr "WriteCoorXmol"
 
-#: converter/forms.py:144
+#: converter/forms.py:145
 msgid "WriteMullikenPop"
 msgstr "WriteMullikenPop"
 
-#: converter/forms.py:148
+#: converter/forms.py:149
 msgid "XC.functional"
 msgstr "XC.functional"
 
-#: converter/forms.py:153
+#: converter/forms.py:154
 msgid "XC.authors"
 msgstr "XC.authors"
 
-#: converter/forms.py:165
+#: converter/forms.py:166
 msgid "SolutionMethod"
 msgstr "SolutionMethod"
 
-#: converter/forms.py:170
+#: converter/forms.py:171
 msgid "ElectronicTemperature (meV)"
 msgstr "ElectronicTemperature (meV)"
 
-#: converter/forms.py:173
+#: converter/forms.py:174
 msgid "Valor em meV"
 msgstr "Valor em meV"
 
-#: converter/forms.py:182
-#| msgid "Apenas arquivos .out ou .txt são permitidos."
+#: converter/forms.py:183
 msgid "Apenas arquivos com extensão .xyz são permitidos."
 msgstr "Apenas arquivos com extensão .xyz são permitidos."
 
-#: converter/forms.py:184
+#: converter/forms.py:185
 msgid "Arquivo muito grande. O limite é 5 MB."
 msgstr "Arquivo muito grande. O limite é 5 MB."
 
-#: converter/forms.py:196
+#: converter/forms.py:197
 #, python-format
 msgid ""
 "A combinação XC.functional=%(functional)s com XC.authors=%(authors)s é "
 "inválida. Valores aceitos: %(allowed)s."
 msgstr ""
 
-#: converter/templates/base.html:26
-msgid "Alternar navegação"
-msgstr "Alternar navegação"
+#: converter/templates/404.html:4 converter/templates/404.html:23
+msgid "Página não encontrada"
+msgstr ""
 
-#: converter/templates/base.html:32 converter/templates/base.html:125
-msgid "Início"
-msgstr "Início"
+#: converter/templates/404.html:24
+msgid "O endereço acessado não existe"
+msgstr ""
 
-#: converter/templates/base.html:35
-msgid "Conversor"
-msgstr "Conversor"
+#: converter/templates/404.html:32
+msgid ""
+"A página que você procura pode ter sido removida ou o link está incorreto."
+msgstr ""
 
-#: converter/templates/base.html:39
-msgid "Histórico"
-msgstr "Histórico"
+#: converter/templates/404.html:36 converter/templates/500.html:39
+msgid "Página inicial"
+msgstr ""
 
-#: converter/templates/base.html:43 converter/templates/base.html:126
-msgid "Sobre Nós"
-msgstr "Sobre Nós"
+#: converter/templates/404.html:39 converter/templates/500.html:42
+msgid "Voltar"
+msgstr ""
 
-#: converter/templates/base.html:46 converter/templates/base.html:127
-msgid "Contato"
-msgstr "Contato"
+#: converter/templates/500.html:4
+msgid "Erro interno"
+msgstr ""
 
-#: converter/templates/base.html:76
-msgid "Dashboard"
-msgstr "Dashboard"
+#: converter/templates/500.html:23
+msgid "Erro interno do servidor"
+msgstr ""
 
-#: converter/templates/base.html:80
-msgid "Minhas Configurações"
-msgstr "Minhas Configurações"
+#: converter/templates/500.html:24
+msgid "Algo deu errado no servidor"
+msgstr ""
 
-#: converter/templates/base.html:84
-msgid "Visualizar .out"
-msgstr "Visualizar .out"
+#: converter/templates/500.html:32
+msgid "Ocorreu um erro inesperado ao processar sua solicitação."
+msgstr ""
 
-#: converter/templates/base.html:88
-msgid "Olá"
-msgstr "Olá"
+#: converter/templates/500.html:35
+msgid ""
+"Nossa equipe foi notificada e está trabalhando para resolver o problema. "
+"Tente novamente em alguns instantes."
+msgstr ""
 
-#: converter/templates/base.html:91
-msgid "Logout"
-msgstr "Logout"
+#: converter/templates/about.html:5
+msgid "Nossa Equipe"
+msgstr ""
 
-#: converter/templates/base.html:95
-msgid "Login"
-msgstr "Login"
+#: converter/templates/about.html:59
+#, fuzzy
+#| msgid "Bem-vindo à SIESTA Platform"
+msgid "Sobre a SIESTA Platform"
+msgstr "Bem-vindo à SIESTA Platform"
 
-#: converter/templates/base.html:98
+#: converter/templates/about.html:60
+msgid ""
+"Conheça nossa equipe e nossa missão de democratizar as simulações "
+"computacionais de materiais."
+msgstr ""
+
+#: converter/templates/about.html:70
+msgid "Conheça Nossa Equipe"
+msgstr ""
+
+#: converter/templates/about.html:71
+msgid "Profissionais dedicados à inovação em simulações computacionais"
+msgstr ""
+
+#: converter/templates/about.html:83
+#, fuzzy, python-format
+#| msgid "Foto de Perfil"
+msgid "Foto de %(name)s"
+msgstr "Foto de Perfil"
+
+#: converter/templates/about.html:94
+#, python-format
+msgid "Enviar email para %(name)s"
+msgstr ""
+
+#: converter/templates/about.html:100
+#, python-format
+msgid "Currículo Lattes de %(name)s"
+msgstr ""
+
+#: converter/templates/about.html:106
+#, python-format
+msgid "LinkedIn de %(name)s"
+msgstr ""
+
+#: converter/templates/about.html:119
+msgid "Informações da equipe não disponíveis no momento."
+msgstr ""
+
+#: converter/templates/about.html:130
+msgid "Nossa Missão e Visão"
+msgstr ""
+
+#: converter/templates/about.html:131
+msgid "O que nos motiva e para onde estamos indo"
+msgstr ""
+
+#: converter/templates/about.html:143
+msgid "Nossa Missão"
+msgstr ""
+
+#: converter/templates/about.html:146
+msgid ""
+"Facilitar e democratizar o acesso a simulações computacionais de materiais "
+"utilizando o SIESTA, fornecendo uma plataforma intuitiva, poderosa e "
+"integrada com ferramentas de análise modernas para acelerar a descoberta "
+"científica e a inovação tecnológica."
+msgstr ""
+
+#: converter/templates/about.html:159
+msgid "Nossa Visão"
+msgstr ""
+
+#: converter/templates/about.html:162
+msgid ""
+"Ser a plataforma de referência para pesquisadores e estudantes na área de "
+"ciência dos materiais, promovendo a colaboração, o aprendizado e o avanço do "
+"conhecimento através de simulações computacionais acessíveis e eficientes."
+msgstr ""
+
+#: converter/templates/about.html:174
+msgid "O Que Fazemos?"
+msgstr ""
+
+#: converter/templates/about.html:175
+msgid "Um ambiente completo para o ciclo de vida de simulações com o SIESTA"
+msgstr ""
+
+#: converter/templates/about.html:186
+msgid "Conversão de Arquivos"
+msgstr ""
+
+#: converter/templates/about.html:187
+#, fuzzy
+#| msgid "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
+msgid ""
+"Transforme arquivos XYZ para o formato FDF do SIESTA com customização "
+"detalhada."
+msgstr "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
+
+#: converter/templates/about.html:198
+#, fuzzy
+#| msgid "Visualização"
+msgid "Visualização 3D"
+msgstr "Visualização"
+
+#: converter/templates/about.html:199
+#, fuzzy
+#| msgid "Renderiza a molécula em 3D interativamente no navegador"
+msgid "Visualize estruturas moleculares em 3D diretamente no navegador."
+msgstr "Renderiza a molécula em 3D interativamente no navegador"
+
+#: converter/templates/about.html:210
+msgid "Execução de Simulações"
+msgstr ""
+
+#: converter/templates/about.html:211
+msgid ""
+"Gerencie e execute simulações SIESTA de forma integrada (em desenvolvimento)."
+msgstr ""
+
+#: converter/templates/about.html:222
+msgid "Análise Inteligente"
+msgstr ""
+
+#: converter/templates/about.html:223
+msgid ""
+"Interpretação de resultados com ferramentas baseadas em IA (em "
+"desenvolvimento)."
+msgstr ""
+
+#: converter/templates/about.html:236
+msgid "Junte-se a Nós"
+msgstr ""
+
+#: converter/templates/about.html:238
+msgid ""
+"Seja você um pesquisador experiente, um estudante curioso ou um entusiasta "
+"da ciência, a SIESTA Platform está aqui para apoiar sua jornada."
+msgstr ""
+
+#: converter/templates/about.html:242 converter/templates/base.html:120
+#: converter/templates/converter/signup.html:4
 #: converter/templates/converter/signup.html:55
+#: converter/templates/home.html:45
 msgid "Criar Conta"
 msgstr "Criar Conta"
 
-#: converter/templates/base.html:112
-#: converter/templates/converter/history.html:137
-#: converter/templates/converter/upload.html:433
+#: converter/templates/about.html:245 converter/templates/contact.html:63
+#, fuzzy
+#| msgid "Contato"
+msgid "Entre em Contato"
+msgstr "Contato"
+
+#: converter/templates/base.html:8
+msgid ""
+"Plataforma para converter arquivos XYZ em FDF do SIESTA, visualizar "
+"resultados em 3D e gerenciar simulações de materiais."
+msgstr ""
+
+#: converter/templates/base.html:10
+msgid ""
+"Conversão XYZ para FDF, visualização 3D de resultados e gestão de simulações "
+"com o SIESTA."
+msgstr ""
+
+#: converter/templates/base.html:32
+msgid "Alternar navegação"
+msgstr "Alternar navegação"
+
+#: converter/templates/base.html:38 converter/templates/base.html:147
+msgid "Início"
+msgstr "Início"
+
+#: converter/templates/base.html:41
+msgid "Conversor"
+msgstr "Conversor"
+
+#: converter/templates/base.html:45
+#: converter/templates/converter/my_configs.html:54
+#: converter/templates/converter/upload.html:49
+msgid "Histórico"
+msgstr "Histórico"
+
+#: converter/templates/base.html:49 converter/templates/base.html:148
+msgid "Sobre Nós"
+msgstr "Sobre Nós"
+
+#: converter/templates/base.html:52 converter/templates/base.html:149
+#: converter/templates/contact.html:4
+msgid "Contato"
+msgstr "Contato"
+
+#: converter/templates/base.html:82
+msgid "Olá"
+msgstr "Olá"
+
+#: converter/templates/base.html:88
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: converter/templates/base.html:94 user/templates/user/profile.html:39
+#, fuzzy
+#| msgid "Foto de Perfil"
+msgid "Meu Perfil"
+msgstr "Foto de Perfil"
+
+#: converter/templates/base.html:99
+#: converter/templates/converter/history.html:60
+#: converter/templates/converter/my_configs.html:4
+#: converter/templates/converter/upload.html:52
+#: user/templates/user/profile.html:137
+msgid "Minhas Configurações"
+msgstr "Minhas Configurações"
+
+#: converter/templates/base.html:104
+msgid "Visualizar .out"
+msgstr "Visualizar .out"
+
+#: converter/templates/base.html:110
+msgid "Logout"
+msgstr "Logout"
+
+#: converter/templates/base.html:117
+msgid "Login"
+msgstr "Login"
+
+#: converter/templates/base.html:134
+#: converter/templates/converter/history.html:138
+#: converter/templates/converter/login.html:48
+#: converter/templates/converter/my_configs.html:124
+#: converter/templates/converter/upload.html:431
+#: converter/templates/converter/upload.html:437
+#: converter/templates/converter/upload.html:466
+#: converter/templates/home.html:34
+#: dashboard/templates/dashboard/dashboard.html:116
 msgid "Fechar"
 msgstr "Fechar"
 
-#: converter/templates/base.html:128
-#: converter/templates/converter/signup.html:191
-msgid "Termos de Serviço"
-msgstr "Termos de Serviço"
-
-#: converter/templates/base.html:129
-#: converter/templates/converter/signup.html:192
-msgid "Política de Privacidade"
-msgstr "Política de Privacidade"
-
-#: converter/templates/base.html:131
+#: converter/templates/base.html:151
 msgid "Todos os direitos reservados."
 msgstr "Todos os direitos reservados."
+
+#: converter/templates/contact.html:64
+msgid ""
+"Estamos aqui para ajudar. Entre em contato conosco através dos canais abaixo."
+msgstr ""
+
+#: converter/templates/contact.html:90
+msgid "Endereço"
+msgstr ""
+
+#: converter/templates/contact.html:97 user/forms.py:13 user/forms.py:65
+#: user/templates/user/profile.html:62
+msgid "Email"
+msgstr "Email"
+
+#: converter/templates/contact.html:104
+msgid "Telefone"
+msgstr ""
+
+#: converter/templates/contact.html:115
+msgid "Envie uma mensagem"
+msgstr ""
+
+#: converter/templates/contact.html:138
+msgid "Enviar Mensagem"
+msgstr ""
+
+#: converter/templates/contact.html:152
+msgid "Siga-nos nas Redes Sociais"
+msgstr ""
+
+#: converter/templates/converter/history.html:4
+#, fuzzy
+#| msgid "Meu Histórico de Conversões"
+msgid "Histórico de Conversões"
+msgstr "Meu Histórico de Conversões"
 
 #: converter/templates/converter/history.html:53
 msgid "Meu Histórico de Conversões"
 msgstr "Meu Histórico de Conversões"
+
+#: converter/templates/converter/history.html:57
+#: converter/templates/converter/my_configs.html:51
+msgid "Voltar para Conversão"
+msgstr ""
 
 #: converter/templates/converter/history.html:69
 msgid "Arquivo"
@@ -331,24 +584,84 @@ msgstr "Processando"
 msgid "Falha"
 msgstr "Falha"
 
-#: converter/templates/converter/history.html:157
-#: converter/templates/converter/history.html:161
+#: converter/templates/converter/history.html:99
+#: converter/templates/converter/history.html:140
+msgid "Baixar FDF"
+msgstr ""
+
+#: converter/templates/converter/history.html:102
+#, fuzzy
+#| msgid "Parâmetros:"
+msgid "Ver parâmetros"
+msgstr "Parâmetros:"
+
+#: converter/templates/converter/history.html:107
+msgid "Tem certeza que deseja excluir esta entrada do histórico?"
+msgstr ""
+
+#: converter/templates/converter/history.html:110
+#: converter/templates/converter/my_configs.html:97
+#: visualizer/templates/visualizer/visualize.html:59
+msgid "Excluir"
+msgstr ""
+
+#: converter/templates/converter/history.html:123
+#: converter/templates/converter/my_configs.html:116
+msgid "Parâmetros:"
+msgstr "Parâmetros:"
+
+#: converter/templates/converter/history.html:128
+#, fuzzy
+#| msgid "Arquivo"
+msgid "Arquivo:"
+msgstr "Arquivo"
+
+#: converter/templates/converter/history.html:129
+#, fuzzy
+#| msgid "Data"
+msgid "Data:"
+msgstr "Data"
+
+#: converter/templates/converter/history.html:130
+#, fuzzy
+#| msgid "Parâmetros:"
+msgid "Parâmetros SIESTA:"
+msgstr "Parâmetros:"
+
+#: converter/templates/converter/history.html:158
+#: converter/templates/converter/history.html:162
 msgid "Anterior"
 msgstr "Anterior"
 
-#: converter/templates/converter/history.html:179
-#: converter/templates/converter/history.html:183
+#: converter/templates/converter/history.html:180
+#: converter/templates/converter/history.html:184
 msgid "Próxima"
 msgstr "Próxima"
 
-#: converter/templates/converter/history.html:191
-msgid "Você ainda não realizou nenhuma conversão."
+#: converter/templates/converter/history.html:194
+#, fuzzy
+#| msgid "Você ainda não realizou nenhuma conversão."
+msgid "Você ainda não realizou nenhuma conversão"
 msgstr "Você ainda não realizou nenhuma conversão."
 
-#: converter/templates/converter/history.html:192
-#: converter/templates/converter/my_configs.html:144
-msgid "página de conversão"
-msgstr "página de conversão"
+#: converter/templates/converter/history.html:195
+msgid "Converta um arquivo XYZ para começar a construir seu histórico."
+msgstr ""
+
+#: converter/templates/converter/history.html:197
+#: converter/templates/converter/my_configs.html:146
+#: user/templates/user/profile.html:140
+#, fuzzy
+#| msgid "Conversor"
+msgid "Nova Conversão"
+msgstr "Conversor"
+
+#: converter/templates/converter/login.html:4
+#: converter/templates/converter/login.html:131
+#: converter/templates/converter/password_reset_complete.html:37
+#: converter/templates/home.html:42
+msgid "Entrar"
+msgstr ""
 
 #: converter/templates/converter/login.html:39
 msgid "Bem-vindo de volta"
@@ -358,9 +671,51 @@ msgstr "Bem-vindo de volta"
 msgid "Entre na sua conta SIESTA Platform"
 msgstr "Entre na sua conta SIESTA Platform"
 
+#: converter/templates/converter/login.html:47
+#, fuzzy
+#| msgid "Erro"
+msgid "Erro!"
+msgstr "Erro"
+
+#: converter/templates/converter/login.html:47
+#, fuzzy
+#| msgid "Nome de usuário"
+msgid "Nome de usuário ou senha incorretos."
+msgstr "Nome de usuário"
+
+#: converter/templates/converter/login.html:56
+msgid ""
+"Sua conta não tem acesso a esta página. Para prosseguir, faça login com uma "
+"conta que tenha acesso."
+msgstr ""
+
+#: converter/templates/converter/login.html:61
+msgid "Faça login para ver esta página."
+msgstr ""
+
+#: converter/templates/converter/login.html:81
+#, fuzzy
+#| msgid "Nome de usuário"
+msgid "Digite seu nome de usuário"
+msgstr "Nome de usuário"
+
+#: converter/templates/converter/login.html:100
+msgid "Esqueceu a senha?"
+msgstr ""
+
+#: converter/templates/converter/login.html:110
+#, fuzzy
+#| msgid "Confirme a senha"
+msgid "Digite sua senha"
+msgstr "Confirme a senha"
+
 #: converter/templates/converter/login.html:125
 msgid "Lembrar meus dados"
 msgstr "Lembrar meus dados"
+
+#: converter/templates/converter/login.html:143
+msgid "Não tem uma conta?"
+msgstr ""
 
 #: converter/templates/converter/login.html:143
 msgid "Registre-se"
@@ -386,11 +741,13 @@ msgstr "Para seu trabalho científico"
 msgid "Minhas Configurações Salvas"
 msgstr "Minhas Configurações Salvas"
 
-#: converter/templates/converter/my_configs.html:63 user/forms.py:60
+#: converter/templates/converter/my_configs.html:63
+#: dashboard/templates/dashboard/dashboard.html:68 user/forms.py:60
 msgid "Nome"
 msgstr "Nome"
 
 #: converter/templates/converter/my_configs.html:64
+#: dashboard/templates/dashboard/dashboard.html:69
 msgid "Descrição"
 msgstr "Descrição"
 
@@ -406,21 +763,171 @@ msgstr "Último uso"
 msgid "Usos"
 msgstr "Usos"
 
-#: converter/templates/converter/my_configs.html:77
-msgid "Padrão"
-msgstr "Padrão"
+#: converter/templates/converter/my_configs.html:86
+msgid "Carregar"
+msgstr ""
 
-#: converter/templates/converter/my_configs.html:118
-msgid "Parâmetros:"
-msgstr "Parâmetros:"
+#: converter/templates/converter/my_configs.html:90
+msgid "Detalhes"
+msgstr ""
 
-#: converter/templates/converter/my_configs.html:129
+#: converter/templates/converter/my_configs.html:93
+#, fuzzy
+#| msgid "Dê um nome descritivo para esta configuração"
+msgid "Tem certeza que deseja excluir esta configuração?"
+msgstr "Dê um nome descritivo para esta configuração"
+
+#: converter/templates/converter/my_configs.html:107
+#, fuzzy
+#| msgid "Salvar Configuração"
+msgid "Detalhes da Configuração:"
+msgstr "Salvar Configuração"
+
+#: converter/templates/converter/my_configs.html:111
+#, fuzzy
+#| msgid "Descrição"
+msgid "Descrição:"
+msgstr "Descrição"
+
+#: converter/templates/converter/my_configs.html:112
+#, fuzzy
+#| msgid "Criada em"
+msgid "Criada em:"
+msgstr "Criada em"
+
+#: converter/templates/converter/my_configs.html:113
+#, fuzzy
+#| msgid "Último uso"
+msgid "Último uso:"
+msgstr "Último uso"
+
+#: converter/templates/converter/my_configs.html:114
+#, fuzzy
+#| msgid "Nome de usuário"
+msgid "Número de usos:"
+msgstr "Nome de usuário"
+
+#: converter/templates/converter/my_configs.html:127
 msgid "Carregar esta configuração"
 msgstr "Carregar esta configuração"
 
 #: converter/templates/converter/my_configs.html:143
-msgid "Você ainda não tem configurações salvas."
+#, fuzzy
+#| msgid "Você ainda não tem configurações salvas."
+msgid "Você ainda não tem configurações salvas"
 msgstr "Você ainda não tem configurações salvas."
+
+#: converter/templates/converter/my_configs.html:144
+msgid ""
+"Ajuste os parâmetros no conversor e salve um conjunto para reutilizar depois."
+msgstr ""
+
+#: converter/templates/converter/password_reset_complete.html:4
+#: converter/templates/converter/password_reset_complete.html:23
+msgid "Senha Redefinida"
+msgstr ""
+
+#: converter/templates/converter/password_reset_complete.html:24
+#, fuzzy
+#| msgid "Perfil atualizado com sucesso!"
+msgid "Sua senha foi alterada com sucesso"
+msgstr "Perfil atualizado com sucesso!"
+
+#: converter/templates/converter/password_reset_complete.html:34
+msgid ""
+"Sua senha foi redefinida com sucesso. Agora você pode fazer login com a nova "
+"senha."
+msgstr ""
+
+#: converter/templates/converter/password_reset_confirm.html:4
+#: converter/templates/converter/password_reset_confirm.html:23
+msgid "Redefinir Senha"
+msgstr ""
+
+#: converter/templates/converter/password_reset_confirm.html:24
+#, fuzzy
+#| msgid "Escolha um nome único para acessar sua conta."
+msgid "Escolha uma nova senha para sua conta"
+msgstr "Escolha um nome único para acessar sua conta."
+
+#: converter/templates/converter/password_reset_confirm.html:34
+#: converter/templates/converter/password_reset_confirm.html:43
+#, fuzzy
+#| msgid "Confirme a senha"
+msgid "Nova senha"
+msgstr "Confirme a senha"
+
+#: converter/templates/converter/password_reset_confirm.html:54
+#, fuzzy
+#| msgid "Confirme a senha"
+msgid "Confirmar nova senha"
+msgstr "Confirme a senha"
+
+#: converter/templates/converter/password_reset_confirm.html:63
+#, fuzzy
+#| msgid "Confirme a senha"
+msgid "Confirme a nova senha"
+msgstr "Confirme a senha"
+
+#: converter/templates/converter/password_reset_confirm.html:74
+msgid "Redefinir senha"
+msgstr ""
+
+#: converter/templates/converter/password_reset_confirm.html:83
+msgid "Link inválido ou expirado"
+msgstr ""
+
+#: converter/templates/converter/password_reset_confirm.html:85
+msgid ""
+"Este link de redefinição de senha não é mais válido. Solicite um novo link "
+"abaixo."
+msgstr ""
+
+#: converter/templates/converter/password_reset_confirm.html:88
+msgid "Solicitar novo link"
+msgstr ""
+
+#: converter/templates/converter/password_reset_confirm.html:96
+#: converter/templates/converter/password_reset_done.html:44
+#: converter/templates/converter/password_reset_form.html:60
+msgid "Voltar para o login"
+msgstr ""
+
+#: converter/templates/converter/password_reset_done.html:4
+#: converter/templates/converter/password_reset_done.html:23
+msgid "E-mail Enviado"
+msgstr ""
+
+#: converter/templates/converter/password_reset_done.html:24
+msgid "Verifique sua caixa de entrada"
+msgstr ""
+
+#: converter/templates/converter/password_reset_done.html:34
+msgid ""
+"Se existe uma conta com o e-mail informado, você receberá um link para "
+"redefinir sua senha em breve."
+msgstr ""
+
+#: converter/templates/converter/password_reset_done.html:37
+msgid "Não recebeu o e-mail? Verifique a pasta de spam ou"
+msgstr ""
+
+#: converter/templates/converter/password_reset_done.html:38
+msgid "tente novamente"
+msgstr ""
+
+#: converter/templates/converter/password_reset_form.html:4
+#: converter/templates/converter/password_reset_form.html:23
+msgid "Recuperar Senha"
+msgstr ""
+
+#: converter/templates/converter/password_reset_form.html:24
+msgid "Informe seu e-mail para receber o link de redefinição"
+msgstr ""
+
+#: converter/templates/converter/password_reset_form.html:52
+msgid "Enviar link de redefinição"
+msgstr ""
 
 #: converter/templates/converter/signup.html:56
 msgid "Junte-se à comunidade SIESTA Platform"
@@ -434,119 +941,198 @@ msgstr "Escolha um nome único para acessar sua conta."
 msgid "Seu email será usado para recuperação de senha e notificações."
 msgstr "Seu email será usado para recuperação de senha e notificações."
 
+#: converter/templates/converter/signup.html:134
+msgid "Sua senha não pode ser muito similar ao nome de usuário ou e-mail."
+msgstr ""
+
+#: converter/templates/converter/signup.html:137
+msgid "Sua senha deve conter pelo menos 8 caracteres."
+msgstr ""
+
+#: converter/templates/converter/signup.html:140
+msgid "Sua senha não pode ser uma senha comumente utilizada."
+msgstr ""
+
+#: converter/templates/converter/signup.html:143
+msgid "Sua senha não pode ser inteiramente numérica."
+msgstr ""
+
+#: converter/templates/converter/signup.html:152
+#, fuzzy
+#| msgid "Confirme a senha"
+msgid "Confirmar senha"
+msgstr "Confirme a senha"
+
 #: converter/templates/converter/signup.html:167
 msgid "Digite a mesma senha novamente para verificação."
 msgstr "Digite a mesma senha novamente para verificação."
 
+#: converter/templates/converter/signup.html:173
+#, fuzzy
+#| msgid "Criar Conta"
+msgid "Criar minha conta"
+msgstr "Criar Conta"
+
 #: converter/templates/converter/signup.html:182
+msgid "Já tem uma conta?"
+msgstr ""
+
+#: converter/templates/converter/signup.html:183
 msgid "Faça login"
 msgstr "Faça login"
+
+#: converter/templates/converter/signup.html:190
+msgid "Ao criar uma conta, você concorda com os termos de uso da plataforma."
+msgstr ""
 
 #: converter/templates/converter/upload.html:4
 msgid "Conversor XYZ para FDF — SIESTA Platform"
 msgstr "Conversor XYZ para FDF — SIESTA Platform"
 
-#: converter/templates/converter/upload.html:48
-msgid "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
+#: converter/templates/converter/upload.html:45
+#, fuzzy
+#| msgid "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
+msgid "Conversor de Arquivos XYZ para FDF (SIESTA)"
 msgstr "Conversor de Arquivos XYZ para FDF (SIESTA) com Visualização 3D"
 
 #: converter/templates/converter/upload.html:55
-msgid "Arquivo e Configurações Básicas"
-msgstr "Arquivo e Configurações Básicas"
-
-#: converter/templates/converter/upload.html:64
-msgid ""
-"Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione "
-"um arquivo para visualização 3D abaixo."
-msgstr ""
-"Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione "
-"um arquivo para visualização 3D abaixo."
-
-#: converter/templates/converter/upload.html:85
-msgid "Espaço extra em Å ao redor da molécula"
-msgstr "Espaço extra em Å ao redor da molécula"
-
-#: converter/templates/converter/upload.html:95
-msgid "Visualização 3D da Molécula (do arquivo XYZ selecionado)"
-msgstr "Visualização 3D da Molécula (do arquivo XYZ selecionado)"
-
-#: converter/templates/converter/upload.html:99
-msgid "Selecione um arquivo XYZ acima para visualizar a molécula."
-msgstr "Selecione um arquivo XYZ acima para visualizar a molécula."
-
-#: converter/templates/converter/upload.html:106
-msgid "Parâmetros de Base e Malha"
-msgstr "Parâmetros de Base e Malha"
-
-#: converter/templates/converter/upload.html:143
-msgid "Parâmetros de Dinâmica Molecular"
-msgstr "Parâmetros de Dinâmica Molecular"
-
-#: converter/templates/converter/upload.html:192
-msgid "Parâmetros SCF e DM"
-msgstr "Parâmetros SCF e DM"
-
-#: converter/templates/converter/upload.html:252
-msgid "Funcional XC e Parâmetros de Solução"
-msgstr "Funcional XC e Parâmetros de Solução"
-
-#: converter/templates/converter/upload.html:306
-msgid "Saídas e Análises"
-msgstr "Saídas e Análises"
-
-#: converter/templates/converter/upload.html:314
-msgid "Exporta coordenadas em formato Xmol"
-msgstr "Exporta coordenadas em formato Xmol"
-
-#: converter/templates/converter/upload.html:324
-msgid "Análise populacional de Mulliken"
-msgstr "Análise populacional de Mulliken"
-
-#: converter/templates/converter/upload.html:334
-msgid "Constante de Rede e Vetores"
-msgstr "Constante de Rede e Vetores"
-
-#: converter/templates/converter/upload.html:416
-msgid "Converter e Baixar"
-msgstr ""
-
-#: converter/templates/converter/upload.html:426
-msgid "Pré-visualização do arquivo FDF"
-msgstr "Pré-visualização do arquivo FDF"
-
-#: converter/templates/converter/upload.html:461
-msgid "Salvar Configuração Atual"
-msgstr "Salvar Configuração Atual"
-
-#: converter/templates/converter/upload.html:467
-msgid "Nome da Configuração *"
-msgstr "Nome da Configuração *"
-
-#: converter/templates/converter/upload.html:469
-msgid "Dê um nome descritivo para esta configuração"
-msgstr "Dê um nome descritivo para esta configuração"
-
-#: converter/templates/converter/upload.html:472
-msgid "Descrição (opcional)"
-msgstr "Descrição (opcional)"
-
-#: converter/templates/converter/upload.html:474
-msgid "Descreva os parâmetros ou quando usar esta configuração"
-msgstr "Descreva os parâmetros ou quando usar esta configuração"
-
-#: converter/templates/converter/upload.html:484
-msgid "Cancelar"
-msgstr "Cancelar"
-
-#: converter/templates/converter/upload.html:485
+#: converter/templates/converter/upload.html:489
 msgid "Salvar Configuração"
 msgstr "Salvar Configuração"
 
-#: converter/templates/converter/upload.html:492
+#: converter/templates/converter/upload.html:66
+msgid "Arquivo e Configurações Básicas"
+msgstr "Arquivo e Configurações Básicas"
+
+#: converter/templates/converter/upload.html:75
+msgid ""
+"Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione "
+"um arquivo para visualização 3D abaixo."
+msgstr ""
+"Formato XYZ: número de átomos, comentário, linhas de coordenadas. Selecione "
+"um arquivo para visualização 3D abaixo."
+
+#: converter/templates/converter/upload.html:96
+msgid "Espaço extra em Å ao redor da molécula"
+msgstr "Espaço extra em Å ao redor da molécula"
+
+#: converter/templates/converter/upload.html:106
+msgid "Visualização 3D da Molécula (do arquivo XYZ selecionado)"
+msgstr "Visualização 3D da Molécula (do arquivo XYZ selecionado)"
+
+#: converter/templates/converter/upload.html:110
+msgid "Selecione um arquivo XYZ acima para visualizar a molécula."
+msgstr "Selecione um arquivo XYZ acima para visualizar a molécula."
+
+#: converter/templates/converter/upload.html:117
+msgid "Parâmetros de Base e Malha"
+msgstr "Parâmetros de Base e Malha"
+
+#: converter/templates/converter/upload.html:154
+msgid "Parâmetros de Dinâmica Molecular"
+msgstr "Parâmetros de Dinâmica Molecular"
+
+#: converter/templates/converter/upload.html:203
+msgid "Parâmetros SCF e DM"
+msgstr "Parâmetros SCF e DM"
+
+#: converter/templates/converter/upload.html:263
+msgid "Funcional XC e Parâmetros de Solução"
+msgstr "Funcional XC e Parâmetros de Solução"
+
+#: converter/templates/converter/upload.html:317
+msgid "Saídas e Análises"
+msgstr "Saídas e Análises"
+
+#: converter/templates/converter/upload.html:325
+msgid "Exporta coordenadas em formato Xmol"
+msgstr "Exporta coordenadas em formato Xmol"
+
+#: converter/templates/converter/upload.html:335
+msgid "Análise populacional de Mulliken"
+msgstr "Análise populacional de Mulliken"
+
+#: converter/templates/converter/upload.html:345
+msgid "Constante de Rede e Vetores"
+msgstr "Constante de Rede e Vetores"
+
+#: converter/templates/converter/upload.html:390
+msgid "Nota:"
+msgstr ""
+
+#: converter/templates/converter/upload.html:390
+msgid "Os vetores da rede serão gerados como uma matriz diagonal:"
+msgstr ""
+
+#: converter/templates/converter/upload.html:394
+msgid ""
+"Estes valores são adimensionais e serão multiplicados pela 'LatticeConstant' "
+"no arquivo de entrada do SIESTA."
+msgstr ""
+
+#: converter/templates/converter/upload.html:415
+#, fuzzy
+#| msgid "Pré-visualização do arquivo FDF"
+msgid "Pré-visualizar FDF"
+msgstr "Pré-visualização do arquivo FDF"
+
+#: converter/templates/converter/upload.html:418
+msgid "Converter e Baixar"
+msgstr ""
+
+#: converter/templates/converter/upload.html:430
+msgid "Pré-visualização do arquivo FDF"
+msgstr "Pré-visualização do arquivo FDF"
+
+#: converter/templates/converter/upload.html:439
+#: converter/templates/converter/upload.html:451
+#, fuzzy
+#| msgid "Downloads"
+msgid "Download"
+msgstr "Downloads"
+
+#: converter/templates/converter/upload.html:449
+#, fuzzy
+#| msgid "Pré-visualização do arquivo FDF"
+msgid "Pré-visualização FDF:"
+msgstr "Pré-visualização do arquivo FDF"
+
+#: converter/templates/converter/upload.html:465
+msgid "Salvar Configuração Atual"
+msgstr "Salvar Configuração Atual"
+
+#: converter/templates/converter/upload.html:471
+msgid "Nome da Configuração *"
+msgstr "Nome da Configuração *"
+
+#: converter/templates/converter/upload.html:473
+msgid "Dê um nome descritivo para esta configuração"
+msgstr "Dê um nome descritivo para esta configuração"
+
+#: converter/templates/converter/upload.html:476
+msgid "Descrição (opcional)"
+msgstr "Descrição (opcional)"
+
+#: converter/templates/converter/upload.html:478
+msgid "Descreva os parâmetros ou quando usar esta configuração"
+msgstr "Descreva os parâmetros ou quando usar esta configuração"
+
+#: converter/templates/converter/upload.html:482
+msgid ""
+"Esta configuração salvará todos os parâmetros atuais do formulário, exceto o "
+"arquivo XYZ."
+msgstr ""
+
+#: converter/templates/converter/upload.html:488
+#: user/templates/user/profile.html:108
+msgid "Cancelar"
+msgstr "Cancelar"
+
+#: converter/templates/converter/upload.html:496
 msgid "O que faz este conversor?"
 msgstr "O que faz este conversor?"
 
-#: converter/templates/converter/upload.html:493
+#: converter/templates/converter/upload.html:497
 msgid ""
 "Este conversor transforma arquivos XYZ em arquivos de entrada FDF para o "
 "SIESTA, permitindo ajuste completo de todos os parâmetros de simulação e "
@@ -556,156 +1142,154 @@ msgstr ""
 "SIESTA, permitindo ajuste completo de todos os parâmetros de simulação e "
 "visualização 3D da molécula carregada."
 
-#: converter/templates/converter/upload.html:495
+#: converter/templates/converter/upload.html:499
 msgid "Lê a geometria do arquivo XYZ"
 msgstr "Lê a geometria do arquivo XYZ"
 
-#: converter/templates/converter/upload.html:496
+#: converter/templates/converter/upload.html:500
 msgid "Renderiza a molécula em 3D interativamente no navegador"
 msgstr "Renderiza a molécula em 3D interativamente no navegador"
 
-#: converter/templates/converter/upload.html:497
+#: converter/templates/converter/upload.html:501
 msgid "Identifica elementos e cria bloco de espécies químicas"
 msgstr "Identifica elementos e cria bloco de espécies químicas"
 
-#: converter/templates/converter/upload.html:498
+#: converter/templates/converter/upload.html:502
 msgid "Constrói uma caixa cúbica adequada baseada nas dimensões da molécula"
 msgstr "Constrói uma caixa cúbica adequada baseada nas dimensões da molécula"
 
-#: converter/templates/converter/upload.html:499
+#: converter/templates/converter/upload.html:503
 msgid ""
 "Ajusta as dimensões da caixa para conter a molécula (bounding box + padding)"
 msgstr ""
 
-#: converter/templates/converter/upload.html:500
+#: converter/templates/converter/upload.html:504
 msgid "Configura todos os parâmetros de cálculo SIESTA"
 msgstr "Configura todos os parâmetros de cálculo SIESTA"
 
-#: converter/templates/converter/upload.html:501
+#: converter/templates/converter/upload.html:505
 msgid "Gera um arquivo FDF pronto para o SIESTA"
 msgstr "Gera um arquivo FDF pronto para o SIESTA"
 
 #: converter/templates/home.html:4
-#| msgid "Entre na sua conta SIESTA Platform"
 msgid "Página Inicial — SIESTA Platform"
 msgstr "Página Inicial — SIESTA Platform"
 
 #: converter/templates/home.html:33
-msgid "Atenção:"
-msgstr "Atenção:"
+msgid ""
+"<strong>Atenção:</strong> A SIESTA Platform ainda está em fase <strong>Beta</"
+"strong>! Algumas funcionalidades podem estar em desenvolvimento ou "
+"apresentar comportamento inesperado. Agradecemos sua compreensão e feedback."
+msgstr ""
 
-#: converter/templates/home.html:33
-msgid "Beta"
-msgstr "Beta"
-
-#: converter/templates/home.html:39
-#| msgid "Junte-se à comunidade SIESTA Platform"
+#: converter/templates/home.html:37
 msgid "Bem-vindo à SIESTA Platform"
 msgstr "Bem-vindo à SIESTA Platform"
 
-#: converter/templates/home.html:40
+#: converter/templates/home.html:38
 msgid "Simulações computacionais de materiais de forma simples e eficiente."
 msgstr "Simulações computacionais de materiais de forma simples e eficiente."
 
-#: converter/templates/home.html:63
+#: converter/templates/home.html:49
+#, fuzzy
+#| msgid "Criar Conta"
+msgid "Criar Conversão"
+msgstr "Criar Conta"
+
+#: converter/templates/home.html:61
 msgid "Nosso Fluxo de Trabalho"
 msgstr "Nosso Fluxo de Trabalho"
 
-#: converter/templates/home.html:64
+#: converter/templates/home.html:62
 msgid ""
 "Transforme suas estruturas moleculares em simulações completas em poucos "
 "passos"
 msgstr ""
 
-#: converter/templates/home.html:75
+#: converter/templates/home.html:73
 msgid "Passo 1"
 msgstr "Passo 1"
 
-#: converter/templates/home.html:76
+#: converter/templates/home.html:74
 msgid "Upload do Arquivo"
 msgstr "Upload do Arquivo"
 
-#: converter/templates/home.html:77
+#: converter/templates/home.html:75
 msgid ""
 "Carregue seu arquivo XYZ contendo as coordenadas atômicas da estrutura "
 "molecular."
 msgstr ""
 
-#: converter/templates/home.html:88
+#: converter/templates/home.html:86
 msgid "Passo 2"
 msgstr "Passo 2"
 
-#: converter/templates/home.html:89
-#| msgid "Salvar Configuração"
+#: converter/templates/home.html:87
 msgid "Configuração"
 msgstr "Configuração"
 
-#: converter/templates/home.html:90
+#: converter/templates/home.html:88
 msgid ""
 "Ajuste os parâmetros de simulação SIESTA conforme suas necessidades de "
 "pesquisa."
 msgstr ""
 
-#: converter/templates/home.html:101
+#: converter/templates/home.html:99
 msgid "Passo 3"
 msgstr "Passo 3"
 
-#: converter/templates/home.html:102
+#: converter/templates/home.html:100
 msgid "Download e Execução"
 msgstr "Download e Execução"
 
-#: converter/templates/home.html:103
+#: converter/templates/home.html:101
 msgid ""
 "Baixe o arquivo FDF gerado e execute no SIESTA para obter resultados da "
 "simulação."
 msgstr ""
 
-#: converter/templates/home.html:114
-#| msgid "Recursos Exclusivos"
+#: converter/templates/home.html:112
 msgid "Recursos Principais"
 msgstr "Recursos Principais"
 
-#: converter/templates/home.html:115
+#: converter/templates/home.html:113
 msgid "Tudo que você precisa para suas simulações computacionais"
 msgstr "Tudo que você precisa para suas simulações computacionais"
 
-#: converter/templates/home.html:127
-#| msgid "Visualização"
+#: converter/templates/home.html:125
 msgid "Visualização 3D Interativa"
 msgstr "Visualização 3D Interativa"
 
-#: converter/templates/home.html:129
+#: converter/templates/home.html:127
 msgid ""
 "Visualize suas estruturas moleculares em 3D diretamente no navegador antes "
 "de iniciar as simulações."
 msgstr ""
 
-#: converter/templates/home.html:141
-#| msgid "Minhas Configurações Salvas"
+#: converter/templates/home.html:139
 msgid "Configurações Salvas"
 msgstr "Minhas Configurações Salvas"
 
-#: converter/templates/home.html:143
+#: converter/templates/home.html:141
 msgid ""
 "Salve suas configurações favoritas para reutilização rápida em futuras "
 "simulações."
 msgstr ""
 
-#: converter/templates/home.html:155
-#| msgid "Histórico"
+#: converter/templates/home.html:153
 msgid "Histórico Completo"
 msgstr "Histórico Completo"
 
-#: converter/templates/home.html:157
+#: converter/templates/home.html:155
 msgid ""
 "Acesse todo o histórico de suas conversões e downloads organizados por data."
 msgstr ""
 
-#: converter/templates/home.html:169
+#: converter/templates/home.html:167
 msgid "Pseudopotenciais Inclusos"
 msgstr "Pseudopotenciais Inclusos"
 
-#: converter/templates/home.html:171
+#: converter/templates/home.html:169
 msgid ""
 "Receba automaticamente os pseudopotenciais necessários para cada elemento em "
 "sua estrutura."
@@ -732,7 +1316,7 @@ msgstr ""
 msgid "Formulário inválido."
 msgstr ""
 
-#: converter/views.py:119
+#: converter/views.py:120
 #, python-format
 msgid ""
 "Dimensão X da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
@@ -741,7 +1325,7 @@ msgstr ""
 "Dimensão X da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
 "%(mol).1f Å + padding: %(pad).1f Å)."
 
-#: converter/views.py:125
+#: converter/views.py:126
 #, python-format
 msgid ""
 "Dimensão Y da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
@@ -750,7 +1334,7 @@ msgstr ""
 "Dimensão Y da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
 "%(mol).1f Å + padding: %(pad).1f Å)."
 
-#: converter/views.py:131
+#: converter/views.py:132
 #, python-format
 msgid ""
 "Dimensão Z da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
@@ -759,7 +1343,7 @@ msgstr ""
 "Dimensão Z da célula ajustada de %(old).1f para %(new).1f Å (molécula: "
 "%(mol).1f Å + padding: %(pad).1f Å)."
 
-#: converter/views.py:147
+#: converter/views.py:148
 msgid ""
 "Números atômicos detectados no arquivo XYZ. Eles foram automaticamente "
 "convertidos para símbolos químicos."
@@ -767,49 +1351,86 @@ msgstr ""
 "Números atômicos detectados no arquivo XYZ. Eles foram automaticamente "
 "convertidos para símbolos químicos."
 
-#: converter/views.py:154
+#: converter/views.py:155
 msgid ""
 "O servidor disponibiliza apenas pseudopotenciais LDA. O FDF referencia "
 "arquivos .lda.psf independentemente do funcional escolhido."
 msgstr ""
 
-#: converter/views.py:261
+#: converter/views.py:262
 msgid "Entrada do histórico excluída com sucesso."
 msgstr "Entrada do histórico excluída com sucesso."
 
-#: converter/views.py:318
+#: converter/views.py:319
 msgid "Nome é obrigatório"
 msgstr ""
 
-#: converter/views.py:324
-#| msgid "Parâmetros:"
+#: converter/views.py:325
 msgid "Parâmetros inválidos"
 msgstr "Parâmetros inválidos"
 
-#: converter/views.py:340
-#| msgid "Dê um nome descritivo para esta configuração"
+#: converter/views.py:341
 msgid "Não foi possível salvar a configuração."
 msgstr "Não foi possível salvar a configuração."
 
-#: converter/views.py:369
+#: converter/views.py:370
 #, python-format
 msgid "Configuração \"%(name)s\" carregada com sucesso!"
 msgstr "Configuração \"%(name)s\" carregada com sucesso!"
 
-#: converter/views.py:381
+#: converter/views.py:382
 #, python-format
 msgid "Configuração \"%(name)s\" excluída com sucesso!"
 msgstr "Configuração \"%(name)s\" excluída com sucesso!"
 
-#: user/forms.py:13 user/forms.py:65
-msgid "Email"
-msgstr "Email"
+#: dashboard/templates/dashboard/dashboard.html:4
+#, fuzzy
+#| msgid "Dashboard"
+msgid "Dashboard de URLs"
+msgstr "Dashboard"
+
+#: dashboard/templates/dashboard/dashboard.html:55
+msgid "Central de URLs da Plataforma"
+msgstr ""
+
+#: dashboard/templates/dashboard/dashboard.html:56
+msgid ""
+"Abaixo estão listadas todas as rotas disponíveis no projeto. Clique nos "
+"botões para acessar as páginas ou visualize os parâmetros necessários para "
+"rotas dinâmicas."
+msgstr ""
+
+#: dashboard/templates/dashboard/dashboard.html:70
+msgid "URL"
+msgstr ""
+
+#: dashboard/templates/dashboard/dashboard.html:71
+msgid "Ação"
+msgstr ""
+
+#: dashboard/templates/dashboard/dashboard.html:91
+msgid "Acessar"
+msgstr ""
+
+#: dashboard/templates/dashboard/dashboard.html:94
+#, fuzzy
+#| msgid "Parâmetros:"
+msgid "Requer parâmetros"
+msgstr "Parâmetros:"
+
+#: dashboard/templates/dashboard/dashboard.html:106
+msgid "Esta URL requer os seguintes parâmetros:"
+msgstr ""
+
+#: dashboard/templates/dashboard/dashboard.html:112
+msgid "Exemplo de uso:"
+msgstr ""
 
 #: user/forms.py:15 user/forms.py:66
 msgid "seu.email@exemplo.com"
 msgstr "seu.email@exemplo.com"
 
-#: user/forms.py:21
+#: user/forms.py:21 user/templates/user/profile.html:58
 msgid "Nome de usuário"
 msgstr "Nome de usuário"
 
@@ -861,6 +1482,52 @@ msgstr "Foto de Perfil"
 msgid "Envie uma imagem para seu perfil (opcional)"
 msgstr "Envie uma imagem para seu perfil (opcional)"
 
+#: user/templates/user/profile.html:4
+#, fuzzy
+#| msgid "Foto de Perfil"
+msgid "Perfil"
+msgstr "Foto de Perfil"
+
+#: user/templates/user/profile.html:101
+msgid "Foto atual:"
+msgstr ""
+
+#: user/templates/user/profile.html:109
+#, fuzzy
+#| msgid "Salvar Configuração"
+msgid "Salvar Alterações"
+msgstr "Salvar Configuração"
+
+#: user/templates/user/profile.html:119
+msgid "Estatísticas"
+msgstr ""
+
+#: user/templates/user/profile.html:121
+msgid "Conversões realizadas:"
+msgstr ""
+
+#: user/templates/user/profile.html:122
+#, fuzzy
+#| msgid "Configurações Salvas"
+msgid "Configurações salvas:"
+msgstr "Minhas Configurações Salvas"
+
+#: user/templates/user/profile.html:123
+msgid "Membro desde:"
+msgstr ""
+
+#: user/templates/user/profile.html:131
+#, fuzzy
+#| msgid "Ações"
+msgid "Ações Rápidas"
+msgstr "Ações"
+
+#: user/templates/user/profile.html:134
+#, fuzzy
+#| msgid "Histórico"
+msgid "Ver Histórico"
+msgstr "Histórico"
+
 #: user/views.py:52
 #, python-format
 msgid "Não foi possível enviar sua mensagem: %(errors)s"
@@ -873,6 +1540,37 @@ msgstr ""
 #: user/views.py:79
 msgid "Sua mensagem foi enviada com sucesso! Entraremos em contato em breve."
 msgstr "Sua mensagem foi enviada com sucesso! Entraremos em contato em breve."
+
+#: user/views.py:113
+msgid "Aluno/Doutorado"
+msgstr ""
+
+#: user/views.py:114
+msgid ""
+"Graduado em Ciência da Computação (UFN), Mestre em Microeletrônica (UFRGS) e "
+"aluno de Doutorado em Nanociências (UFN)."
+msgstr ""
+
+#: user/views.py:122
+msgid "Aluno/Programador"
+msgstr ""
+
+#: user/views.py:123
+msgid ""
+"Graduado em Ciência da Computação (UFN). Desenvolvedor principal da "
+"plataforma"
+msgstr ""
+
+#: user/views.py:131
+msgid "Professor (UFN)"
+msgstr ""
+
+#: user/views.py:132
+msgid ""
+"Professor de Ciência da Computação, Engenharia Biomédica, Inteligência "
+"Artificial para Engenharias, Modelagem e Simulação e Complexidade de "
+"Algoritmos."
+msgstr ""
 
 #: user/views.py:153
 msgid "Perfil atualizado com sucesso!"
@@ -907,12 +1605,10 @@ msgid "Arquivo muito grande. Limite: 10 MB."
 msgstr "Arquivo muito grande. Limite: 10 MB."
 
 #: visualizer/templates/visualizer/upload.html:4
-#| msgid "Upload do Arquivo"
 msgid "Upload .out"
 msgstr "Upload .out"
 
 #: visualizer/templates/visualizer/upload.html:18
-#| msgid "Upload do Arquivo"
 msgid "Upload de Arquivo .out"
 msgstr "Upload de Arquivo .out"
 
@@ -923,17 +1619,15 @@ msgid ""
 msgstr ""
 
 #: visualizer/templates/visualizer/upload.html:42
-#| msgid "Deixe em branco para usar o nome do arquivo"
 msgid "Deixe em branco para usar o nome detectado no arquivo."
 msgstr "Deixe em branco para usar o nome do arquivo"
 
 #: visualizer/templates/visualizer/upload.html:46
-#| msgid "Visualizar .out"
 msgid "Visualizar em 3D"
 msgstr "Visualizar em 3D"
 
 #: visualizer/templates/visualizer/visualize.html:5
-#: visualizer/templates/visualizer/visualize.html:35
+#: visualizer/templates/visualizer/visualize.html:51
 msgid "SIESTA 3D"
 msgstr "SIESTA 3D"
 
@@ -941,85 +1635,114 @@ msgstr "SIESTA 3D"
 msgid "Visualização"
 msgstr "Visualização"
 
-#: visualizer/templates/visualizer/visualize.html:39
+#: visualizer/templates/visualizer/visualize.html:55
 msgid "Tem certeza que deseja excluir este arquivo?"
 msgstr ""
 
-#: visualizer/templates/visualizer/visualize.html:43
-msgid "Excluir"
-msgstr ""
-
-#: visualizer/templates/visualizer/visualize.html:47
+#: visualizer/templates/visualizer/visualize.html:63
 msgid "Novo Upload"
 msgstr "Novo Upload"
 
-#: visualizer/templates/visualizer/visualize.html:56
+#: visualizer/templates/visualizer/visualize.html:72
 msgid "(intensidade)"
 msgstr "(intensidade)"
 
-#: visualizer/templates/visualizer/visualize.html:61
+#: visualizer/templates/visualizer/visualize.html:77
 msgid "Grade 3D"
 msgstr "Grade 3D"
 
-#: visualizer/templates/visualizer/visualize.html:66
+#: visualizer/templates/visualizer/visualize.html:82
 msgid "Renderizar 3D"
 msgstr "Renderizar 3D"
 
-#: visualizer/templates/visualizer/visualize.html:69
+#: visualizer/templates/visualizer/visualize.html:85
 msgid "Traçar Linhas"
 msgstr "Traçar Linhas"
 
-#: visualizer/templates/visualizer/visualize.html:71
+#: visualizer/templates/visualizer/visualize.html:87
+msgid "Resetar câmera"
+msgstr ""
+
+#: visualizer/templates/visualizer/visualize.html:90
 msgid "Zoom +"
 msgstr "Zoom +"
 
-#: visualizer/templates/visualizer/visualize.html:72
+#: visualizer/templates/visualizer/visualize.html:93
 msgid "Zoom −"
 msgstr "Zoom −"
 
-#: visualizer/templates/visualizer/visualize.html:82
+#: visualizer/templates/visualizer/visualize.html:96
+msgid "Exportar imagem PNG"
+msgstr ""
+
+#: visualizer/templates/visualizer/visualize.html:101
+msgid "Carga positiva"
+msgstr ""
+
+#: visualizer/templates/visualizer/visualize.html:102
+msgid "Carga negativa"
+msgstr ""
+
+#: visualizer/templates/visualizer/visualize.html:103
+msgid "Neutro"
+msgstr ""
+
+#: visualizer/templates/visualizer/visualize.html:104
+msgid "Campo elétrico"
+msgstr ""
+
+#: visualizer/templates/visualizer/visualize.html:105
+#, fuzzy
+#| msgid "linhas de campo"
+msgid "Linhas de campo"
+msgstr "linhas de campo"
+
+#: visualizer/templates/visualizer/visualize.html:115
 msgid "Erro"
 msgstr "Erro"
 
-#: visualizer/templates/visualizer/visualize.html:91
+#: visualizer/templates/visualizer/visualize.html:124
 msgid "Falha ao carregar arquivo"
 msgstr "Falha ao carregar arquivo"
 
-#: visualizer/templates/visualizer/visualize.html:92
+#: visualizer/templates/visualizer/visualize.html:125
 msgid "Arquivo não carregado. Aguarde ou recarregue a página."
 msgstr "Arquivo não carregado. Aguarde ou recarregue a página."
 
-#: visualizer/templates/visualizer/visualize.html:93
+#: visualizer/templates/visualizer/visualize.html:126
 msgid "Nenhum átomo encontrado no arquivo."
 msgstr "Nenhum átomo encontrado no arquivo."
 
-#: visualizer/templates/visualizer/visualize.html:94
+#: visualizer/templates/visualizer/visualize.html:127
 msgid "Renderize os átomos primeiro."
 msgstr "Renderize os átomos primeiro."
 
-#: visualizer/templates/visualizer/visualize.html:95
+#: visualizer/templates/visualizer/visualize.html:128
 msgid "átomos"
 msgstr "átomos"
 
-#: visualizer/templates/visualizer/visualize.html:96
+#: visualizer/templates/visualizer/visualize.html:129
 msgid "grade"
 msgstr "grade"
 
-#: visualizer/templates/visualizer/visualize.html:97
+#: visualizer/templates/visualizer/visualize.html:130
 msgid "vetores"
 msgstr "vetores"
 
-#: visualizer/templates/visualizer/visualize.html:98
+#: visualizer/templates/visualizer/visualize.html:131
 msgid "linhas de campo"
 msgstr "linhas de campo"
 
-#: visualizer/templates/visualizer/visualize.html:99
+#: visualizer/templates/visualizer/visualize.html:132
+msgid "Calculando..."
+msgstr ""
+
+#: visualizer/templates/visualizer/visualize.html:133
 msgid ""
 "Falha ao carregar o módulo WASM/Three.js. Verifique se o build foi executado "
 "(visualizer/rust/build.sh)."
 msgstr ""
 
 #: visualizer/views.py:79
-#| msgid "Entrada do histórico excluída com sucesso."
 msgid "Arquivo .out excluído com sucesso."
 msgstr "Arquivo .out excluído com sucesso."
