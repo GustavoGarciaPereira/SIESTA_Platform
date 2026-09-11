@@ -199,4 +199,4 @@ Entregável: metatags/OG, decisão sobre vendorização de CDN, contraste e foco
 | FR-16 | Parcial | `--color-accent-dark` para contraste AA e `:focus-visible` padronizado; auditoria completa de a11y pendente |
 | FR-17 | Parcial | Ações principais consolidados; revisão global de variantes ainda pendente |
 
-Validação: **112 testes Django** e **7 testes Rust** verdes, `manage.py check` limpo, `collectstatic` executado, `msgfmt --check-format` OK nos dois idiomas.
+Validação: **117 testes Django** e **7 testes Rust** verdes, `manage.py check` limpo, `collectstatic` executado, `msgfmt --check-format` OK nos dois idiomas.

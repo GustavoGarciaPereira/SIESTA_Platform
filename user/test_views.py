@@ -506,3 +506,19 @@ class UserFormsTests(TestCase):
 
         form = UserProfileForm(data=form_data, instance=profile)
         self.assertTrue(form.is_valid())
+
+class DefaultLanguageMiddlewareTests(TestCase):
+    """Testes do idioma padrão pt-BR e da escolha explícita do usuário."""
+
+    def test_default_language_is_pt_br_without_cookie(self):
+        """Navegador em inglês sem cookie deve renderizar em pt-BR."""
+        response = self.client.get(reverse('home'), HTTP_ACCEPT_LANGUAGE='en-US')
+        self.assertContains(response, 'Bem-vindo à SIESTA Platform')
+
+    def test_explicit_language_cookie_is_respected(self):
+        """Cookie de idioma definido pelo seletor deve ser respeitado."""
+        from django.conf import settings
+
+        self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = 'en'
+        response = self.client.get(reverse('home'), HTTP_ACCEPT_LANGUAGE='pt-BR')
+        self.assertContains(response, 'Welcome to SIESTA Platform')

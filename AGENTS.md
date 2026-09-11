@@ -38,7 +38,7 @@ python manage.py collectstatic    # necessário após mexer em estáticos
 
 ```bash
 python manage.py test                                   # descobre todos os apps
-python manage.py test converter user dashboard visualizer  # suíte completa (111 testes)
+python manage.py test converter user dashboard visualizer  # suíte completa (117 testes)
 python manage.py test converter.tests.ConvertViewTests  # app/classe específica
 
 cargo test --manifest-path visualizer/rust/Cargo.toml   # 7 testes Rust

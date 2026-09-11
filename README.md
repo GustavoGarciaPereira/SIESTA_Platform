@@ -6,7 +6,7 @@
 [![Django](https://img.shields.io/badge/Django-4.2-green.svg)](https://www.djangoproject.com/)
 [![Rust](https://img.shields.io/badge/Rust-WASM-orange.svg)](https://www.rust-lang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![Tests](https://img.shields.io/badge/tests-111%2F7%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-117%2F7%20passing-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -148,7 +148,7 @@ python manage.py collectstatic --noinput
 ## 🧪 Testes
 
 ```bash
-# Todos os testes Django (111)
+# Todos os testes Django (117)
 python manage.py test converter user dashboard visualizer
 
 # Testes Rust (7)
