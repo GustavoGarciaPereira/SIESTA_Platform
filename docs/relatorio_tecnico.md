@@ -5,7 +5,7 @@
 **Data do relatório:** 10/09/2026
 **Stack:** Django 4.2.17 · Python 3.10 · Bootstrap 5.3 · Three.js 0.160 + Rust/WASM · SQLite (dev) / PostgreSQL (prod)
 **Dimensão:** ~4.000 linhas Python + templates HTML + crate Rust
-**Validação executada:** `python manage.py test converter user dashboard visualizer` → **117/117 testes passando**. 7 testes Rust separados (`cargo test`).
+**Validação executada:** `python manage.py test converter user dashboard visualizer api` → **131/131 testes passando**. 7 testes Rust separados (`cargo test`).
 
 > Este relatório foi produzido por leitura estática integral do código, complementada pela execução da suíte de testes. Nenhum arquivo do projeto foi modificado durante a análise.
 
@@ -58,11 +58,12 @@ Templates globais (`base.html`, `home.html`, `about.html`, `contact.html`, auth)
 
 | App | Testes |
 |---|---|
-| converter | 51 |
+| converter | 58 |
 | user | 37 |
 | dashboard | 7 |
 | visualizer | 22 |
-| **Total Django** | **117 (OK)** |
+| api | 7 |
+| **Total Django** | **131 (OK)** |
 | Rust | 7 |
 
 Lacunas: ramo AJAX do preview, round-trip de configs salvas com booleanos, upload real de imagem, fluxo feliz do reset com token, e nenhum teste de JS.

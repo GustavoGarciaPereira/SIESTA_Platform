@@ -6,7 +6,7 @@
 [![Django](https://img.shields.io/badge/Django-4.2-green.svg)](https://www.djangoproject.com/)
 [![Rust](https://img.shields.io/badge/Rust-WASM-orange.svg)](https://www.rust-lang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![Tests](https://img.shields.io/badge/tests-117%2F7%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-131%2F7%20passing-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -148,8 +148,8 @@ python manage.py collectstatic --noinput
 ## 🧪 Testes
 
 ```bash
-# Todos os testes Django (117)
-python manage.py test converter user dashboard visualizer
+# Todos os testes Django (131)
+python manage.py test converter user dashboard visualizer api
 
 # Testes Rust (7)
 cargo test --manifest-path visualizer/rust/Cargo.toml
@@ -179,6 +179,8 @@ python manage.py test converter.tests.ReadXyzTests
 | `EMAIL_HOST` | `smtp.gmail.com` | Servidor SMTP (produção) |
 | `EMAIL_HOST_USER` | — | Email (produção) |
 | `EMAIL_HOST_PASSWORD` | — | Senha do email (produção) |
+| `CELERY_BROKER_URL` | `redis://localhost:6379/0` | Broker do Celery (produção) |
+| `CELERY_TASK_ALWAYS_EAGER` | igual a `DEBUG` | `True` executa tarefas de forma síncrona |
 
 ---
 
@@ -192,12 +194,15 @@ python manage.py test converter.tests.ReadXyzTests
 - [x] Configurações salvas (CRUD)
 - [x] Visualizador 3D de resultados `.out` (Rust/WASM + Three.js)
 - [x] Limpeza estrutural (dead code, phantom deps, duplicações)
+- [x] API REST (Django REST Framework + JWT)
+- [x] Modelo `Pseudopotential` com gestão no admin
+- [x] Presets de simulação + tooltips
+- [x] Processamento assíncrono com Celery + Redis
+- [x] Frontend vendorizado (offline) + i18n pt-BR/EN completo
 
 ### 🔜 Em breve
-- [ ] Processamento assíncrono com Celery + Redis
-- [ ] API REST (Django REST Framework + JWT)
-- [ ] Modelo `Pseudopotential` com gestão no admin
-- [ ] Presets de simulação + tooltips
+- [ ] Execução de simulações SIESTA pela plataforma
+- [ ] Análise de resultados com IA
 
 ---
 

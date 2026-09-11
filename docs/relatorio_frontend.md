@@ -200,4 +200,4 @@ Entregável: metatags/OG, decisão sobre vendorização de CDN, contraste e foco
 | FR-17 | Parcial | Ações principais consolidadas (dashboard, histórico, configs, hero); revisão global de variantes ainda pendente |
 | Extra | Concluído | Tooltip no hover dos átomos no visualizador (símbolo, coordenadas e carga) |
 
-Validação: **117 testes Django** e **7 testes Rust** verdes, `manage.py check` limpo, `collectstatic` executado, `msgfmt --check-format` OK nos dois idiomas.
+Validação: **131 testes Django** e **7 testes Rust** verdes, `manage.py check` limpo, `collectstatic` executado, `msgfmt --check-format` OK nos dois idiomas.

@@ -38,7 +38,7 @@ python manage.py collectstatic    # necessário após mexer em estáticos
 
 ```bash
 python manage.py test                                   # descobre todos os apps
-python manage.py test converter user dashboard visualizer  # suíte completa (117 testes)
+python manage.py test converter user dashboard visualizer api  # suíte completa (131 testes)
 python manage.py test converter.tests.ConvertViewTests  # app/classe específica
 
 cargo test --manifest-path visualizer/rust/Cargo.toml   # 7 testes Rust
@@ -53,7 +53,7 @@ Ao alterar `visualizer/rust/src/lib.rs`, **rebuilde o WASM** (`build.sh`) antes 
 docker compose up --build
 ```
 
-O `docker-compose.yml` define `DEBUG=True` (SQLite + console e-mail) para uso local.
+O `docker-compose.yml` define `DEBUG=True` (SQLite + console e-mail) para uso local e sobe também `redis`, `worker` e `beat` do Celery.
 
 ## Arquitetura
 
@@ -65,6 +65,7 @@ Quatro apps Django sob `heparin_converter/`:
 | `user` | `/` | Home, login, signup, about, contato, perfil, password reset |
 | `dashboard` | `/dashboard/` | Catálogo de URLs (staff only) |
 | `visualizer` | `/visualizer/` | Upload/visualização 3D de `.out` (Rust/WASM + Three.js) |
+| `api` | `/api/v1/` | API REST (DRF + JWT): conversões, configurações e `.out` |
 
 Templates globais (`base.html`, `home.html`, `about.html`, `contact.html`, auth) vivem em `converter/templates/` mesmo sendo usados pelo app `user`.
 
@@ -79,7 +80,7 @@ Templates globais (`base.html`, `home.html`, `about.html`, `contact.html`, auth)
 
 ### Models
 
-- `converter`: `UploadedFile`, `ConversionHistory` (user nullable), `SavedConfiguration` (`unique_together (user, name)`).
+- `converter`: `UploadedFile`, `ConversionHistory` (user nullable), `SavedConfiguration` (`unique_together (user, name)`), `Pseudopotential` (`unique_together (symbol, functional)`) e `SimulationPreset` (presets globais gerenciados no admin).
 - `user`: `UserProfile` 1:1 com `User`; criado automaticamente via signal `user/signals.py`.
 - `visualizer`: `OutFile` (isolado por dono).
 - Models gerenciados pelo Django (sem `managed = False`); migrações criam as tabelas.
@@ -112,6 +113,7 @@ Templates globais (`base.html`, `home.html`, `about.html`, `contact.html`, auth)
 | `DB_*` | PostgreSQL de produção (`DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_SSLMODE`) |
 | `EMAIL_*`, `DEFAULT_FROM_EMAIL` | SMTP de produção |
 | `CONTACT_EMAIL` | Destino do formulário de contato |
+| `CELERY_BROKER_URL` | Broker do Celery (`redis://...`); em DEBUG as tarefas são eager |
 
 ## Testes — convenções e pegadinhas
 
